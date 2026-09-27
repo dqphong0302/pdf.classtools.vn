@@ -1,0 +1,25 @@
+.flatten-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.flatten-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.flatten-info-card {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #f8fafc;
+  border: 1px solid var(--pdui-border, #e2e8f0);
+  border-radius: var(--pdui-radius-lg, 0.75rem);
+}
+
+.flatten-info-card .icon {
+  color: var(--pdui-primary, #2563eb);
+  flex-shrink: 0;
+}

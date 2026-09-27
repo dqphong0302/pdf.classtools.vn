@@ -1,0 +1,39 @@
+.pdfa-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.pdfa-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pdfa-info-box {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--pdui-radius-lg, 0.75rem);
+}
+
+.pdfa-info-box .icon {
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+.info-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #15803d;
+  margin: 0 0 0.375rem 0;
+}
+
+.info-desc {
+  font-size: 0.875rem;
+  color: #166534;
+  margin: 0;
+  line-height: 1.5;
+}

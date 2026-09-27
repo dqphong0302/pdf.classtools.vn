@@ -6,18 +6,28 @@ interface FileDropProps {
   hint?: string;
   onFiles: (files: File[]) => void;
   notice?: string;
+  accept?: string;
+  acceptPattern?: RegExp;
 }
 
-export function FileDrop({ multiple = false, label, hint, onFiles, notice }: FileDropProps) {
+export function FileDrop({
+  multiple = false,
+  label,
+  hint,
+  onFiles,
+  notice,
+  accept = 'application/pdf,.pdf',
+  acceptPattern = /\.pdf$/i
+}: FileDropProps) {
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const acceptFiles = useCallback((list: FileList | null) => {
     if (!list) return;
-    const pdfs = Array.from(list).filter((file) => file.type === 'application/pdf' || /\.pdf$/i.test(file.name));
-    if (!pdfs.length) return;
-    onFiles(multiple ? pdfs : [pdfs[0]]);
-  }, [multiple, onFiles]);
+    const filtered = Array.from(list).filter((file) => acceptPattern.test(file.name) || file.type.includes('pdf'));
+    if (!filtered.length) return;
+    onFiles(multiple ? filtered : [filtered[0]]);
+  }, [multiple, onFiles, acceptPattern]);
 
   return (
     <div className="file-drop-stack">
@@ -50,7 +60,7 @@ export function FileDrop({ multiple = false, label, hint, onFiles, notice }: Fil
         <input
           ref={inputRef}
           type="file"
-          accept="application/pdf,.pdf"
+          accept={accept}
           multiple={multiple}
           className="ct-visually-hidden"
           onChange={(event) => {

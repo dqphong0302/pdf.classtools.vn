@@ -62,3 +62,17 @@ export async function decryptPdf(bytes: Uint8Array, password = ''): Promise<Uint
   module.FS.unlink('/out.pdf');
   return new Uint8Array(output);
 }
+
+/**
+ * Repairs damaged or corrupt PDF files by linearizing and rebuilding cross-reference tables.
+ */
+export async function repairPdf(bytes: Uint8Array): Promise<Uint8Array> {
+  const module = await loadQpdf();
+  module.FS.writeFile('/in.pdf', bytes);
+  runQpdf(module, ['--linearize', '/in.pdf', '/out.pdf']);
+  const output = module.FS.readFile('/out.pdf');
+  module.FS.unlink('/in.pdf');
+  module.FS.unlink('/out.pdf');
+  return new Uint8Array(output);
+}
+

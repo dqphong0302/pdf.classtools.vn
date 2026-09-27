@@ -1,0 +1,25 @@
+.repair-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.repair-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.repair-info-box {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  border-radius: var(--pdui-radius-lg, 0.75rem);
+}
+
+.repair-info-box .icon {
+  color: #ca8a04;
+  flex-shrink: 0;
+}

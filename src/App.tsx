@@ -16,6 +16,20 @@ const CropPage = lazy(() => import('./pages/CropPage').then((module) => ({ defau
 const ProtectPage = lazy(() => import('./pages/ProtectPage').then((module) => ({ default: module.ProtectPage })));
 const CompressPage = lazy(() => import('./pages/CompressPage').then((module) => ({ default: module.CompressPage })));
 
+// New Tools
+const RotatePage = lazy(() => import('./pages/RotatePage').then((module) => ({ default: module.RotatePage })));
+const PageNumbersPage = lazy(() => import('./pages/PageNumbersPage').then((module) => ({ default: module.PageNumbersPage })));
+const WatermarkPage = lazy(() => import('./pages/WatermarkPage').then((module) => ({ default: module.WatermarkPage })));
+const RedactPage = lazy(() => import('./pages/RedactPage').then((module) => ({ default: module.RedactPage })));
+const ComparePage = lazy(() => import('./pages/ComparePage').then((module) => ({ default: module.ComparePage })));
+const PdfToPdfaPage = lazy(() => import('./pages/PdfToPdfaPage').then((module) => ({ default: module.PdfToPdfaPage })));
+const RepairPage = lazy(() => import('./pages/RepairPage').then((module) => ({ default: module.RepairPage })));
+const ScanPage = lazy(() => import('./pages/ScanPage').then((module) => ({ default: module.ScanPage })));
+const HtmlToPdfPage = lazy(() => import('./pages/HtmlToPdfPage').then((module) => ({ default: module.HtmlToPdfPage })));
+const ExcelToPdfPage = lazy(() => import('./pages/ExcelToPdfPage').then((module) => ({ default: module.ExcelToPdfPage })));
+const PdfToExcelPage = lazy(() => import('./pages/PdfToExcelPage').then((module) => ({ default: module.PdfToExcelPage })));
+const FlattenPage = lazy(() => import('./pages/FlattenPage').then((module) => ({ default: module.FlattenPage })));
+
 const routeTable: Record<string, ComponentType> = {
   '/merge': MergePage,
   '/split': SplitPage,
@@ -29,7 +43,19 @@ const routeTable: Record<string, ComponentType> = {
   '/nup': NupPage,
   '/crop': CropPage,
   '/protect': ProtectPage,
-  '/compress': CompressPage
+  '/compress': CompressPage,
+  '/rotate': RotatePage,
+  '/page-numbers': PageNumbersPage,
+  '/watermark': WatermarkPage,
+  '/redact': RedactPage,
+  '/compare': ComparePage,
+  '/pdf-to-pdfa': PdfToPdfaPage,
+  '/repair': RepairPage,
+  '/scan': ScanPage,
+  '/html-to-pdf': HtmlToPdfPage,
+  '/excel-to-pdf': ExcelToPdfPage,
+  '/pdf-to-excel': PdfToExcelPage,
+  '/flatten': FlattenPage
 };
 
 export default function App() {

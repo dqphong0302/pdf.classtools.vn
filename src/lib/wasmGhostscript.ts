@@ -59,3 +59,28 @@ export async function compressPdf(bytes: Uint8Array, preset: CompressionPreset =
     compressedSize: output.byteLength
   };
 }
+
+/** Converts a PDF to the ISO standard PDF/A-2b format using Ghostscript WASM. */
+export async function convertToPdfa(bytes: Uint8Array): Promise<Uint8Array> {
+  const module = await loadGhostscript();
+  module.FS.writeFile('/in.pdf', bytes);
+  const exitCode = module.callMain([
+    '-dNOPAUSE',
+    '-dBATCH',
+    '-dSAFER',
+    '-sDEVICE=pdfwrite',
+    '-dPDFA=2',
+    '-sColorConversionStrategy=UseDeviceIndependentColor',
+    '-dCompatibilityLevel=1.5',
+    '-dEmbedAllFonts=true',
+    '-dSubsetFonts=true',
+    '-sOutputFile=/out.pdf',
+    '/in.pdf'
+  ]);
+  if (exitCode !== 0) throw new Error(`GS_PDFA_FAILED:${exitCode}`);
+  const output = module.FS.readFile('/out.pdf');
+  module.FS.unlink('/in.pdf');
+  module.FS.unlink('/out.pdf');
+  return new Uint8Array(output);
+}
+
