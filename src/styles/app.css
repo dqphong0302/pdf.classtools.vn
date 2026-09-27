@@ -1,0 +1,561 @@
+/* ClassTools PDF — app layout (design tokens in tokens.css) */
+
+.app-error-page {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  gap: 0.9rem;
+  text-align: center;
+  padding: 2rem;
+  background: var(--ct-paper);
+  color: var(--ct-ink-800);
+}
+
+.tool-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at 5% 6%, rgba(89, 103, 255, 0.1), transparent 22rem),
+    radial-gradient(circle at 92% 25%, rgba(37, 191, 166, 0.08), transparent 20rem),
+    var(--ct-paper);
+}
+
+.tool-app-header {
+  position: sticky;
+  z-index: 40;
+  top: 0;
+  padding-block: 0.7rem;
+  border-bottom: 1px solid var(--ct-border);
+  background: color-mix(in srgb, var(--ct-paper) 84%, transparent);
+  backdrop-filter: blur(20px);
+}
+
+.tool-app-header__inner,
+.tool-app-header__actions,
+.tool-app-footer > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+}
+
+.tool-app-main {
+  flex: 1;
+  width: 100%;
+  padding-block: 1.5rem 3rem;
+}
+
+.tool-app-footer {
+  padding-block: 0.9rem;
+  border-top: 1px solid var(--ct-border);
+  background: color-mix(in srgb, var(--ct-paper) 88%, transparent);
+  color: var(--ct-ink-600);
+  font-size: 0.8rem;
+}
+
+.tool-app-footer span:last-child {
+  text-align: right;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--ct-ink-900);
+  font-family: var(--ct-font-display);
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
+}
+
+.brand__mark {
+  width: 2.2rem;
+  height: 2.2rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--ct-radius-md);
+  background: linear-gradient(135deg, var(--ct-cobalt-500), var(--ct-teal-500));
+  color: #fff;
+}
+
+.brand__name strong {
+  color: var(--ct-cobalt-600);
+}
+
+.header-action {
+  min-height: 2.35rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-inline: 0.85rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-pill);
+  background: var(--ct-surface);
+  color: var(--ct-ink-700);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Page heading */
+.tool-page-heading {
+  max-width: 58rem;
+}
+
+.tool-page-heading--compact {
+  margin-bottom: 1.25rem;
+}
+
+.tool-page-heading__back {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  border-radius: var(--ct-radius-sm);
+  color: var(--ct-ink-600);
+  font-size: 0.83rem;
+  font-weight: 750;
+}
+
+.tool-page-heading h1 {
+  margin-top: 0.7rem;
+  font-family: var(--ct-font-display);
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.tool-page-heading > p {
+  max-width: 48rem;
+  margin-top: 0.5rem;
+  color: var(--ct-ink-600);
+  font-size: 0.92rem;
+}
+
+/* File drop */
+.file-drop-stack {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.file-drop {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  padding: 2.2rem 1.2rem;
+  border: 2px dashed var(--ct-border-strong);
+  border-radius: var(--ct-radius-xl);
+  background: var(--ct-surface);
+  color: var(--ct-ink-600);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--ct-fast) ease, background var(--ct-fast) ease, transform var(--ct-fast) var(--ct-ease);
+}
+
+.file-drop:hover,
+.file-drop:focus-visible {
+  border-color: var(--ct-cobalt-500);
+  background: var(--ct-surface-solid);
+}
+
+.file-drop--dragging {
+  border-color: var(--ct-cobalt-500);
+  background: color-mix(in srgb, var(--ct-cobalt-100) 55%, transparent);
+  transform: scale(1.01);
+}
+
+.file-drop strong {
+  color: var(--ct-ink-800);
+  font-size: 0.98rem;
+}
+
+.file-drop span {
+  font-size: 0.8rem;
+}
+
+.file-drop__notice {
+  color: var(--ct-danger);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.file-drop__meta {
+  color: var(--ct-ink-400);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Shared list of files */
+.file-list {
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.file-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+  font-size: 0.86rem;
+}
+
+.file-list .file-list__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--ct-ink-800);
+}
+
+.file-list .file-list__meta {
+  color: var(--ct-ink-500);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Result / action bars */
+.action-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.notice {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--ct-danger) 35%, transparent);
+  border-radius: var(--ct-radius-md);
+  background: color-mix(in srgb, var(--ct-danger) 8%, var(--ct-surface-solid));
+  color: var(--ct-danger);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.notice--ok {
+  border-color: color-mix(in srgb, var(--ct-success) 35%, transparent);
+  background: color-mix(in srgb, var(--ct-teal-100) 60%, var(--ct-surface-solid));
+  color: var(--ct-teal-700);
+}
+
+/* Thumbnails */
+.thumb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.thumb-card {
+  position: relative;
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.55rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+}
+
+.thumb-card--selected {
+  border-color: var(--ct-cobalt-500);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ct-cobalt-500) 30%, transparent);
+}
+
+.thumb-card canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-sm);
+  background: #fff;
+}
+
+.thumb-card__badge {
+  position: absolute;
+  top: 0.65rem;
+  left: 0.65rem;
+  min-width: 1.5rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--ct-radius-pill);
+  background: var(--ct-ink-900);
+  color: var(--ct-paper-strong);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.thumb-card__label {
+  text-align: center;
+  color: var(--ct-ink-600);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.thumb-card__actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.thumb-card__actions .ct-icon-button {
+  width: 2rem;
+  height: 2rem;
+}
+
+.thumb-empty {
+  padding: 3rem 1rem;
+  border: 1px dashed var(--ct-border-strong);
+  border-radius: var(--ct-radius-xl);
+  text-align: center;
+  color: var(--ct-ink-500);
+  font-size: 0.9rem;
+}
+
+.spinner {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid var(--ct-cobalt-100);
+  border-top-color: var(--ct-cobalt-500);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Workspace layout shared by tools */
+.pdf-workspace {
+  display: grid;
+  gap: 1rem;
+  align-items: start;
+}
+
+.pdf-workspace--two {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.pdf-workspace--side {
+  grid-template-columns: minmax(15rem, 0.9fr) minmax(0, 2fr);
+}
+
+@media (max-width: 900px) {
+  .pdf-workspace--two,
+  .pdf-workspace--side {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel-section {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field > span,
+.field > label {
+  color: var(--ct-ink-700);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.field input[type='text'],
+.field input[type='number'],
+.field select,
+.field textarea {
+  min-height: 2.6rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+  color: var(--ct-ink-900);
+  font-size: 0.9rem;
+  font-family: var(--ct-font-body);
+}
+
+.field textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+  outline: 2px solid var(--ct-focus);
+  outline-offset: 1px;
+}
+
+.range-field {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.range-field output {
+  font-weight: 700;
+  color: var(--ct-ink-800);
+}
+
+/* Home */
+.home-hero {
+  padding: clamp(1.5rem, 4vw, 3rem) 0 clamp(2rem, 5vw, 3.5rem);
+  text-align: center;
+}
+
+.home-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.95rem;
+  margin-bottom: 1rem;
+  border-radius: var(--ct-radius-pill);
+  border: 1px solid var(--ct-border);
+  background: var(--ct-surface);
+  color: var(--ct-teal-700);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.home-hero h1 {
+  font-family: var(--ct-font-display);
+  font-size: clamp(1.9rem, 4.5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--ct-ink-950);
+}
+
+.home-hero h1 em {
+  font-style: normal;
+  color: var(--ct-cobalt-600);
+}
+
+.home-hero__lead {
+  max-width: 44rem;
+  margin: 0.8rem auto 0;
+  color: var(--ct-ink-600);
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+}
+
+.home-hero__privacy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  color: var(--ct-teal-700);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1rem;
+}
+
+.pdf-tool-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1.15rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-xl);
+  background: var(--ct-surface);
+  color: var(--ct-ink-800);
+  box-shadow: var(--ct-shadow-xs);
+  transition: transform var(--ct-fast) var(--ct-ease), box-shadow var(--ct-fast) var(--ct-ease), border-color var(--ct-fast) ease;
+}
+
+.pdf-tool-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--ct-shadow-md);
+  border-color: color-mix(in srgb, var(--ct-cobalt-500) 45%, var(--ct-border));
+}
+
+.pdf-tool-card__icon {
+  width: 2.6rem;
+  height: 2.6rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--ct-radius-md);
+  color: #fff;
+}
+
+.pdf-tool-card h2 {
+  font-family: var(--ct-font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ct-ink-900);
+}
+
+.pdf-tool-card p {
+  color: var(--ct-ink-600);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.pdf-tool-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--ct-cobalt-600);
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-top: auto;
+}
+
+.home-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+  flex-wrap: wrap;
+}
+
+.home-section-heading h2 {
+  font-family: var(--ct-font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ct-ink-900);
+}
+
+.home-section-heading p {
+  color: var(--ct-ink-600);
+  font-size: 0.88rem;
+}
+
+.home-band {
+  margin-top: 2.2rem;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-xl);
+  background: color-mix(in srgb, var(--ct-teal-100) 45%, var(--ct-surface));
+  color: var(--ct-teal-700);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+/* Dòng giới thiệu hệ sinh thái (đồng bộ PDUI v2 .pd-eco-line) */
+.pd-eco-line { width: min(100% - 2rem, var(--ct-container)); margin: 0 auto; padding: var(--ct-space-3) 0; color: var(--ct-ink-600); font-size: 0.82rem; text-align: center; }
+.pd-eco-line a { color: var(--ct-ink-950); font-weight: 500; text-decoration: none; }
+.pd-eco-line a:hover { color: var(--ct-cobalt-600); }

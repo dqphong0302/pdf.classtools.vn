@@ -1,0 +1,143 @@
+/* PDF to images — .p2i- prefixed */
+
+.p2i-workspace {
+  align-items: start;
+}
+
+.p2i-source__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.p2i-source__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ct-ink-700);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.p2i-main {
+  display: grid;
+  gap: 1rem;
+}
+
+.p2i-controls {
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.p2i-segmented {
+  display: inline-flex;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-pill);
+  background: var(--ct-surface-solid);
+  padding: 0.2rem;
+  gap: 0.2rem;
+}
+
+.p2i-seg {
+  min-height: 2.1rem;
+  padding-inline: 0.9rem;
+  border: none;
+  border-radius: var(--ct-radius-pill);
+  background: transparent;
+  color: var(--ct-ink-600);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.p2i-seg.is-active {
+  background: var(--ct-ink-900);
+  color: var(--ct-paper-strong);
+}
+
+.p2i-quality,
+.p2i-resolution {
+  min-width: 10rem;
+}
+
+.p2i-convert {
+  min-width: 12rem;
+}
+
+.p2i-results {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.p2i-results__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.p2i-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.p2i-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+}
+
+.p2i-thumb {
+  width: 3.2rem;
+  height: 2.4rem;
+  object-fit: cover;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-sm);
+  background: #fff;
+}
+
+.p2i-item__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ct-ink-800);
+}
+
+.p2i-item__size {
+  color: var(--ct-ink-500);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .p2i-controls > * {
+    min-width: 100%;
+  }
+
+  .p2i-convert {
+    width: 100%;
+  }
+
+  .p2i-grid {
+    grid-template-columns: 1fr;
+  }
+}

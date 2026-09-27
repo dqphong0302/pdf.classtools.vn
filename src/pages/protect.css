@@ -1,0 +1,186 @@
+/* Protect tool — selectors scoped under .protect- */
+
+.protect-workspace {
+  max-width: 64rem;
+}
+
+.protect-panel {
+  gap: 1.1rem;
+}
+
+.protect-source-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.protect-source-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ct-ink-800);
+}
+
+.protect-chip {
+  flex-shrink: 0;
+  gap: 0.3rem;
+  color: var(--ct-cobalt-700);
+  background: var(--ct-cobalt-100);
+  border-color: transparent;
+}
+
+.protect-chip--encrypted {
+  color: var(--ct-coral-600);
+  background: var(--ct-coral-100);
+}
+
+.protect-tabs {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  width: fit-content;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: color-mix(in srgb, var(--ct-surface-solid) 80%, transparent);
+}
+
+.protect-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 1rem;
+  border: none;
+  border-radius: calc(var(--ct-radius-md) - 2px);
+  background: transparent;
+  color: var(--ct-ink-500);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.protect-tab[aria-pressed='true'] {
+  background: var(--ct-cobalt-500);
+  color: #fff;
+}
+
+.protect-fields {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.protect-field input[type='password'] {
+  min-height: 2.6rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+  color: var(--ct-ink-900);
+  font-size: 0.9rem;
+  font-family: var(--ct-font-body);
+}
+
+.protect-field input[type='password']:focus-visible {
+  outline: 2px solid var(--ct-focus);
+  outline-offset: 1px;
+}
+
+.protect-field-hint {
+  color: var(--ct-ink-500);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.protect-field-hint--warn {
+  color: var(--ct-coral-600);
+}
+
+.protect-strength-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.protect-strength-label {
+  color: var(--ct-ink-700);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.protect-strength {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-pill);
+  background: color-mix(in srgb, var(--ct-surface-solid) 80%, transparent);
+}
+
+.protect-strength button {
+  padding: 0.25rem 0.85rem;
+  border: none;
+  border-radius: var(--ct-radius-pill);
+  background: transparent;
+  color: var(--ct-ink-500);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.protect-strength button[aria-pressed='true'] {
+  background: var(--ct-ink-900);
+  color: var(--ct-paper-strong);
+}
+
+.protect-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--ct-ink-500);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.protect-action {
+  min-width: 11rem;
+}
+
+.protect-action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.protect-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.protect-result .ct-button {
+  min-height: 2.5rem;
+  font-size: 0.86rem;
+}
+
+.protect-privacy {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.75rem 0.95rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: color-mix(in srgb, var(--ct-teal-100) 45%, var(--ct-surface));
+  color: var(--ct-teal-700);
+  font-size: 0.82rem;
+  font-weight: 700;
+}

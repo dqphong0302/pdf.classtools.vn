@@ -1,0 +1,115 @@
+.org-workspace {
+  max-width: 72rem;
+}
+
+.org-panel {
+  gap: 1.1rem;
+}
+
+.org-toolbar {
+  row-gap: 0.6rem;
+}
+
+.org-chip {
+  color: var(--ct-cobalt-700);
+  background: var(--ct-cobalt-100);
+  border-color: transparent;
+}
+
+.org-apply {
+  min-width: 11rem;
+}
+
+.org-apply:disabled,
+.org-reset:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.org-grid {
+  gap: 0.9rem;
+}
+
+.org-card {
+  gap: 0.5rem;
+}
+
+.org-card[draggable='true'] {
+  cursor: grab;
+}
+
+.org-card--drag-over {
+  outline: 2px dashed var(--ct-cobalt-500);
+  outline-offset: 3px;
+  background: color-mix(in srgb, var(--ct-cobalt-100) 55%, var(--ct-surface-solid));
+}
+
+.org-card--deleted {
+  opacity: 0.45;
+  border-style: dashed;
+  background: color-mix(in srgb, var(--ct-ink-100) 55%, var(--ct-surface-solid));
+}
+
+.org-card--deleted .thumb-card__badge {
+  background: var(--ct-ink-500);
+}
+
+.org-canvas-box {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  min-height: 6rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-sm);
+  background: #fff;
+}
+
+.org-canvas {
+  width: 100%;
+  height: auto;
+  transition: transform var(--ct-fast) var(--ct-ease);
+}
+
+.org-card-fallback {
+  display: grid;
+  place-items: center;
+  min-height: 7.5rem;
+  border: 1px dashed var(--ct-border-strong);
+  border-radius: var(--ct-radius-sm);
+  background: color-mix(in srgb, var(--ct-cobalt-100) 40%, var(--ct-surface-solid));
+  color: var(--ct-ink-500);
+}
+
+.org-card .ct-icon-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.org-card-remove:hover {
+  color: var(--ct-danger);
+  border-color: color-mix(in srgb, var(--ct-danger) 40%, transparent);
+  background: color-mix(in srgb, var(--ct-coral-100) 55%, var(--ct-surface-solid));
+}
+
+.org-saved {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.org-saved .ct-button {
+  min-height: 2.5rem;
+  font-size: 0.86rem;
+}
+
+@media (max-width: 640px) {
+  .org-apply {
+    min-width: 0;
+    flex: 1;
+  }
+}

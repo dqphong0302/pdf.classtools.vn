@@ -1,0 +1,343 @@
+/* Edit tool — all selectors prefixed .edit- */
+
+.edit-workspace {
+  align-items: start;
+}
+
+.edit-source__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.edit-source__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ct-ink-700);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.edit-chip {
+  white-space: nowrap;
+}
+
+.edit-grid {
+  margin-top: 0.4rem;
+}
+
+.edit-thumb-fallback {
+  display: grid;
+  place-items: center;
+  min-height: 5.5rem;
+  border: 1px dashed var(--ct-border-strong);
+  border-radius: var(--ct-radius-sm);
+  color: var(--ct-ink-500);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.edit-main {
+  display: grid;
+  gap: 1rem;
+}
+
+/* Layers list */
+.edit-layers {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.edit-layers__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.edit-layers__head h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--ct-font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ct-ink-900);
+}
+
+.edit-layers__empty {
+  color: var(--ct-ink-500);
+  font-size: 0.84rem;
+}
+
+.edit-layers__list {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edit-layers__list li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+  font-size: 0.83rem;
+  color: var(--ct-ink-700);
+}
+
+.edit-layers__list span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.edit-layers__thumb {
+  width: 2.2rem;
+  height: 1.6rem;
+  object-fit: contain;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-sm);
+  background: #fff;
+}
+
+/* Forms */
+.edit-forms {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.edit-form {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.95rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-lg, var(--ct-radius-md));
+  background: color-mix(in srgb, var(--ct-surface-solid) 65%, transparent);
+}
+
+.edit-form h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  color: var(--ct-ink-900);
+  font-family: var(--ct-font-display);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.edit-form__row {
+  display: flex;
+  align-items: end;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.edit-form__row > * {
+  min-width: 8.5rem;
+}
+
+.edit-form__row > label.edit-checkbox {
+  min-width: 0;
+  align-self: end;
+  padding-bottom: 0.55rem;
+}
+
+.edit-form__stack {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.edit-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--ct-ink-700);
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.edit-checkbox input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--ct-cobalt-500);
+}
+
+.edit-add {
+  width: fit-content;
+}
+
+/* Preview */
+.edit-preview {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.edit-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  color: var(--ct-ink-500);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.edit-preview-wrap {
+  position: relative;
+  overflow: auto;
+  max-height: 34rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: #fff;
+  cursor: crosshair;
+}
+
+.edit-preview-wrap canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.edit-preview-fallback {
+  display: grid;
+  place-items: center;
+  min-height: 18rem;
+  color: var(--ct-ink-400);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.edit-marker {
+  position: absolute;
+  width: 0.9rem;
+  height: 0.9rem;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: var(--ct-cobalt-500);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ct-cobalt-500) 35%, transparent);
+  pointer-events: none;
+}
+
+/* Action + result */
+.edit-action {
+  min-width: 14rem;
+}
+
+.edit-output {
+  flex: 1;
+  min-width: 12rem;
+}
+
+.edit-output input {
+  font-size: 0.84rem;
+}
+
+.edit-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+/* Watermark source tabs */
+.edit-wm-tabs {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  width: fit-content;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: color-mix(in srgb, var(--ct-surface-solid) 80%, transparent);
+}
+
+.edit-wm-tab {
+  border: none;
+  border-radius: calc(var(--ct-radius-md) - 2px);
+  background: transparent;
+  color: var(--ct-ink-500);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.3rem 0.9rem;
+  cursor: pointer;
+}
+
+.edit-wm-tab[aria-pressed='true'] {
+  background: var(--ct-cobalt-500);
+  color: #fff;
+}
+
+/* Draggable pending layer chips */
+.edit-layer-chip {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1.5px solid #fff;
+  border-radius: var(--ct-radius-sm);
+  background: var(--ct-cobalt-500);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  box-shadow: 0 1px 6px rgba(28, 25, 23, 0.35);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 2;
+}
+
+.edit-layer-chip--dragging {
+  cursor: grabbing;
+  box-shadow: 0 3px 10px rgba(28, 25, 23, 0.45);
+}
+
+.edit-layer-chip__label {
+  pointer-events: none;
+  line-height: 1;
+}
+
+.edit-layer-chip__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.edit-preview-wrap--dragging {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.edit-preview-wrap--dragging .edit-layer-chip {
+  cursor: grabbing;
+}
+
+@media (max-width: 720px) {
+  .edit-form__row > * {
+    min-width: 100%;
+  }
+
+  .edit-action {
+    width: 100%;
+  }
+}

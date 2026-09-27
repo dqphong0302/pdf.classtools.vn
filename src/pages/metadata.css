@@ -1,0 +1,143 @@
+/* Metadata tool — selectors scoped under .meta- */
+
+.meta-workspace {
+  max-width: 72rem;
+}
+
+.meta-source {
+  gap: 0.9rem;
+}
+
+.meta-source__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+}
+
+.meta-source__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ct-ink-800);
+}
+
+.meta-chip {
+  flex-shrink: 0;
+  gap: 0.3rem;
+  color: var(--ct-cobalt-700);
+  background: var(--ct-cobalt-100);
+  border-color: transparent;
+}
+
+.meta-info-block {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.9rem;
+  border: 1px dashed var(--ct-border-strong);
+  border-radius: var(--ct-radius-md);
+  background: color-mix(in srgb, var(--ct-cobalt-100) 35%, transparent);
+}
+
+.meta-info-head h2 {
+  font-family: var(--ct-font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ct-ink-900);
+}
+
+.meta-info-head p {
+  margin-top: 0.15rem;
+  color: var(--ct-ink-500);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.meta-info {
+  display: grid;
+  gap: 0.45rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.meta-info li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.meta-info__label {
+  flex-shrink: 0;
+  color: var(--ct-ink-500);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.meta-info__value {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: right;
+  color: var(--ct-ink-800);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.meta-form-panel {
+  gap: 0.95rem;
+}
+
+.meta-keywords-hint {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--ct-ink-500);
+}
+
+.meta-actions {
+  margin-top: 0.25rem;
+}
+
+.meta-save {
+  min-width: 10rem;
+}
+
+.meta-save:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.meta-clear {
+  color: var(--ct-coral-600);
+}
+
+.meta-clear:hover {
+  color: var(--ct-danger);
+  border-color: color-mix(in srgb, var(--ct-danger) 40%, transparent);
+  background: color-mix(in srgb, var(--ct-coral-100) 55%, var(--ct-surface-solid));
+}
+
+.meta-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.meta-status .ct-button {
+  min-height: 2.5rem;
+  font-size: 0.86rem;
+}

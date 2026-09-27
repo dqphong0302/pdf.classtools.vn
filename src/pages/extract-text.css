@@ -1,0 +1,170 @@
+/* Extract text tool — selectors scoped under .xt- */
+
+.xt-workspace {
+  max-width: 72rem;
+}
+
+.xt-source {
+  gap: 0.9rem;
+}
+
+.xt-source__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+}
+
+.xt-source__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ct-ink-800);
+}
+
+.xt-chip {
+  flex-shrink: 0;
+  gap: 0.3rem;
+  color: var(--ct-cobalt-700);
+  background: var(--ct-cobalt-100);
+  border-color: transparent;
+}
+
+.xt-main {
+  gap: 1rem;
+}
+
+.xt-extract {
+  min-width: 10rem;
+}
+
+.xt-extract:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.xt-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.xt-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.35rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-pill);
+  background: var(--ct-surface-solid);
+  color: var(--ct-ink-600);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background var(--ct-fast) ease,
+    color var(--ct-fast) ease,
+    border-color var(--ct-fast) ease,
+    transform var(--ct-fast) var(--ct-ease);
+}
+
+.xt-toggle-btn:hover {
+  color: var(--ct-ink-900);
+  border-color: color-mix(in srgb, var(--ct-cobalt-500) 45%, var(--ct-border));
+  transform: translateY(-1px);
+}
+
+.xt-toggle-btn.is-active {
+  background: var(--ct-ink-900);
+  border-color: var(--ct-ink-900);
+  color: var(--ct-paper-strong);
+}
+
+.xt-output {
+  width: 100%;
+  min-height: 15rem;
+  max-height: 34rem;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+  color: var(--ct-ink-900);
+  font-family: var(--ct-font-mono);
+  font-size: 0.84rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  resize: vertical;
+}
+
+.xt-output:focus-visible {
+  outline: 2px solid var(--ct-focus);
+  outline-offset: 1px;
+}
+
+.xt-page-view {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.xt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.xt-page-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-pill);
+  background: var(--ct-surface-solid);
+  color: var(--ct-ink-700);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background var(--ct-fast) ease,
+    color var(--ct-fast) ease,
+    border-color var(--ct-fast) ease;
+}
+
+.xt-page-chip:hover {
+  color: var(--ct-ink-900);
+  border-color: color-mix(in srgb, var(--ct-cobalt-500) 45%, var(--ct-border));
+}
+
+.xt-page-chip.is-active {
+  background: var(--ct-cobalt-500);
+  border-color: transparent;
+  color: #fff;
+}
+
+.xt-copied {
+  color: var(--ct-teal-700);
+  background: var(--ct-teal-100);
+  border-color: transparent;
+}
+
+.xt-empty {
+  padding: 2.5rem 1rem;
+  border: 1px dashed var(--ct-border-strong);
+  border-radius: var(--ct-radius-xl);
+  text-align: center;
+  color: var(--ct-ink-500);
+  font-size: 0.9rem;
+  font-weight: 700;
+}

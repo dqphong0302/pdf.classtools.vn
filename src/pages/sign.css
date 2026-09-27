@@ -1,0 +1,353 @@
+/* Sign tool — selectors scoped under .sign- */
+
+.sign-workspace {
+  max-width: 76rem;
+}
+
+.sign-source {
+  gap: 0.9rem;
+}
+
+.sign-source__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+}
+
+.sign-source__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ct-ink-800);
+}
+
+.sign-chip {
+  flex-shrink: 0;
+  gap: 0.3rem;
+  color: var(--ct-cobalt-700);
+  background: var(--ct-cobalt-100);
+  border-color: transparent;
+}
+
+.sign-grid {
+  max-height: 30rem;
+  overflow-y: auto;
+  padding: 0.15rem;
+}
+
+.sign-thumb-fallback {
+  display: grid;
+  place-items: center;
+  min-height: 5.2rem;
+  border: 1px dashed var(--ct-border-strong);
+  border-radius: var(--ct-radius-sm);
+  background: var(--ct-surface);
+  color: var(--ct-ink-500);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.sign-main {
+  gap: 1.1rem;
+}
+
+.sign-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.sign-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.35rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-pill);
+  background: var(--ct-surface-solid);
+  color: var(--ct-ink-600);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    background var(--ct-fast) ease,
+    color var(--ct-fast) ease,
+    border-color var(--ct-fast) ease,
+    transform var(--ct-fast) var(--ct-ease);
+}
+
+.sign-tab:hover {
+  color: var(--ct-ink-900);
+  border-color: color-mix(in srgb, var(--ct-coral-500) 45%, var(--ct-border));
+  transform: translateY(-1px);
+}
+
+.sign-tab.is-active {
+  background: var(--ct-ink-900);
+  border-color: var(--ct-ink-900);
+  color: var(--ct-paper-strong);
+}
+
+.sign-pad-stack {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: start;
+}
+
+.sign-pad {
+  width: 480px;
+  max-width: 100%;
+  height: auto;
+  border: 1px dashed var(--ct-border-strong);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.sign-pad-tools {
+  display: flex;
+  align-items: end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.sign-brush {
+  min-width: 9rem;
+}
+
+.sign-color-field {
+  min-width: 5.5rem;
+}
+
+.sign-color {
+  width: 2.7rem;
+  height: 2.7rem;
+  padding: 0.2rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+  cursor: pointer;
+}
+
+.sign-capture {
+  margin-left: auto;
+}
+
+.sign-captured {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.sign-captured__img {
+  width: 140px;
+  padding: 0.35rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: #fff;
+}
+
+.sign-ready {
+  gap: 0.3rem;
+  color: var(--ct-teal-700);
+  background: var(--ct-teal-100);
+  border-color: transparent;
+}
+
+.sign-saved {
+  display: grid;
+  gap: 0.5rem;
+  width: 100%;
+  justify-items: start;
+}
+
+.sign-saved__title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ct-ink-500);
+}
+
+.sign-saved__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sign-saved__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+}
+
+.sign-saved__pick {
+  display: inline-flex;
+  padding: 0;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-sm);
+  background: #fff;
+  cursor: pointer;
+  transition: border-color var(--ct-fast) ease, transform var(--ct-fast) var(--ct-ease);
+}
+
+.sign-saved__pick:hover {
+  border-color: var(--ct-coral-500);
+  transform: translateY(-1px);
+}
+
+.sign-saved__img {
+  display: block;
+  width: 64px;
+  height: auto;
+  border-radius: var(--ct-radius-sm);
+}
+
+.sign-saved__delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--ct-radius-sm);
+  background: none;
+  color: var(--ct-ink-500);
+  cursor: pointer;
+  transition: color var(--ct-fast) ease, border-color var(--ct-fast) ease;
+}
+
+.sign-saved__delete:hover {
+  color: var(--ct-coral-500);
+  border-color: var(--ct-coral-500);
+}
+
+.sign-all-pages {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  align-self: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ct-ink-600);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sign-all-pages input {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+  accent-color: var(--ct-coral-500);
+  cursor: pointer;
+}
+
+.sign-placement {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sign-placement-fields {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sign-placement-fields > .field {
+  flex: 1;
+  min-width: 7rem;
+}
+
+.sign-hint {
+  color: var(--ct-ink-500);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.sign-preview {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+  cursor: crosshair;
+}
+
+.sign-preview canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.sign-preview-fallback {
+  display: grid;
+  place-items: center;
+  min-height: 17rem;
+  padding: 1rem;
+  border: 1px dashed var(--ct-border-strong);
+  color: var(--ct-ink-500);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.sign-marker {
+  position: absolute;
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--ct-coral-500);
+  box-shadow: 0 1px 6px rgba(37, 34, 63, 0.45);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.sign-action {
+  min-width: 11rem;
+}
+
+.sign-action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.sign-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.sign-result .ct-button {
+  min-height: 2.5rem;
+  font-size: 0.86rem;
+}
+
+@media (max-width: 640px) {
+  .sign-capture {
+    margin-left: 0;
+  }
+}

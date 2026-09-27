@@ -1,0 +1,169 @@
+/* Compress tool — selectors scoped under .compress- */
+
+.compress-workspace {
+  max-width: 64rem;
+}
+
+.compress-panel {
+  gap: 1rem;
+}
+
+.compress-reading {
+  color: var(--ct-ink-500);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.compress-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+}
+
+.compress-file__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ct-ink-800);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.compress-file__chips {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.compress-chip {
+  flex-shrink: 0;
+  gap: 0.3rem;
+  color: var(--ct-cobalt-700);
+  background: var(--ct-cobalt-100);
+  border-color: transparent;
+}
+
+.compress-side {
+  gap: 1.1rem;
+}
+
+.compress-presets {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.compress-preset {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 0.95rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-surface-solid);
+  color: var(--ct-ink-700);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--ct-fast) ease,
+    background var(--ct-fast) ease,
+    transform var(--ct-fast) var(--ct-ease);
+}
+
+.compress-preset:hover {
+  border-color: color-mix(in srgb, var(--ct-cobalt-500) 45%, var(--ct-border));
+  transform: translateY(-1px);
+}
+
+.compress-preset--active {
+  border-color: var(--ct-cobalt-500);
+  background: color-mix(in srgb, var(--ct-cobalt-100) 55%, var(--ct-surface-solid));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ct-cobalt-500) 30%, transparent);
+}
+
+.compress-preset__icon {
+  flex-shrink: 0;
+  color: var(--ct-cobalt-600);
+}
+
+.compress-preset__text {
+  display: grid;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.compress-preset__title {
+  color: var(--ct-ink-900);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.compress-preset__hint {
+  color: var(--ct-ink-500);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.compress-action {
+  min-width: 9.5rem;
+}
+
+.compress-action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.compress-first-note {
+  color: var(--ct-ink-500);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.compress-warning {
+  white-space: normal;
+}
+
+.compress-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.compress-result .ct-button {
+  min-height: 2.5rem;
+  font-size: 0.86rem;
+}
+
+.compress-sizes {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.compress-sizes__arrow {
+  opacity: 0.6;
+}
+
+.compress-size--out {
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--ct-radius-pill);
+  background: color-mix(in srgb, var(--ct-teal-500) 22%, transparent);
+}
+
+.compress-saved {
+  font-size: 0.95rem;
+}
