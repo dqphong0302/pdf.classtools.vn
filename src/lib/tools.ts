@@ -39,6 +39,15 @@ export interface ToolInfo {
   description: Record<Locale, string>;
 }
 
+/** ClassTools tone family per category (cobalt / teal / coral / yellow). */
+export const CATEGORY_TONE: Record<ToolCategory, 'cobalt' | 'teal' | 'coral' | 'yellow'> = {
+  organize: 'cobalt',
+  edit: 'coral',
+  optimize: 'teal',
+  security: 'yellow',
+  convert: 'cobalt'
+};
+
 export const CATEGORIES: { id: ToolCategory; title: Record<Locale, string>; hint: Record<Locale, string> }[] = [
   { id: 'organize', title: { vi: 'Tổ chức trang', en: 'Organize' }, hint: { vi: 'Ghép, tách, sắp xếp, xoay, đánh số', en: 'Merge, split, reorder, rotate, number' } },
   { id: 'edit', title: { vi: 'Chỉnh sửa & ký', en: 'Edit & sign' }, hint: { vi: 'Thêm chữ, chữ ký, che thông tin mật', en: 'Add text, sign, redact' } },

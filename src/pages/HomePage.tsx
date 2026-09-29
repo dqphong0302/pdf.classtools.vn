@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { CATEGORIES, TOOLS, type ToolCategory } from '../lib/tools';
+import { CATEGORIES, CATEGORY_TONE, TOOLS, type ToolCategory } from '../lib/tools';
 import './home.css';
 
 export function HomePage() {
@@ -44,8 +44,8 @@ export function HomePage() {
       </div>
 
       <div className="tool-grid">
-        {tools.map(({ to, icon: Icon, title, description }) => (
-          <a key={to} className="tool-card" href={to}>
+        {tools.map(({ to, icon: Icon, title, description, category }) => (
+          <a key={to} className={`tool-card tone-${CATEGORY_TONE[category]}`} href={to}>
             <span className="tool-card__icon" aria-hidden="true">
               <Icon size={22} strokeWidth={1.75} />
             </span>

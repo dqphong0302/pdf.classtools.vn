@@ -72,8 +72,8 @@
   display: grid;
   place-items: center;
   border-radius: var(--ct-radius-md);
-  background: var(--ct-ink-900);
-  color: var(--ct-paper-strong);
+  background: var(--ct-cobalt-600);
+  color: #fff;
 }
 
 .brand__name strong {
@@ -190,16 +190,16 @@
   min-height: 2.75rem;
   margin-top: 0.4rem;
   padding: 0 1.4rem;
-  border-radius: var(--ct-radius-pill);
-  background: var(--ct-cobalt-500);
-  color: var(--ct-paper-strong);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-cobalt-600);
+  color: #fff;
   font-size: 0.95rem;
   font-weight: 750;
   box-shadow: none;
 }
 
 .file-drop:hover .file-drop__button {
-  background: var(--ct-cobalt-600);
+  background: var(--ct-cobalt-700);
 }
 
 .file-drop span:not(.file-drop__button) {
@@ -487,11 +487,11 @@
 .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
 .btn:focus-visible { outline: 2px solid var(--ct-focus, var(--ct-cobalt-500)); outline-offset: 2px; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
-.btn-primary { background: var(--ct-cobalt-500); color: var(--ct-paper-strong); box-shadow: none; }
-.btn-primary:hover:not(:disabled) { background: var(--ct-cobalt-600); color: var(--ct-paper-strong); }
+.btn-primary { background: var(--ct-cobalt-600); color: #fff; box-shadow: none; }
+.btn-primary:hover:not(:disabled) { background: var(--ct-cobalt-700); color: #fff; }
 .btn-secondary { background: var(--ct-surface-solid); border-color: var(--ct-border); box-shadow: var(--ct-shadow-xs); }
 .btn-secondary:hover:not(:disabled) { border-color: var(--ct-border-strong); }
-.btn-success { background: var(--ct-ink-900); color: var(--ct-paper-strong); box-shadow: none; }
+.btn-success { background: var(--ct-teal-700); color: #fff; box-shadow: none; }
 .btn-sm { min-height: 2.25rem; padding: 0.4rem 0.85rem; font-size: 0.85rem; }
 .btn-lg { min-height: 3rem; padding: 0.75rem 1.3rem; font-size: 1rem; }
 .btn-group, .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
@@ -693,12 +693,16 @@
 /* ---- Header, tool menu, breadcrumb, related tools ---- */
 .header-action--primary {
   border-color: transparent;
-  background: var(--ct-ink-900);
-  color: var(--ct-paper-strong);
+  background: var(--ct-cobalt-600);
+  color: #fff;
 }
 
 .header-action--primary:hover {
-  background: var(--ct-ink-800);
+  background: var(--ct-cobalt-700);
+}
+
+[data-theme="dark"] .header-action--primary {
+  color: #0e1726;
 }
 
 .header-kbd {
@@ -912,10 +916,9 @@
   height: 2rem;
   display: grid;
   place-items: center;
-  border: 1px solid var(--ct-border);
   border-radius: var(--ct-radius-md);
-  background: var(--ct-canvas);
-  color: var(--ct-ink-900);
+  background: var(--tone-soft, var(--ct-cobalt-100));
+  color: var(--tone-ink, var(--ct-cobalt-700));
 }
 
 .related {
@@ -1083,9 +1086,9 @@
   gap: 0.6rem;
   margin-top: 0.8rem;
   border: 0;
-  border-radius: var(--ct-radius-pill);
-  background: var(--ct-cobalt-500);
-  color: var(--ct-paper-strong);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-cobalt-600);
+  color: #fff;
   font: inherit;
   font-size: 1.05rem;
   font-weight: 750;
@@ -1094,7 +1097,7 @@
 }
 
 .result-card__download:hover {
-  background: var(--ct-cobalt-600);
+  background: var(--ct-cobalt-700);
 }
 
 .result-card__reset {
@@ -1125,9 +1128,9 @@
   gap: 0.6rem;
   padding: 0 1.8rem;
   border: 0;
-  border-radius: var(--ct-radius-pill);
-  background: var(--ct-cobalt-500);
-  color: var(--ct-paper-strong);
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-cobalt-600);
+  color: #fff;
   font: inherit;
   font-size: 1rem;
   font-weight: 750;
@@ -1136,7 +1139,7 @@
 }
 
 .primary-action:hover:not(:disabled) {
-  background: var(--ct-cobalt-600);
+  background: var(--ct-cobalt-700);
 }
 
 .primary-action:disabled {
@@ -1328,3 +1331,18 @@
     grid-template-rows: 8.5rem auto;
   }
 }
+
+/* PDUI v2: brand-blue primary buttons use dark text in dark mode. */
+[data-theme="dark"] .file-drop__button,
+[data-theme="dark"] .primary-action,
+[data-theme="dark"] .result-card__download,
+[data-theme="dark"] .btn-primary,
+[data-theme="dark"] .brand__mark {
+  color: #0e1726;
+}
+
+/* Tone families shared with ClassTools tool cards. */
+.tone-cobalt { --tone-soft: var(--ct-cobalt-100); --tone-ink: var(--ct-cobalt-700); --tone-solid: var(--ct-cobalt-600); }
+.tone-teal { --tone-soft: var(--ct-teal-100); --tone-ink: var(--ct-teal-700); --tone-solid: var(--ct-teal-500); }
+.tone-coral { --tone-soft: var(--ct-coral-100); --tone-ink: var(--ct-coral-600); --tone-solid: var(--ct-coral-500); }
+.tone-yellow { --tone-soft: var(--ct-yellow-100); --tone-ink: var(--ct-yellow-700); --tone-solid: var(--ct-yellow-500); }

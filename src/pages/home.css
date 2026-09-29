@@ -80,8 +80,12 @@
 }
 
 .home-tab.is-active {
-  background: var(--ct-ink-900);
-  color: var(--ct-paper-strong);
+  background: var(--ct-cobalt-600);
+  color: #fff;
+}
+
+[data-theme="dark"] .home-tab.is-active {
+  color: #0e1726;
 }
 
 .tool-grid {
@@ -119,22 +123,24 @@
 }
 
 .tool-card__icon {
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 2.9rem;
+  height: 2.9rem;
   display: grid;
   place-items: center;
   margin-bottom: 0.9rem;
-  border: 1px solid var(--ct-border);
   border-radius: var(--ct-radius-lg);
-  background: var(--ct-canvas);
-  color: var(--ct-ink-900);
+  background: var(--tone-soft);
+  color: var(--tone-ink);
   transition: background var(--ct-fast) ease, color var(--ct-fast) ease, border-color var(--ct-fast) ease;
 }
 
 .tool-card:hover .tool-card__icon {
-  border-color: var(--ct-ink-900);
-  background: var(--ct-ink-900);
-  color: var(--ct-paper-strong);
+  background: var(--tone-solid);
+  color: #fff;
+}
+
+[data-theme="dark"] .tool-card:hover .tool-card__icon {
+  color: #0e1726;
 }
 
 .tool-card strong {

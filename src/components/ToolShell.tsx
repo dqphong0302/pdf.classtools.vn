@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ChevronRight, FileText, Languages, LayoutGrid, Moon, Search, ShieldCheck, Sun, X } from 'lucide-react';
 import type { Locale } from '../hooks/usePreferences';
-import { CATEGORIES, TOOLS, searchTools, toolForPath, type ToolInfo } from '../lib/tools';
+import { CATEGORIES, CATEGORY_TONE, TOOLS, searchTools, toolForPath, type ToolInfo } from '../lib/tools';
 import { rememberTool } from '../lib/recentTools';
 
 interface ToolShellProps {
@@ -16,7 +16,7 @@ interface ToolShellProps {
 function ToolLink({ tool, locale, onNavigate }: { tool: ToolInfo; locale: Locale; onNavigate?: () => void }) {
   const Icon = tool.icon;
   return (
-    <a className="menu-tool" href={tool.to} onClick={onNavigate}>
+    <a className={`menu-tool tone-${CATEGORY_TONE[tool.category]}`} href={tool.to} onClick={onNavigate}>
       <span className="menu-tool__icon" aria-hidden="true">
         <Icon size={16} strokeWidth={1.75} />
       </span>
