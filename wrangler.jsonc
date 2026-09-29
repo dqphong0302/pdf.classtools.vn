@@ -15,6 +15,7 @@
     "enabled": true
   },
   "routes": [
-    { "pattern": "pdf.classtools.vn", "custom_domain": true }
+    { "pattern": "pdf.classtools.vn", "custom_domain": true },
+    { "pattern": "pdf.phongdang.io.vn", "custom_domain": true }
   ]
 }
