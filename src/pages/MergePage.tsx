@@ -1,10 +1,12 @@
 import { useCallback, useRef, useState } from 'react';
-import { ArrowLeft, ChevronDown, ChevronUp, Combine, FileText, Trash2 } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Combine, Trash2 } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
+import { PdfThumb } from '../components/PdfThumb';
 import { ResultCard } from '../components/ResultCard';
+import { SortableCard, SortableCards } from '../components/SortableCards';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
+import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { EncryptedPdfError, getPdfPageCount, mergePdfs } from '../lib/pdfOps';
 import './merge.css';
 
@@ -172,6 +174,14 @@ export function MergePage() {
     [clearOutcome]
   );
 
+  const reorderEntries = useCallback(
+    (nextIds: (string | number)[]) => {
+      clearOutcome();
+      setEntries((prev) => nextIds.map((id) => prev.find((entry) => entry.id === id)).filter((entry): entry is MergeEntry => Boolean(entry)));
+    },
+    [clearOutcome]
+  );
+
   const removeEntry = useCallback(
     (id: number) => {
       clearOutcome();
@@ -231,49 +241,53 @@ export function MergePage() {
             <FileDrop multiple compact={entries.length > 0} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
             {entries.length > 0 && (
-              <ul className="file-list merge-file-list">
+              <SortableCards ids={entries.map((entry) => entry.id)} label={vi ? 'Danh sách tệp' : 'Files'} onReorder={reorderEntries}>
                 {entries.map((entry, index) => (
-                  <li key={entry.id}>
-                    <span className="file-list__name">{fileSummary(entry.file)}</span>
-                    {entry.pages >= 0 ? (
-                      <span className="ct-chip merge-chip">
-                        <FileText size={13} aria-hidden="true" />
-                        {t.pages(entry.pages)}
+                  <SortableCard key={entry.id} id={entry.id}>
+                    <span className="file-card__index">{index + 1}</span>
+                    <button
+                      className="file-card__remove"
+                      type="button"
+                      aria-label={t.remove(entry.file.name)}
+                      onClick={() => removeEntry(entry.id)}
+                    >
+                      <Trash2 size={15} aria-hidden="true" />
+                    </button>
+                    <div className="file-card__thumb">
+                      <PdfThumb bytes={entry.bytes} />
+                    </div>
+                    <div className="file-card__meta">
+                      <span className="file-card__name" title={entry.file.name}>{entry.file.name}</span>
+                      <span className="file-card__sub">
+                        {entry.pages >= 0 ? `${t.pages(entry.pages)} · ${formatBytes(entry.file.size)}` : '…'}
                       </span>
-                    ) : (
-                      <span className="ct-chip merge-chip merge-chip--pending">…</span>
-                    )}
-                    <span className="merge-row-actions">
-                      <button
-                        className="ct-icon-button"
-                        type="button"
-                        aria-label={t.moveUp(entry.file.name)}
-                        disabled={index === 0}
-                        onClick={() => moveEntry(index, -1)}
-                      >
-                        <ChevronUp size={15} aria-hidden="true" />
-                      </button>
-                      <button
-                        className="ct-icon-button"
-                        type="button"
-                        aria-label={t.moveDown(entry.file.name)}
-                        disabled={index === entries.length - 1}
-                        onClick={() => moveEntry(index, 1)}
-                      >
-                        <ChevronDown size={15} aria-hidden="true" />
-                      </button>
-                      <button
-                        className="ct-icon-button merge-remove"
-                        type="button"
-                        aria-label={t.remove(entry.file.name)}
-                        onClick={() => removeEntry(entry.id)}
-                      >
-                        <Trash2 size={15} aria-hidden="true" />
-                      </button>
-                    </span>
-                  </li>
+                      <span className="file-card__move">
+                        <button
+                          className="ct-icon-button"
+                          type="button"
+                          aria-label={t.moveUp(entry.file.name)}
+                          disabled={index === 0}
+                          onClick={() => moveEntry(index, -1)}
+                        >
+                          <ChevronLeft size={15} aria-hidden="true" />
+                        </button>
+                        <button
+                          className="ct-icon-button"
+                          type="button"
+                          aria-label={t.moveDown(entry.file.name)}
+                          disabled={index === entries.length - 1}
+                          onClick={() => moveEntry(index, 1)}
+                        >
+                          <ChevronRight size={15} aria-hidden="true" />
+                        </button>
+                      </span>
+                    </div>
+                  </SortableCard>
                 ))}
-              </ul>
+              </SortableCards>
+            )}
+            {entries.length > 1 && (
+              <p className="file-cards__hint">{vi ? 'Kéo thả các tệp để đổi thứ tự ghép.' : 'Drag files to change the merge order.'}</p>
             )}
 
             {entries.length > 0 && !allLoaded && <p className="merge-loading">{vi ? 'Đang đọc tệp…' : 'Reading files…'}</p>}

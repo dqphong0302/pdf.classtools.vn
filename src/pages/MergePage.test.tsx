@@ -3,6 +3,10 @@ import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MergePage } from './MergePage';
 
+vi.mock('../lib/pdfPreview', () => ({
+  openPdfView: vi.fn().mockRejectedValue(new Error('no preview'))
+}));
+
 async function createPdfFile(pages: number, name: string): Promise<File> {
   const doc = await PDFDocument.create();
   const font = await doc.embedFont(StandardFonts.Helvetica);
@@ -46,16 +50,16 @@ describe('MergePage', () => {
 
     upload(container, [twoPage, threePage]);
 
-    expect(await screen.findByText(/^a\.pdf ·/)).toBeInTheDocument();
-    expect(await screen.findByText('2 trang')).toBeInTheDocument();
-    expect(await screen.findByText('3 trang')).toBeInTheDocument();
+    expect(await screen.findByText('a.pdf')).toBeInTheDocument();
+    expect(await screen.findByText(/^2 trang/)).toBeInTheDocument();
+    expect(await screen.findByText(/^3 trang/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Ghép 2 tệp' })).toBeEnabled();
   });
 
   it('reorders files with move up and move down buttons', async () => {
     const { container } = render(<MergePage />);
     upload(container, [twoPage, threePage]);
-    await screen.findByText('3 trang');
+    await screen.findByText(/^3 trang/);
 
     expect(screen.getByRole('button', { name: /Di chuyển a\.pdf lên trên/ })).toBeDisabled();
     expect(screen.getByRole('button', { name: /Di chuyển b\.pdf xuống dưới/ })).toBeDisabled();
@@ -73,12 +77,11 @@ describe('MergePage', () => {
   it('merges the files and downloads the result', async () => {
     const { container } = render(<MergePage />);
     upload(container, [twoPage, threePage]);
-    await screen.findByText('3 trang');
+    await screen.findByText(/^3 trang/);
 
     fireEvent.click(screen.getByRole('button', { name: /Ghép 2 tệp/ }));
 
-    const status = await screen.findByRole('status');
-    expect(status).toHaveTextContent('5 trang');
+    expect(await screen.findByText(/Đã ghép 5 trang/)).toBeInTheDocument();
     // No file-name prompt: the result is named automatically.
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
 
@@ -90,11 +93,11 @@ describe('MergePage', () => {
   it('disables merge after removing files down to one', async () => {
     const { container } = render(<MergePage />);
     upload(container, [twoPage, threePage]);
-    await screen.findByText('3 trang');
+    await screen.findByText(/^3 trang/);
 
     fireEvent.click(screen.getByRole('button', { name: /Xóa a\.pdf/ }));
 
-    await waitFor(() => expect(screen.queryByText(/^a\.pdf ·/)).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText('a.pdf')).not.toBeInTheDocument());
     expect(screen.getByRole('button', { name: 'Ghép 1 tệp' })).toBeDisabled();
     expect(screen.getByText('Thêm ít nhất một tệp nữa để ghép.')).toBeInTheDocument();
   });

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ChevronDown, ChevronUp, FilePlus2, Trash2 } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, FilePlus2, Trash2 } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ResultCard } from '../components/ResultCard';
+import { SortableCard, SortableCards } from '../components/SortableCards';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
 import { downloadBytes, formatBytes, sanitizeFilename, withPdfSuffix } from '../lib/download';
@@ -195,6 +196,11 @@ export function ImagesToPdfPage() {
     setResult(null);
   }, []);
 
+  const reorderImages = useCallback((nextIds: (string | number)[]) => {
+    setImages((current) => nextIds.map((id) => current.find((image) => image.id === id)).filter((image): image is (typeof current)[number] => Boolean(image)));
+    setResult(null);
+  }, []);
+
   const move = useCallback((index: number, delta: -1 | 1) => {
     setImages((current) => {
       const next = [...current];
@@ -272,45 +278,55 @@ export function ImagesToPdfPage() {
             />
             {notice && <p className="notice" role="alert">{notice}</p>}
 
-          {images.length ? (
-            <ul className="i2p-list">
-              {images.map((image, index) => (
-                <li key={image.id}>
-                  <img src={image.url} alt="" className="i2p-thumb" />
-                  <span className="i2p-item__name">{image.file.name}</span>
-                  <span className="i2p-item__size">{formatBytes(image.file.size)}</span>
-                  <div className="i2p-item__actions">
+          {images.length > 0 && (
+            <>
+              <SortableCards ids={images.map((image) => image.id)} label={t.images(images.length)} onReorder={reorderImages}>
+                {images.map((image, index) => (
+                  <SortableCard key={image.id} id={image.id}>
+                    <span className="file-card__index">{index + 1}</span>
                     <button
-                      className="ct-icon-button"
-                      type="button"
-                      aria-label={t.moveUp(image.file.name)}
-                      disabled={index === 0}
-                      onClick={() => move(index, -1)}
-                    >
-                      <ChevronUp size={15} aria-hidden="true" />
-                    </button>
-                    <button
-                      className="ct-icon-button"
-                      type="button"
-                      aria-label={t.moveDown(image.file.name)}
-                      disabled={index === images.length - 1}
-                      onClick={() => move(index, 1)}
-                    >
-                      <ChevronDown size={15} aria-hidden="true" />
-                    </button>
-                    <button
-                      className="ct-icon-button"
+                      className="file-card__remove"
                       type="button"
                       aria-label={t.removeImage(image.file.name)}
                       onClick={() => handleRemove(image.id)}
                     >
                       <Trash2 size={15} aria-hidden="true" />
                     </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : null}
+                    <div className="file-card__thumb">
+                      <img src={image.url} alt="" draggable={false} />
+                    </div>
+                    <div className="file-card__meta">
+                      <span className="file-card__name" title={image.file.name}>{image.file.name}</span>
+                      <span className="file-card__sub">{formatBytes(image.file.size)}</span>
+                      <span className="file-card__move">
+                        <button
+                          className="ct-icon-button"
+                          type="button"
+                          aria-label={t.moveUp(image.file.name)}
+                          disabled={index === 0}
+                          onClick={() => move(index, -1)}
+                        >
+                          <ChevronLeft size={15} aria-hidden="true" />
+                        </button>
+                        <button
+                          className="ct-icon-button"
+                          type="button"
+                          aria-label={t.moveDown(image.file.name)}
+                          disabled={index === images.length - 1}
+                          onClick={() => move(index, 1)}
+                        >
+                          <ChevronRight size={15} aria-hidden="true" />
+                        </button>
+                      </span>
+                    </div>
+                  </SortableCard>
+                ))}
+              </SortableCards>
+              {images.length > 1 && (
+                <p className="file-cards__hint">{vi ? 'Kéo thả các ảnh để đổi thứ tự trang.' : 'Drag images to change the page order.'}</p>
+              )}
+            </>
+          )}
 
             {images.length > 0 && (
               <>

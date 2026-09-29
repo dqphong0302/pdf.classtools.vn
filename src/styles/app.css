@@ -1159,7 +1159,7 @@
 
 /* Single-column, step-by-step tool layout. */
 .flow {
-  width: min(100%, 44rem);
+  width: min(100%, 52rem);
   margin-inline: auto;
 }
 
@@ -1176,4 +1176,158 @@
   grid-column: 1 / -1;
   width: min(100%, 44rem);
   margin-inline: auto;
+}
+
+/* ---- Reorderable file cards (drag & drop) ---- */
+.file-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 8.5rem), 1fr));
+  gap: 0.8rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: 11rem auto;
+  gap: 0.5rem;
+  padding: 0.6rem 0.6rem 0.7rem;
+  border: 1.5px solid var(--ct-border);
+  border-radius: var(--ct-radius-xl);
+  background: var(--ct-surface-solid);
+  cursor: grab;
+  touch-action: manipulation;
+  user-select: none;
+  transition: border-color var(--ct-fast) ease, box-shadow var(--ct-fast) ease;
+}
+
+.file-card:hover {
+  border-color: var(--ct-border-strong);
+  box-shadow: var(--ct-shadow-sm);
+}
+
+.file-card:focus-visible {
+  outline: none;
+  border-color: var(--ct-cobalt-500);
+  box-shadow: var(--ct-ring);
+}
+
+.file-card--dragging {
+  z-index: 10;
+  cursor: grabbing;
+  border-color: var(--ct-cobalt-500);
+  box-shadow: var(--ct-shadow-lg);
+  opacity: 0.95;
+}
+
+.file-card__thumb {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: var(--ct-radius-md);
+  background: var(--ct-canvas);
+  pointer-events: none;
+}
+
+.file-card__thumb canvas,
+.file-card__thumb img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.file-card__fallback {
+  color: var(--ct-ink-300);
+}
+
+.file-card__meta {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+  text-align: center;
+}
+
+.file-card__name {
+  overflow: hidden;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-card__sub {
+  color: var(--ct-ink-500);
+  font-size: 0.74rem;
+}
+
+.file-card__index {
+  position: absolute;
+  top: 0.9rem;
+  left: 0.9rem;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--ct-ink-900);
+  color: var(--ct-paper-strong);
+  font-size: 0.75rem;
+  font-weight: 750;
+  pointer-events: none;
+}
+
+.file-card__remove {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ct-surface-solid) 92%, transparent);
+  color: var(--ct-ink-700);
+  box-shadow: var(--ct-shadow-sm);
+  cursor: pointer;
+}
+
+.file-card__remove:hover {
+  background: var(--ct-danger);
+  color: #fff;
+}
+
+.file-cards__hint {
+  margin: 0.8rem 0 0;
+  color: var(--ct-ink-500);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.file-card__move {
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-top: 0.3rem;
+}
+
+.file-card__move .ct-icon-button {
+  width: 1.9rem;
+  height: 1.9rem;
+}
+
+@media (min-width: 640px) {
+  .file-cards {
+    grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+    gap: 0.9rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .file-card {
+    grid-template-rows: 8.5rem auto;
+  }
 }
