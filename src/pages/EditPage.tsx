@@ -16,19 +16,13 @@ import {
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
 import { openPdfView } from '../lib/pdfPreview';
 import type { OpenedPdfView } from '../lib/pdfPreview';
-import {
-  addImageLayers,
-  addImageWatermark,
-  addPageNumbers,
-  addTextLayers,
-  addWatermark,
-  ensureEmbeddedFonts,
-  type NumberPosition
-} from '../lib/pdfEdit';
+import { addImageLayers, addImageWatermark, addTextLayers, ensureEmbeddedFonts } from '../lib/pdfEdit';
+import { stampPageNumbers, type PageNumberPosition as NumberPosition } from '../lib/pdfPageNumbers';
+import { stampTextWatermark } from '../lib/pdfWatermark';
 import './edit.css';
 
 interface SourceDoc {
@@ -363,7 +357,7 @@ function PageCard({ view, pageNumber, label, selected, onSelect }: PageCardProps
 }
 
 export function EditPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const vi = locale === 'vi';
   const t = STRINGS[locale];
 
@@ -627,12 +621,13 @@ export function EditPage() {
         );
       }
       if (wmSource === 'text' && watermark.text.trim()) {
-        await addWatermark(pdf, fonts.regular, {
+        stampTextWatermark(pdf, fonts.regular, {
           text: watermark.text.trim(),
-          fontSizePt: watermark.fontSizePt,
+          fontSize: watermark.fontSizePt,
           colorHex: watermark.colorHex,
           opacity: watermark.opacity,
-          angle: watermark.angle
+          angle: watermark.angle,
+          tiled: false
         });
       } else if (wmSource === 'image' && wmImage) {
         await addImageWatermark(pdf, {
@@ -645,13 +640,14 @@ export function EditPage() {
         });
       }
       if (numbersEnabled) {
-        await addPageNumbers(pdf, fonts.regular, {
+        stampPageNumbers(pdf, fonts.regular, {
           position: numbers.position,
-          startAt: numbers.startAt,
-          template: numbers.template,
-          fontSizePt: numbers.fontSizePt,
-          skipFirst: numbers.skipFirst,
-          colorHex: '#25223f'
+          startFrom: numbers.startAt,
+          format: numbers.template,
+          fontSize: numbers.fontSizePt,
+          firstPageToNumber: numbers.skipFirst ? 2 : 1,
+          colorHex: '#25223f',
+          marginPt: 24
         });
       }
       const edited = new Uint8Array(await pdf.save());
@@ -671,7 +667,7 @@ export function EditPage() {
 
   const handleDownload = useCallback(() => {
     if (!result || !source) return;
-    const base = source.file.name.replace(/\.pdf$/i, '');
+    const base = baseName(source.file.name);
     const name = `${base}-${vi ? 'da-chinh-sua' : 'edited'}`;
     downloadBytes(result, withPdfSuffix(name));
   }, [result, source, vi]);
@@ -688,7 +684,7 @@ export function EditPage() {
   ];
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
 
       <div className="pdf-workspace pdf-workspace--side edit-workspace">
         <section className="ct-panel panel-section edit-source" aria-label={t.dropLabel}>

@@ -87,7 +87,7 @@ function buildNotice(parts: string[]): string | undefined {
 }
 
 export function MergePage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const vi = locale === 'vi';
   const t = STRINGS[locale];
 
@@ -193,7 +193,7 @@ export function MergePage() {
   }, [result, outputName]);
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
 
       <div className="flow merge-workspace">
         {result ? (

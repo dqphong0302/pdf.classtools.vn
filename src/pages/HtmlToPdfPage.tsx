@@ -31,7 +31,7 @@ const DEFAULT_HTML = `<!DOCTYPE html>
 </html>`;
 
 export function HtmlToPdfPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const [htmlContent, setHtmlContent] = useState(DEFAULT_HTML);
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
 
@@ -63,7 +63,7 @@ export function HtmlToPdfPage() {
   };
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
       <div className="html-pdf-container">
 
         <div className="html-pdf-layout">

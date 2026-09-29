@@ -5,7 +5,7 @@ import { CATEGORIES, CATEGORY_TONE, TOOLS, type ToolCategory } from '../lib/tool
 import './home.css';
 
 export function HomePage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const vi = locale === 'vi';
   // Deep links from breadcrumbs (/#security) preselect the category.
   const [active, setActive] = useState<ToolCategory | 'all'>(() => {
@@ -15,7 +15,7 @@ export function HomePage() {
   const tools = TOOLS.filter((tool) => active === 'all' || tool.category === active);
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
       <section className="home-hero" aria-labelledby="home-title">
         <span className="home-eyebrow">{vi ? `${TOOLS.length} công cụ · Miễn phí · Riêng tư` : `${TOOLS.length} tools · Free · Private`}</span>
         <h1 id="home-title">{vi ? 'Mọi công cụ PDF bạn cần, ở một nơi' : 'Every tool you need to work with PDFs'}</h1>

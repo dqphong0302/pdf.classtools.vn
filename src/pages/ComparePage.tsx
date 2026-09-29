@@ -15,7 +15,7 @@ interface DocState {
 }
 
 export function ComparePage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const [docA, setDocA] = useState<DocState | null>(null);
   const [docB, setDocB] = useState<DocState | null>(null);
   const [activePage, setActivePage] = useState(1);
@@ -127,7 +127,7 @@ export function ComparePage() {
   const maxPages = Math.max(docA?.pageCount || 1, docB?.pageCount || 1);
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
       <div className="compare-container">
 
         {(!docA || !docB) && (

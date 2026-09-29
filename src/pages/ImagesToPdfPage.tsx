@@ -106,7 +106,7 @@ const STRINGS: Record<'vi' | 'en', I2pStrings> = {
 };
 
 export function ImagesToPdfPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const vi = locale === 'vi';
   const t = STRINGS[locale];
 
@@ -226,7 +226,7 @@ export function ImagesToPdfPage() {
   }, [result, vi]);
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
 
       <div className="flow i2p-workspace">
         {result ? (

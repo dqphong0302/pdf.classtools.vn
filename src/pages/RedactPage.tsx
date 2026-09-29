@@ -3,7 +3,7 @@ import { Download, EyeOff, FileText, Trash2 } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { openPdfView, type OpenedPdfView } from '../lib/pdfPreview';
 import { redactPdf, type RedactBox, type RedactColor } from '../lib/pdfRedact';
@@ -18,7 +18,7 @@ interface DocState {
 type Point = { x: number; y: number };
 
 export function RedactPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const [doc, setDoc] = useState<DocState | null>(null);
   const [view, setView] = useState<OpenedPdfView | null>(null);
   const [activePage, setActivePage] = useState(1);
@@ -202,11 +202,11 @@ export function RedactPage() {
 
   const handleDownload = () => {
     if (!resultBytes || !doc) return;
-    downloadBytes(resultBytes, withPdfSuffix(doc.file.name.replace(/\.pdf$/i, '') + '-redacted'));
+    downloadBytes(resultBytes, withPdfSuffix(baseName(doc.file.name) + '-redacted'));
   };
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
       <div className="redact-container">
 
         {!doc ? (

@@ -115,7 +115,7 @@ function baseName(name: string): string {
 }
 
 export function ProtectPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const vi = locale === 'vi';
   const t = STRINGS[locale];
 
@@ -214,7 +214,7 @@ export function ProtectPage() {
   }, [result]);
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
 
       <div className="pdf-workspace pdf-workspace--two protect-workspace">
         <section className="ct-panel panel-section protect-panel" aria-label={t.dropLabel}>

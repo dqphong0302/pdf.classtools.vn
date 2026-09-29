@@ -46,3 +46,8 @@ export function readFileBytes(file: File): Promise<ArrayBuffer> {
     reader.readAsArrayBuffer(file);
   });
 }
+
+/** File name without its extension ("bao-cao.pdf" -> "bao-cao"). */
+export function baseName(name: string): string {
+  return name.replace(/\.[^.]+$/, '');
+}

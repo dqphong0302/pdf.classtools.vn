@@ -275,7 +275,7 @@ function OrgPageCard({
 }
 
 export function OrganizePage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const vi = locale === 'vi';
   const t = STRINGS[locale];
 
@@ -558,7 +558,7 @@ export function OrganizePage() {
   }, [source, vi]);
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
 
       <div className="pdf-workspace org-workspace">
         <section className="ct-panel panel-section org-panel" aria-label={t.title}>

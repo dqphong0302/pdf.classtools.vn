@@ -3,7 +3,7 @@ import { BookOpen, Download, FileText, HardDrive, Minimize2, Printer, Smartphone
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, formatBytes, readFileBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, formatBytes, readFileBytes, withPdfSuffix } from '../lib/download';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
 import { compressPdf, type CompressionPreset, type CompressionResult } from '../lib/wasmGhostscript';
 import './compress.css';
@@ -101,7 +101,7 @@ const PRESETS: { id: CompressionPreset; icon: typeof Printer }[] = [
 ];
 
 export function CompressPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const vi = locale === 'vi';
   const t = STRINGS[locale];
 
@@ -164,12 +164,12 @@ export function CompressPage() {
 
   const handleDownload = useCallback(() => {
     if (!result) return;
-    const base = source?.file.name.replace(/\.pdf$/i, '') ?? 'file';
+    const base = source ? baseName(source.file.name) : 'file';
     downloadBytes(result.bytes, withPdfSuffix(`${base}${vi ? '-nen' : '-compressed'}`));
   }, [result, source, vi]);
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
 
       <div className="pdf-workspace pdf-workspace--two compress-workspace">
         <section className="ct-panel panel-section compress-panel" aria-label={t.title}>

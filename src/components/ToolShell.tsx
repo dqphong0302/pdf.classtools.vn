@@ -1,27 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ChevronRight, FileText, Languages, LayoutGrid, Moon, Search, ShieldCheck, Sun, X } from 'lucide-react';
-import type { Locale } from '../hooks/usePreferences';
+import { usePreferences, type Locale } from '../hooks/usePreferences';
 import { CATEGORIES, CATEGORY_TONE, TOOLS, searchTools, toolForPath, type ToolInfo } from '../lib/tools';
 
 interface ToolShellProps {
-  theme: 'light' | 'dark';
-  locale: Locale;
-  onThemeToggle: () => void;
-  onLocaleToggle: () => void;
   children: ReactNode;
-  footerNote?: string;
 }
 
-function ToolLink({ tool, locale, onNavigate }: { tool: ToolInfo; locale: Locale; onNavigate?: () => void }) {
+function ToolLink({ tool, locale }: { tool: ToolInfo; locale: Locale }) {
   const Icon = tool.icon;
   return (
-    <a className={`menu-tool tone-${CATEGORY_TONE[tool.category]}`} href={tool.to} onClick={onNavigate}>
+    <a className={`menu-tool tone-${CATEGORY_TONE[tool.category]}`} href={tool.to}>
       <span className="menu-tool__icon" aria-hidden="true">
         <Icon size={16} strokeWidth={1.75} />
       </span>
-      <span className="menu-tool__text">
-        <strong>{tool.title[locale]}</strong>
-      </span>
+      <strong>{tool.title[locale]}</strong>
     </a>
   );
 }
@@ -90,7 +83,7 @@ function ToolsMenu({ locale, currentPath, onClose }: { locale: Locale; currentPa
         <div className="menu-body">
           {query.trim() ? (
             results.length ? (
-              <div className="menu-grid menu-grid--flat">
+              <div className="menu-grid">
                 {results.map((tool) => (
                   <ToolLink key={tool.to} tool={tool} locale={locale} />
                 ))}
@@ -124,7 +117,8 @@ function ToolsMenu({ locale, currentPath, onClose }: { locale: Locale; currentPa
   );
 }
 
-export function ToolShell({ theme, locale, onThemeToggle, onLocaleToggle, children, footerNote }: ToolShellProps) {
+export function ToolShell({ children }: ToolShellProps) {
+  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
   const vi = locale === 'vi';
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
@@ -146,9 +140,6 @@ export function ToolShell({ theme, locale, onThemeToggle, onLocaleToggle, childr
     return () => document.removeEventListener('keydown', onKey);
   }, []);
 
-  const related = currentTool
-    ? TOOLS.filter((tool) => tool.category === currentTool.category && tool.to !== currentTool.to).slice(0, 4)
-    : [];
 
   return (
     <div className="tool-app">
@@ -171,11 +162,11 @@ export function ToolShell({ theme, locale, onThemeToggle, onLocaleToggle, childr
               <span>{vi ? 'Tất cả công cụ' : 'All tools'}</span>
               <kbd className="header-kbd" aria-hidden="true">/</kbd>
             </button>
-            <button className="header-action" type="button" onClick={onLocaleToggle} aria-label={vi ? 'Switch to English' : 'Chuyển sang tiếng Việt'}>
+            <button className="header-action" type="button" onClick={toggleLocale} aria-label={vi ? 'Switch to English' : 'Chuyển sang tiếng Việt'}>
               <Languages size={17} aria-hidden="true" />
               <span>{locale.toUpperCase()}</span>
             </button>
-            <button className="ct-icon-button" type="button" onClick={onThemeToggle} aria-label={vi ? 'Đổi giao diện' : 'Toggle theme'}>
+            <button className="ct-icon-button" type="button" onClick={toggleTheme} aria-label={vi ? 'Đổi giao diện' : 'Toggle theme'}>
               {theme === 'light' ? <Moon size={19} aria-hidden="true" /> : <Sun size={19} aria-hidden="true" />}
             </button>
           </div>
@@ -204,16 +195,6 @@ export function ToolShell({ theme, locale, onThemeToggle, onLocaleToggle, childr
 
         {children}
 
-        {related.length > 0 && (
-          <section className="related" aria-label={vi ? 'Công cụ liên quan' : 'Related tools'}>
-            <h2>{vi ? 'Có thể bạn cũng cần' : 'You might also need'}</h2>
-            <div className="menu-grid">
-              {related.map((tool) => (
-                <ToolLink key={tool.to} tool={tool} locale={locale} />
-              ))}
-            </div>
-          </section>
-        )}
       </main>
 
       <footer className="tool-app-footer">
@@ -222,7 +203,7 @@ export function ToolShell({ theme, locale, onThemeToggle, onLocaleToggle, childr
           <span>ClassTools.vn</span>
           <span className="footer-privacy">
             <ShieldCheck size={14} aria-hidden="true" />
-            {footerNote ?? (vi ? 'Tệp của bạn chỉ được xử lý ngay trên thiết bị này.' : 'Your files are processed on this device only.')}
+            {vi ? 'Tệp của bạn chỉ được xử lý ngay trên thiết bị này.' : 'Your files are processed on this device only.'}
           </span>
         </div>
       </footer>

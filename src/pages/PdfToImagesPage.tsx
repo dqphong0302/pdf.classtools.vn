@@ -3,7 +3,7 @@ import { Download, FileText, Image as ImageIcon } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, formatBytes, readFileBytes, sanitizeFilename } from '../lib/download';
+import { baseName, downloadBytes, fileSummary, formatBytes, readFileBytes, sanitizeFilename } from '../lib/download';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
 import { openPdfView } from '../lib/pdfPreview';
 import type { OpenedPdfView } from '../lib/pdfPreview';
@@ -123,7 +123,7 @@ function canvasToBytes(canvas: HTMLCanvasElement, format: OutputFormat, quality:
 }
 
 export function PdfToImagesPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const t = STRINGS[locale];
 
   const [source, setSource] = useState<SourceDoc | null>(null);
@@ -206,7 +206,7 @@ export function PdfToImagesPage() {
     setZipBusy(true);
     try {
       const zipBytes = await zipFiles(images.map((image) => ({ name: image.name, bytes: image.bytes })));
-      const base = source.file.name.replace(/\.pdf$/i, '');
+      const base = baseName(source.file.name);
       downloadBytes(zipBytes, `${sanitizeFilename(base)}-images.zip`, 'application/zip');
     } catch {
       setOpError(t.opError);
@@ -218,7 +218,7 @@ export function PdfToImagesPage() {
   const sizeLabel = (bytes: Uint8Array) => formatBytes(bytes.byteLength);
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
 
       <div className="pdf-workspace pdf-workspace--side p2i-workspace">
         <section className="ct-panel panel-section p2i-source" aria-label={t.dropLabel}>

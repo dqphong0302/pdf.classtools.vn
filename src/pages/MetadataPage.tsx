@@ -3,7 +3,7 @@ import { Download, Eraser, FileText, Save } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
 import { clearMetadata, formatKeywords, readMetadata, writeMetadata } from '../lib/pdfMeta';
 import type { PdfMetadata, PdfMetadataDraft } from '../lib/pdfMeta';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
@@ -126,7 +126,7 @@ function formatDate(value: string | null): string {
 }
 
 export function MetadataPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const t = STRINGS[locale];
 
   const [source, setSource] = useState<SourceDoc | null>(null);
@@ -204,7 +204,7 @@ export function MetadataPage() {
     }
   }, [source, busy, t]);
 
-  const downloadName = source ? withPdfSuffix(`${source.file.name.replace(/\.pdf$/i, '')}-metadata`) : '';
+  const downloadName = source ? withPdfSuffix(`${baseName(source.file.name)}-metadata`) : '';
 
   const handleDownload = useCallback(() => {
     if (!outcomeBytes) return;
@@ -215,7 +215,7 @@ export function MetadataPage() {
     setDraft((prev) => ({ ...prev, [key]: value }));
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
 
       <div className="pdf-workspace pdf-workspace--side meta-workspace">
         <section className="ct-panel panel-section meta-source" aria-label={t.dropLabel}>

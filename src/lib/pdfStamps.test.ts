@@ -1,6 +1,6 @@
 import { PDFDocument, PDFPage, StandardFonts, degrees } from 'pdf-lib';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { addPageNumbers } from './pdfPageNumbers';
+import { addPageNumbers, pageNumberLabel } from './pdfPageNumbers';
 import { addWatermark } from './pdfWatermark';
 import { rotatePdfPages } from './pdfRotate';
 import { flattenPdf } from './pdfFlatten';
@@ -125,5 +125,15 @@ describe('flattenPdf', () => {
     field.addToPage(page, { x: 10, y: 10, width: 100, height: 20 });
     const flattened = await PDFDocument.load(await flattenPdf(await doc.save()));
     expect(flattened.getForm().getFields()).toHaveLength(0);
+  });
+});
+
+describe('pageNumberLabel', () => {
+  const base = { position: 'bottom-center' as const, startFrom: 1, firstPageToNumber: 1, fontSize: 10, colorHex: '#000', marginPt: 20 };
+  it('expands {n}/{total} and the {page}/{pages} aliases, falling back to the number', () => {
+    expect(pageNumberLabel(1, 5, { ...base, format: '{n} / {total}' })).toBe('2 / 5');
+    expect(pageNumberLabel(2, 5, { ...base, format: 'Trang {page}' })).toBe('Trang 3');
+    expect(pageNumberLabel(0, 9, { ...base, format: 'Page {n} of {pages}' })).toBe('Page 1 of 9');
+    expect(pageNumberLabel(3, 5, { ...base, format: '' })).toBe('4');
   });
 });

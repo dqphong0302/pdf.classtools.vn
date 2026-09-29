@@ -4,7 +4,7 @@ import { FileDrop } from '../components/FileDrop';
 import { ResultCard } from '../components/ResultCard';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
 import { createNup } from '../lib/pdfNup';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
 import './nup.css';
@@ -88,7 +88,7 @@ const STRINGS: Record<'vi' | 'en', NupStrings> = {
 };
 
 export function NupPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const vi = locale === 'vi';
   const t = STRINGS[locale];
 
@@ -102,7 +102,7 @@ export function NupPage() {
 
   const preset = PRESETS.find((item) => item.id === presetId) ?? PRESETS[1];
   const sheetCount = source ? Math.ceil(source.pageCount / (preset.cols * preset.rows)) : 0;
-  const outputName = (source ? `${source.file.name.replace(/\.pdf$/i, '')}-nup` : 'nup');
+  const outputName = source ? `${baseName(source.file.name)}-nup` : 'nup';
 
   const clearOutcome = useCallback(() => {
     setOpError(null);
@@ -150,7 +150,7 @@ export function NupPage() {
   }, [result, outputName]);
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
 
       <div className="flow nup-workspace">
         {result ? (

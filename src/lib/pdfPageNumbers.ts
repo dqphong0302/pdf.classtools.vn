@@ -1,4 +1,4 @@
-import { PDFDocument, degrees } from 'pdf-lib';
+import { PDFDocument, degrees, type PDFFont } from 'pdf-lib';
 import { ensureEmbeddedFonts, hexToPdfRgb } from './pdfEdit';
 import { pageFrame } from './pdfPlacement';
 
@@ -24,9 +24,14 @@ export interface PageNumberOptions {
 export function pageNumberLabel(index: number, totalPages: number, options: PageNumberOptions): string | null {
   const first = Math.max(1, options.firstPageToNumber);
   if (index + 1 < first) return null;
-  return options.format
-    .replace(/\{n\}/g, String(options.startFrom + index - (first - 1)))
-    .replace(/\{total\}/g, String(totalPages - (first - 1)));
+  const current = String(options.startFrom + index - (first - 1));
+  const total = String(totalPages - (first - 1));
+  return (
+    options.format
+      .replace(/\{(n|page)\}/gi, current)
+      .replace(/\{(total|pages)\}/gi, total)
+      .trim() || current
+  );
 }
 
 /** Baseline origin (visual coordinates, bottom-left origin) of the label on a page. */
@@ -47,12 +52,8 @@ export function pageNumberOrigin(
   return { x, y };
 }
 
-export async function addPageNumbers(
-  sourceBytes: Uint8Array,
-  options: PageNumberOptions
-): Promise<Uint8Array> {
-  const pdf = await PDFDocument.load(sourceBytes, { ignoreEncryption: true });
-  const fonts = await ensureEmbeddedFonts(pdf);
+/** Draws page numbers on every numbered page of an open document. */
+export function stampPageNumbers(pdf: PDFDocument, font: PDFFont, options: PageNumberOptions): void {
   const totalPages = pdf.getPageCount();
   const fontColor = hexToPdfRgb(options.colorHex);
 
@@ -60,7 +61,7 @@ export async function addPageNumbers(
     const text = pageNumberLabel(index, totalPages, options);
     if (!text) return;
     const frame = pageFrame(page);
-    const textWidth = fonts.regular.widthOfTextAtSize(text, options.fontSize);
+    const textWidth = font.widthOfTextAtSize(text, options.fontSize);
     const origin = pageNumberOrigin(frame.width, frame.height, textWidth, options);
     const at = frame.toPdf(origin.x, origin.y);
     page.drawText(text, {
@@ -68,10 +69,15 @@ export async function addPageNumbers(
       y: at.y,
       rotate: degrees(frame.rotation),
       size: options.fontSize,
-      font: fonts.regular,
+      font,
       color: fontColor
     });
   });
+}
 
+export async function addPageNumbers(sourceBytes: Uint8Array, options: PageNumberOptions): Promise<Uint8Array> {
+  const pdf = await PDFDocument.load(sourceBytes, { ignoreEncryption: true });
+  const fonts = await ensureEmbeddedFonts(pdf);
+  stampPageNumbers(pdf, fonts.regular, options);
   return await pdf.save();
 }

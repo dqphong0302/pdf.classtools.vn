@@ -3,7 +3,7 @@ import { Download, FileText, LayoutGrid, ListOrdered, Scissors, SquareSplitHoriz
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, readFileBytes, sanitizeFilename, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, fileSummary, readFileBytes, sanitizeFilename, withPdfSuffix } from '../lib/download';
 import { EncryptedPdfError, extractPages, getPdfPageCount, splitEveryN } from '../lib/pdfOps';
 import { openPdfView } from '../lib/pdfPreview';
 import type { OpenedPdfView } from '../lib/pdfPreview';
@@ -207,7 +207,7 @@ function PageThumb({ view, pageNumber, label, selected, onToggle }: PageThumbPro
 }
 
 export function SplitPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const vi = locale === 'vi';
   const t = STRINGS[locale];
 
@@ -352,7 +352,7 @@ export function SplitPage() {
 
   const singleDefaultName =
     single && source
-      ? `${source.file.name.replace(/\.pdf$/i, '')}-${vi ? 'trang' : 'pages'}-${formatPageLabel(
+      ? `${baseName(source.file.name)}-${vi ? 'trang' : 'pages'}-${formatPageLabel(
           single.indices
         ).replace(/,\s*/g, '-')}`
       : '';
@@ -393,7 +393,7 @@ export function SplitPage() {
     setZipBusy(true);
     try {
       const zipBytes = await zipFiles(parts.map((part) => ({ name: part.name, bytes: part.bytes })));
-      const base = source ? source.file.name.replace(/\.pdf$/i, '') : 'split';
+      const base = source ? baseName(source.file.name) : 'split';
       const name = sanitizeFilename(base + '-parts') + '.zip';
       downloadBytes(zipBytes, name, 'application/zip');
     } catch {
@@ -410,7 +410,7 @@ export function SplitPage() {
   ];
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
 
       <div className="pdf-workspace pdf-workspace--side split-workspace">
         <section className="ct-panel panel-section split-source" aria-label={t.dropLabel}>

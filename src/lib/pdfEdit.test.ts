@@ -4,7 +4,6 @@ import {
   detectImageFormat,
   hexToRgb,
   placementFromPct,
-  renderNumberTemplate,
   splitLines,
   textBlockHeight
 } from './pdfEdit';
@@ -67,11 +66,3 @@ describe('detectImageFormat', () => {
   });
 });
 
-describe('renderNumberTemplate', () => {
-  it('expands templates with current and total numbers', () => {
-    expect(renderNumberTemplate('{n} / {total}', 2, 5)).toBe('2 / 5');
-    expect(renderNumberTemplate('Trang {page}', 3, 5)).toBe('Trang 3');
-    expect(renderNumberTemplate('Page {n} of {pages}', 1, 9)).toBe('Page 1 of 9');
-    expect(renderNumberTemplate('', 4, 5)).toBe('4');
-  });
-});

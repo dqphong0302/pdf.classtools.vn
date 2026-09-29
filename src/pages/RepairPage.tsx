@@ -3,7 +3,7 @@ import { Download, FileText, Wrench } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { repairPdf } from '../lib/wasmQpdf';
 import './repair.css';
 
@@ -13,7 +13,7 @@ interface DocState {
 }
 
 export function RepairPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const [doc, setDoc] = useState<DocState | null>(null);
   const [busy, setBusy] = useState(false);
   const [resultBytes, setResultBytes] = useState<Uint8Array | null>(null);
@@ -55,11 +55,11 @@ export function RepairPage() {
 
   const handleDownload = () => {
     if (!resultBytes || !doc) return;
-    downloadBytes(resultBytes, withPdfSuffix(doc.file.name.replace(/\.pdf$/i, '') + '-repaired'));
+    downloadBytes(resultBytes, withPdfSuffix(baseName(doc.file.name) + '-repaired'));
   };
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
       <div className="repair-container">
 
         {!doc ? (

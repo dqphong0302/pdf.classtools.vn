@@ -1,7 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 export type Locale = 'vi' | 'en';
 type Theme = 'light' | 'dark';
+interface Preferences {
+  theme: Theme;
+  locale: Locale;
+}
 
 // Storage can throw (blocked cookies, some private modes); preferences are optional.
 function readPref(key: string): string | null {
@@ -20,36 +24,39 @@ function writePref(key: string, value: string): void {
   }
 }
 
-const getInitialTheme = (): Theme => {
-  const stored = readPref('classtools-theme');
-  if (stored === 'light' || stored === 'dark') return stored;
-  return 'light';
+// One shared store so the shell (which toggles) and every page (which reads) stay in sync.
+let state: Preferences = {
+  theme: readPref('classtools-theme') === 'dark' ? 'dark' : 'light',
+  locale: readPref('classtools-locale') === 'en' ? 'en' : 'vi'
 };
+const listeners = new Set<() => void>();
+
+function apply({ theme, locale }: Preferences) {
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.lang = locale;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#10162d' : '#f7f5ef');
+}
+apply(state);
+
+function update(next: Partial<Preferences>) {
+  state = { ...state, ...next };
+  writePref('classtools-theme', state.theme);
+  writePref('classtools-locale', state.locale);
+  apply(state);
+  listeners.forEach((listener) => listener());
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
 
 export function usePreferences() {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme);
-  const [locale, setLocale] = useState<Locale>(() =>
-    readPref('classtools-locale') === 'en' ? 'en' : 'vi'
-  );
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    writePref('classtools-theme', theme);
-    document.querySelector('meta[name="theme-color"]')?.setAttribute(
-      'content',
-      theme === 'dark' ? '#10162d' : '#f7f5ef'
-    );
-  }, [theme]);
-
-  useEffect(() => {
-    document.documentElement.lang = locale;
-    writePref('classtools-locale', locale);
-  }, [locale]);
-
+  const { theme, locale } = useSyncExternalStore(subscribe, () => state);
   return {
     theme,
     locale,
-    toggleTheme: () => setTheme((value) => (value === 'light' ? 'dark' : 'light')),
-    toggleLocale: () => setLocale((value) => (value === 'vi' ? 'en' : 'vi'))
+    toggleTheme: () => update({ theme: theme === 'light' ? 'dark' : 'light' }),
+    toggleLocale: () => update({ locale: locale === 'vi' ? 'en' : 'vi' })
   };
 }

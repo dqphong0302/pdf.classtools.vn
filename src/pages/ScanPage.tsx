@@ -14,7 +14,7 @@ interface ScannedPage {
 }
 
 export function ScanPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const [pages, setPages] = useState<ScannedPage[]>([]);
   const [filter, setFilter] = useState<'color' | 'bw' | 'grayscale'>('color');
   const [isCameraActive, setIsCameraActive] = useState(false);
@@ -166,7 +166,7 @@ export function ScanPage() {
   };
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
       <div className="scan-container">
 
         <div className="scan-layout">

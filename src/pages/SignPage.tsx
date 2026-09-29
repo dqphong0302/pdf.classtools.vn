@@ -5,7 +5,7 @@ import { Download, Eraser, FileSignature, FileText, PenLine, Trash2, Type } from
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
 import { openPdfView } from '../lib/pdfPreview';
 import type { OpenedPdfView } from '../lib/pdfPreview';
@@ -312,7 +312,7 @@ function SignPreview({ view, pageNumber, fallbackLabel, markerX, markerY, wrapRe
 }
 
 export function SignPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const vi = locale === 'vi';
   const t = STRINGS[locale];
 
@@ -585,14 +585,14 @@ export function SignPage() {
 
   const handleDownload = useCallback(() => {
     if (!result || !source) return;
-    const base = source.file.name.replace(/\.pdf$/i, '');
+    const base = baseName(source.file.name);
     downloadBytes(result, withPdfSuffix(`${base}-${vi ? 'da-ky' : 'signed'}`));
   }, [result, source, vi]);
 
   const pageNumbers = source ? Array.from({ length: source.pageCount }, (_, index) => index + 1) : [];
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
 
       <div className="pdf-workspace pdf-workspace--side sign-workspace">
         <section className="ct-panel panel-section sign-source" aria-label={t.dropLabel}>

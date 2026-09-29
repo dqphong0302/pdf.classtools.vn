@@ -3,7 +3,7 @@ import { Download, FileText, RotateCcw, RotateCw } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { openPdfView, type OpenedPdfView } from '../lib/pdfPreview';
 import { rotatePdfPages } from '../lib/pdfRotate';
@@ -17,7 +17,7 @@ interface DocState {
 }
 
 export function RotatePage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const [doc, setDoc] = useState<DocState | null>(null);
   const [rotations, setRotations] = useState<Map<number, number>>(new Map());
   const [busy, setBusy] = useState(false);
@@ -113,11 +113,11 @@ export function RotatePage() {
 
   const handleDownload = () => {
     if (!resultBytes || !doc) return;
-    downloadBytes(resultBytes, withPdfSuffix(doc.file.name.replace(/\.pdf$/i, '') + '-rotated'));
+    downloadBytes(resultBytes, withPdfSuffix(baseName(doc.file.name) + '-rotated'));
   };
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
       <div className="rotate-container">
 
         {!doc ? (

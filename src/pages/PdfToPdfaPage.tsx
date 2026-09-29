@@ -3,7 +3,7 @@ import { Archive, Download, FileText, ShieldCheck } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { convertToPdfa } from '../lib/wasmGhostscript';
 import './pdf-to-pdfa.css';
@@ -15,7 +15,7 @@ interface DocState {
 }
 
 export function PdfToPdfaPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const [doc, setDoc] = useState<DocState | null>(null);
   const [busy, setBusy] = useState(false);
   const [resultBytes, setResultBytes] = useState<Uint8Array | null>(null);
@@ -58,11 +58,11 @@ export function PdfToPdfaPage() {
 
   const handleDownload = () => {
     if (!resultBytes || !doc) return;
-    downloadBytes(resultBytes, withPdfSuffix(doc.file.name.replace(/\.pdf$/i, '') + '-pdfa'));
+    downloadBytes(resultBytes, withPdfSuffix(baseName(doc.file.name) + '-pdfa'));
   };
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
       <div className="pdfa-container">
 
         {!doc ? (

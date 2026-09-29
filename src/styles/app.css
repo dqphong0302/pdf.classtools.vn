@@ -645,7 +645,7 @@
 @keyframes route-pulse { 50% { opacity: 0.4; } }
 @media (prefers-reduced-motion: reduce) { .route-loading span { animation: none; } }
 
-/* ---- Header, tool menu, breadcrumb, related tools ---- */
+/* ---- Header, tool menu, breadcrumb ---- */
 .header-action--primary {
   border-color: transparent;
   background: var(--ct-cobalt-600);
@@ -876,17 +876,7 @@
   color: var(--tone-ink, var(--ct-cobalt-700));
 }
 
-.related {
-  margin-top: 3rem;
-  padding-top: 1.6rem;
-  border-top: 1px solid var(--ct-border);
-}
 
-.related h2 {
-  margin: 0 0 0.8rem;
-  font-family: var(--ct-font-display);
-  font-size: 1.05rem;
-}
 
 .footer-privacy {
   display: inline-flex;

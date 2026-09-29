@@ -3,7 +3,7 @@ import { Download, FileText, Image as ImageIcon, Stamp, Type } from 'lucide-reac
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { openPdfView, type OpenedPdfView } from '../lib/pdfPreview';
 import { addWatermark, watermarkCentres, type WatermarkOptions } from '../lib/pdfWatermark';
@@ -16,7 +16,7 @@ interface DocState {
 }
 
 export function WatermarkPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const [doc, setDoc] = useState<DocState | null>(null);
 
   const [mode, setMode] = useState<'text' | 'image'>('text');
@@ -199,11 +199,11 @@ export function WatermarkPage() {
 
   const handleDownload = () => {
     if (!resultBytes || !doc) return;
-    downloadBytes(resultBytes, withPdfSuffix(doc.file.name.replace(/\.pdf$/i, '') + '-watermarked'));
+    downloadBytes(resultBytes, withPdfSuffix(baseName(doc.file.name) + '-watermarked'));
   };
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
       <div className="watermark-container">
 
         {!doc ? (

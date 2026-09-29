@@ -1,4 +1,4 @@
-import { PDFDocument, degrees } from 'pdf-lib';
+import { PDFDocument, degrees, type PDFFont } from 'pdf-lib';
 import { ensureEmbeddedFonts, hexToPdfRgb } from './pdfEdit';
 import { centeredOrigin, pageFrame } from './pdfPlacement';
 
@@ -51,6 +51,41 @@ export function watermarkCentres(
   return centres;
 }
 
+/** Stamps a text watermark (centred or tiled) on every page of an open document. */
+export function stampTextWatermark(
+  pdf: PDFDocument,
+  font: PDFFont,
+  options: Pick<TextWatermarkOptions, 'text' | 'angle' | 'opacity' | 'fontSize' | 'colorHex' | 'tiled'>
+): void {
+  const color = hexToPdfRgb(options.colorHex);
+  const textWidth = font.widthOfTextAtSize(options.text, options.fontSize);
+  // Cap height ≈ 0.7em; centring on it keeps the glyphs visually centred.
+  const textHeight = options.fontSize * 0.7;
+
+  for (const page of pdf.getPages()) {
+    const frame = pageFrame(page);
+    const centres = watermarkCentres(frame.width, frame.height, options.tiled, {
+      width: textWidth,
+      height: textHeight,
+      angle: options.angle,
+      gap: options.fontSize
+    });
+    for (const centre of centres) {
+      const origin = centeredOrigin(centre.x, centre.y, textWidth, textHeight, options.angle);
+      const at = frame.toPdf(origin.x, origin.y);
+      page.drawText(options.text, {
+        x: at.x,
+        y: at.y,
+        size: options.fontSize,
+        font,
+        color,
+        opacity: options.opacity,
+        rotate: degrees(options.angle + frame.rotation)
+      });
+    }
+  }
+}
+
 export async function addWatermark(
   sourceBytes: Uint8Array,
   options: WatermarkOptions
@@ -59,33 +94,7 @@ export async function addWatermark(
 
   if (options.type === 'text') {
     const fonts = await ensureEmbeddedFonts(pdf);
-    const color = hexToPdfRgb(options.colorHex);
-    const textWidth = fonts.bold.widthOfTextAtSize(options.text, options.fontSize);
-    // Cap height ≈ 0.7em; centring on it keeps the glyphs visually centred.
-    const textHeight = options.fontSize * 0.7;
-
-    for (const page of pdf.getPages()) {
-      const frame = pageFrame(page);
-      const centres = watermarkCentres(frame.width, frame.height, options.tiled, {
-        width: textWidth,
-        height: textHeight,
-        angle: options.angle,
-        gap: options.fontSize
-      });
-      for (const centre of centres) {
-        const origin = centeredOrigin(centre.x, centre.y, textWidth, textHeight, options.angle);
-        const at = frame.toPdf(origin.x, origin.y);
-        page.drawText(options.text, {
-          x: at.x,
-          y: at.y,
-          size: options.fontSize,
-          font: fonts.bold,
-          color,
-          opacity: options.opacity,
-          rotate: degrees(options.angle + frame.rotation)
-        });
-      }
-    }
+    stampTextWatermark(pdf, fonts.bold, options);
   } else {
     const embeddedImage = options.isPng
       ? await pdf.embedPng(options.imageBytes)

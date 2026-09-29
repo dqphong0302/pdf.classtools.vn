@@ -3,7 +3,7 @@ import { Download, FileSpreadsheet, FileText } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, formatBytes } from '../lib/download';
+import { baseName, downloadBytes, formatBytes } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { pdfToExcel } from '../lib/pdfExcel';
 import './pdf-to-excel.css';
@@ -15,7 +15,7 @@ interface DocState {
 }
 
 export function PdfToExcelPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const [doc, setDoc] = useState<DocState | null>(null);
   const [busy, setBusy] = useState(false);
   const [resultBytes, setResultBytes] = useState<Uint8Array | null>(null);
@@ -54,12 +54,12 @@ export function PdfToExcelPage() {
 
   const handleDownload = () => {
     if (!resultBytes || !doc) return;
-    const xlsxName = doc.file.name.replace(/\.pdf$/i, '') + '.xlsx';
+    const xlsxName = baseName(doc.file.name) + '.xlsx';
     downloadBytes(resultBytes, xlsxName, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   };
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
       <div className="pdf-excel-container">
 
         {!doc ? (

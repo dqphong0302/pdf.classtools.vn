@@ -3,7 +3,7 @@ import { Download, FileText, Layers } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { flattenPdf } from '../lib/pdfFlatten';
 import './flatten.css';
@@ -15,7 +15,7 @@ interface DocState {
 }
 
 export function FlattenPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const [doc, setDoc] = useState<DocState | null>(null);
   const [busy, setBusy] = useState(false);
   const [resultBytes, setResultBytes] = useState<Uint8Array | null>(null);
@@ -54,11 +54,11 @@ export function FlattenPage() {
 
   const handleDownload = () => {
     if (!resultBytes || !doc) return;
-    downloadBytes(resultBytes, withPdfSuffix(doc.file.name.replace(/\.pdf$/i, '') + '-flattened'));
+    downloadBytes(resultBytes, withPdfSuffix(baseName(doc.file.name) + '-flattened'));
   };
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
       <div className="flatten-container">
 
         {!doc ? (

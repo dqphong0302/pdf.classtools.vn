@@ -159,39 +159,6 @@ export async function addImageLayers(pdf: PDFDocument, layers: ImageLayer[]): Pr
   }
 }
 
-export interface WatermarkOptions {
-  text: string;
-  fontSizePt: number;
-  colorHex: string;
-  opacity: number;
-  angle: number;
-}
-
-export async function addWatermark(pdf: PDFDocument, font: PDFFont, options: WatermarkOptions): Promise<void> {
-  const text = options.text.trim();
-  if (!text) return;
-  const size = Math.max(12, Math.min(160, options.fontSizePt));
-  const opacity = Math.max(0.05, Math.min(1, options.opacity));
-  const rad = (options.angle * Math.PI) / 180;
-  const textWidth = font.widthOfTextAtSize(text, size);
-
-  pdf.getPages().forEach((page) => {
-    const pageWidth = page.getWidth();
-    const pageHeight = page.getHeight();
-    const x = pageWidth / 2 - (textWidth / 2) * Math.cos(rad) + (size / 2) * Math.sin(rad);
-    const y = pageHeight / 2 - (textWidth / 2) * Math.sin(rad) - (size / 2) * Math.cos(rad);
-    page.drawText(text, {
-      x,
-      y,
-      size,
-      font,
-      color: hexToPdfRgb(options.colorHex),
-      opacity,
-      rotate: degrees(options.angle)
-    });
-  });
-}
-
 export interface ImageWatermarkOptions {
   bytes: Uint8Array;
   /** Width as percentage of page width. */
@@ -226,50 +193,5 @@ export async function addImageWatermark(pdf: PDFDocument, options: ImageWatermar
       opacity,
       rotate: degrees(options.angle)
     });
-  });
-}
-
-export type NumberPosition = 'bottom-left' | 'bottom-center' | 'bottom-right' | 'top-left' | 'top-center' | 'top-right';
-
-export interface PageNumberOptions {
-  position: NumberPosition;
-  startAt: number;
-  template: string;
-  fontSizePt: number;
-  skipFirst: boolean;
-  colorHex: string;
-}
-
-export function renderNumberTemplate(template: string, current: number, total: number): string {
-  return template
-    .replace(/\{n\}/g, String(current))
-    .replace(/\{total\}/g, String(total))
-    .replace(/\{page\}/gi, String(current))
-    .replace(/\{pages\}/gi, String(total))
-    .trim() || String(current);
-}
-
-export async function addPageNumbers(pdf: PDFDocument, font: PDFFont, options: PageNumberOptions): Promise<void> {
-  const pages = pdf.getPages();
-  const total = pages.length;
-  const size = Math.max(6, Math.min(32, options.fontSizePt));
-  const margin = 24;
-
-  pages.forEach((page, index) => {
-    if (options.skipFirst && index === 0) return;
-    const label = renderNumberTemplate(options.template, options.startAt + index, total);
-    const textWidth = font.widthOfTextAtSize(label, size);
-    const pageWidth = page.getWidth();
-    const pageHeight = page.getHeight();
-
-    const isTop = options.position.startsWith('top');
-    const x = options.position.endsWith('left')
-      ? margin
-      : options.position.endsWith('right')
-        ? pageWidth - margin - textWidth
-        : (pageWidth - textWidth) / 2;
-    const y = isTop ? pageHeight - margin - size : margin;
-
-    page.drawText(label, { x, y, size, font, color: hexToPdfRgb(options.colorHex) });
   });
 }

@@ -3,7 +3,9 @@ import { BrowserRouter } from 'react-router-dom';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { EditPage } from './EditPage';
-import { addImageLayers, addImageWatermark, addPageNumbers, addTextLayers, addWatermark } from '../lib/pdfEdit';
+import { addImageLayers, addImageWatermark, addTextLayers } from '../lib/pdfEdit';
+import { stampPageNumbers } from '../lib/pdfPageNumbers';
+import { stampTextWatermark } from '../lib/pdfWatermark';
 
 vi.mock('../lib/pdfPreview', () => ({
   openPdfView: vi.fn().mockRejectedValue(new Error('no preview'))
@@ -16,11 +18,19 @@ vi.mock('../lib/pdfEdit', async (importOriginal) => {
     ensureEmbeddedFonts: vi.fn().mockResolvedValue({ regular: {}, bold: {} }),
     addTextLayers: vi.fn().mockResolvedValue(undefined),
     addImageLayers: vi.fn().mockResolvedValue(undefined),
-    addImageWatermark: vi.fn().mockResolvedValue(undefined),
-    addWatermark: vi.fn().mockResolvedValue(undefined),
-    addPageNumbers: vi.fn().mockResolvedValue(undefined)
+    addImageWatermark: vi.fn().mockResolvedValue(undefined)
   };
 });
+
+vi.mock('../lib/pdfWatermark', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../lib/pdfWatermark')>()),
+  stampTextWatermark: vi.fn()
+}));
+
+vi.mock('../lib/pdfPageNumbers', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../lib/pdfPageNumbers')>()),
+  stampPageNumbers: vi.fn()
+}));
 
 async function makeThreePageFile(): Promise<File> {
   const doc = await PDFDocument.create();
@@ -107,11 +117,11 @@ describe('EditPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Áp dụng & tải xuống/ }));
     await waitFor(() => {
-      expect(addWatermark).toHaveBeenCalledTimes(1);
-      expect(addPageNumbers).toHaveBeenCalledTimes(1);
+      expect(stampTextWatermark).toHaveBeenCalledTimes(1);
+      expect(stampPageNumbers).toHaveBeenCalledTimes(1);
     });
-    expect(vi.mocked(addWatermark).mock.calls[0][2]).toMatchObject({ text: 'TÀI LIỆU NỘI BỘ', angle: 45 });
-    expect(vi.mocked(addPageNumbers).mock.calls[0][2]).toMatchObject({ startAt: 2, position: 'bottom-center' });
+    expect(vi.mocked(stampTextWatermark).mock.calls[0][2]).toMatchObject({ text: 'TÀI LIỆU NỘI BỘ', angle: 45 });
+    expect(vi.mocked(stampPageNumbers).mock.calls[0][2]).toMatchObject({ startFrom: 2, position: 'bottom-center' });
   });
 
   it('adds an image layer and passes its bytes to the pipeline', async () => {
@@ -168,7 +178,7 @@ describe('EditPage', () => {
     await waitFor(() => {
       expect(addImageWatermark).toHaveBeenCalledTimes(1);
     });
-    expect(addWatermark).not.toHaveBeenCalled();
+    expect(stampTextWatermark).not.toHaveBeenCalled();
     expect(vi.mocked(addImageWatermark).mock.calls[0][1]).toMatchObject({
       widthPct: 45,
       opacity: 0.15,
@@ -191,10 +201,10 @@ describe('EditPage', () => {
     fireEvent.click(screen.getByRole('button', { name: /Áp dụng & tải xuống/ }));
 
     await waitFor(() => {
-      expect(addWatermark).toHaveBeenCalledTimes(1);
+      expect(stampTextWatermark).toHaveBeenCalledTimes(1);
     });
     expect(addImageWatermark).not.toHaveBeenCalled();
-    expect(vi.mocked(addWatermark).mock.calls[0][2]).toMatchObject({ text: 'TÀI LIỆU NỘI BỘ', angle: 45 });
+    expect(vi.mocked(stampTextWatermark).mock.calls[0][2]).toMatchObject({ text: 'TÀI LIỆU NỘI BỘ', angle: 45 });
   });
 
   it('renders a draggable chip for each pending layer on the selected page', async () => {

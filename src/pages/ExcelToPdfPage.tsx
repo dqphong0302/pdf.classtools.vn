@@ -3,7 +3,7 @@ import { Download, FileSpreadsheet, Table } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { excelToPdf, parseExcelWorkbook, type ExcelSheetData } from '../lib/pdfExcel';
 import './excel-to-pdf.css';
 
@@ -14,7 +14,7 @@ interface DocState {
 }
 
 export function ExcelToPdfPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const [doc, setDoc] = useState<DocState | null>(null);
   const [busy, setBusy] = useState(false);
   const [resultBytes, setResultBytes] = useState<Uint8Array | null>(null);
@@ -58,14 +58,14 @@ export function ExcelToPdfPage() {
 
   const handleDownload = () => {
     if (!resultBytes || !doc) return;
-    downloadBytes(resultBytes, withPdfSuffix(doc.file.name.replace(/\.[^.]+$/, '') + '-table'));
+    downloadBytes(resultBytes, withPdfSuffix(baseName(doc.file.name) + '-table'));
   };
 
   const activeSheet = doc?.sheets[doc.selectedSheet];
   const previewRows = activeSheet?.rows.slice(0, 15) || [];
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
       <div className="excel-pdf-container">
 
         {!doc ? (

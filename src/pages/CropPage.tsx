@@ -3,7 +3,7 @@ import { Download, FileText, RotateCcw, Scissors } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
 import { applyCrop, type CropMarginsMm } from '../lib/pdfPages';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
 import { openPdfView, type OpenedPdfView } from '../lib/pdfPreview';
@@ -142,7 +142,7 @@ function CropPreview({ view, caption }: CropPreviewProps) {
 }
 
 export function CropPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const vi = locale === 'vi';
   const t = STRINGS[locale];
 
@@ -245,7 +245,7 @@ export function CropPage() {
 
   const handleDownload = useCallback(() => {
     if (!result) return;
-    const base = source ? source.file.name.replace(/\.pdf$/i, '') : 'pdf';
+    const base = source ? baseName(source.file.name) : 'pdf';
     downloadBytes(result.bytes, withPdfSuffix(`${base}-${vi ? 'cắt-mép' : 'cropped'}`));
   }, [result, source, vi]);
 
@@ -257,7 +257,7 @@ export function CropPage() {
   ];
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
 
       <div className="pdf-workspace pdf-workspace--two crop-workspace">
         <section className="ct-panel panel-section crop-panel" aria-label={t.dropLabel}>

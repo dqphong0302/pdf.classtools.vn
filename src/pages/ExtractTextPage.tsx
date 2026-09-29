@@ -94,7 +94,7 @@ const STRINGS: Record<'vi' | 'en', ExtractStrings> = {
 };
 
 export function ExtractTextPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const t = STRINGS[locale];
 
   const [source, setSource] = useState<SourceDoc | null>(null);
@@ -190,7 +190,7 @@ export function ExtractTextPage() {
   const hasText = Boolean(result && result.pages.some((page) => page.text.trim()));
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
 
       <div className="pdf-workspace pdf-workspace--side xt-workspace">
         <section className="ct-panel panel-section xt-source" aria-label={t.dropLabel}>

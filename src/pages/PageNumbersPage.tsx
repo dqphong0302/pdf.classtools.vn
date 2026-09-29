@@ -3,7 +3,7 @@ import { Download, FileText, Hash } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
+import { baseName, downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { addPageNumbers, pageNumberLabel, pageNumberOrigin, type PageNumberPosition } from '../lib/pdfPageNumbers';
 import { openPdfView, type OpenedPdfView } from '../lib/pdfPreview';
@@ -16,7 +16,7 @@ interface DocState {
 }
 
 export function PageNumbersPage() {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { locale } = usePreferences();
   const [doc, setDoc] = useState<DocState | null>(null);
   const [position, setPosition] = useState<PageNumberPosition>('bottom-center');
   const [format, setFormat] = useState('Trang {n} / {total}');
@@ -132,11 +132,11 @@ export function PageNumbersPage() {
 
   const handleDownload = () => {
     if (!resultBytes || !doc) return;
-    downloadBytes(resultBytes, withPdfSuffix(doc.file.name.replace(/\.pdf$/i, '') + '-numbered'));
+    downloadBytes(resultBytes, withPdfSuffix(baseName(doc.file.name) + '-numbered'));
   };
 
   return (
-    <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
+    <ToolShell>
       <div className="page-numbers-container">
 
         {!doc ? (
