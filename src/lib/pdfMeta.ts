@@ -19,17 +19,6 @@ export interface PdfMetadataDraft {
   keywords: string;
 }
 
-const EMPTY: PdfMetadata = {
-  title: '',
-  author: '',
-  subject: '',
-  keywords: [],
-  creator: '',
-  producer: '',
-  createdAt: null,
-  modifiedAt: null
-};
-
 function toDate(value: Date | undefined): string | null {
   if (!(value instanceof Date) || Number.isNaN(value.getTime())) return null;
   return value.toISOString();
@@ -86,4 +75,3 @@ function applyDraft(doc: PDFDocument, draft: PdfMetadataDraft): void {
   if (keywords.length) doc.setKeywords(keywords);
 }
 
-export { EMPTY as EMPTY_METADATA };

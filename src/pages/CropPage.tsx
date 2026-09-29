@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Crop, Download, FileText, RotateCcw, Scissors } from 'lucide-react';
+import { Download, FileText, RotateCcw, Scissors } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
+import { downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
 import { applyCrop, type CropMarginsMm } from '../lib/pdfPages';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
 import { openPdfView, type OpenedPdfView } from '../lib/pdfPreview';
 import './crop.css';
 
-const MAX_FILE_BYTES = 100 * 1024 * 1024;
 const DEFAULT_MARGINS: CropMarginsMm = { top: 10, right: 10, bottom: 10, left: 10 };
 const MARGIN_KEYS = ['top', 'right', 'bottom', 'left'] as const;
 
@@ -20,9 +19,7 @@ interface SourceDoc {
 }
 
 interface CropStrings {
-  back: string;
   title: string;
-  description: string;
   dropLabel: string;
   dropHint: string;
   emptyHint: string;
@@ -46,15 +43,11 @@ interface CropStrings {
   opError: string;
   encrypted: string;
   unreadable: string;
-  oversized: string;
 }
 
 const STRINGS: Record<'vi' | 'en', CropStrings> = {
   vi: {
-    back: 'Trang chủ',
     title: 'Cắt mép',
-    description:
-      'Cắt bớt lề quanh mỗi trang PDF theo khoảng cách tính bằng mm, xem trước ngay trước khi lưu. Mọi thao tác chạy trên thiết bị của bạn.',
     dropLabel: 'Chọn hoặc kéo thả tệp PDF',
     dropHint: 'Một tệp PDF duy nhất',
     emptyHint: 'Tải lên một tệp PDF để bắt đầu cắt mép.',
@@ -78,13 +71,9 @@ const STRINGS: Record<'vi' | 'en', CropStrings> = {
     opError: 'Không thể cắt mép. Tệp có thể bị hỏng hoặc không phải PDF hợp lệ.',
     encrypted: 'Tệp được bảo vệ bằng mật khẩu nên không thể xử lý.',
     unreadable: 'Không đọc được tệp. Tệp có thể bị hỏng hoặc không phải PDF.',
-    oversized: 'Bỏ qua tệp quá 100 MB.'
   },
   en: {
-    back: 'Home',
     title: 'Crop margins',
-    description:
-      'Trim the margins of every PDF page by distances in millimetres, with an instant preview. Everything runs on your device.',
     dropLabel: 'Drop or choose a PDF file',
     dropHint: 'A single PDF file',
     emptyHint: 'Upload a PDF file to start cropping margins.',
@@ -108,18 +97,8 @@ const STRINGS: Record<'vi' | 'en', CropStrings> = {
     opError: 'Could not crop the pages. The file may be corrupted or not a valid PDF.',
     encrypted: 'This file is password protected and cannot be processed.',
     unreadable: 'Could not read the file. It may be corrupted or not a PDF.',
-    oversized: 'Skipped files over 100 MB.'
   }
 };
-
-function readFileBytes(file: File): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(reader.error ?? new Error('READ_FAILED'));
-    reader.readAsArrayBuffer(file);
-  });
-}
 
 interface CropPreviewProps {
   view: OpenedPdfView | null;
@@ -211,12 +190,6 @@ export function CropPage() {
       setNotice(undefined);
       setPreview(null);
       setMargins({ ...DEFAULT_MARGINS });
-      if (file.size > MAX_FILE_BYTES) {
-        setOriginal(null);
-        setSource(null);
-        setNotice(t.oversized);
-        return;
-      }
       void (async () => {
         try {
           const bytes = new Uint8Array(await readFileBytes(file));
@@ -285,16 +258,6 @@ export function CropPage() {
 
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
-      <div className="tool-page-heading tool-page-heading--compact">
-        <a className="tool-page-heading__back" href="/">
-          <ArrowLeft size={17} aria-hidden="true" /> {t.back}
-        </a>
-        <span className="ct-eyebrow">
-          <Crop size={14} aria-hidden="true" /> ClassTools PDF
-        </span>
-        <h1>{t.title}</h1>
-        <p>{t.description}</p>
-      </div>
 
       <div className="pdf-workspace pdf-workspace--two crop-workspace">
         <section className="ct-panel panel-section crop-panel" aria-label={t.dropLabel}>

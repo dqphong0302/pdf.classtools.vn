@@ -1,5 +1,4 @@
 import { PDFDocument, PDFFont, PDFImage, PDFPage, degrees, rgb } from 'pdf-lib';
-import fontkit from '@pdf-lib/fontkit';
 import boldFontUrl from '../assets/fonts/Roboto-Bold.ttf?url';
 import regularFontUrl from '../assets/fonts/Roboto-Regular.ttf?url';
 
@@ -13,8 +12,7 @@ export interface Placement {
   y: number;
 }
 
-export const LINE_HEIGHT_RATIO = 1.25;
-export const WATERMARK_ANGLE = 45;
+const LINE_HEIGHT_RATIO = 1.25;
 
 export function hexToRgb(hex: string): { red: number; green: number; blue: number } {
   const clean = hex.replace('#', '').trim();
@@ -73,8 +71,9 @@ async function fetchFont(url: string): Promise<Uint8Array> {
   return new Uint8Array(await response.arrayBuffer());
 }
 
-/** Registers fontkit and embeds subsetted Roboto Regular/Bold (full Vietnamese support). */
+/** Registers fontkit (loaded on demand, ~700 KB) and embeds subsetted Roboto Regular/Bold (full Vietnamese support). */
 export async function ensureEmbeddedFonts(pdf: PDFDocument): Promise<PdfFonts> {
+  const { default: fontkit } = await import('@pdf-lib/fontkit');
   pdf.registerFontkit(fontkit);
   const [regular, bold] = await Promise.all([
     fetchFont(regularFontUrl),

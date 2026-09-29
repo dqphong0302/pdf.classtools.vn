@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Camera, Download, Trash2 } from 'lucide-react';
+import { Camera, Download, Trash2 } from 'lucide-react';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
 import { downloadBytes } from '../lib/download';
@@ -168,19 +168,6 @@ export function ScanPage() {
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
       <div className="scan-container">
-        <div className="tool-page-heading tool-page-heading--compact">
-          <a className="tool-page-heading__back" href="/">
-            <ArrowLeft size={16} />
-            {isVi ? 'Trang chủ' : 'Home'}
-          </a>
-          <span className="ct-eyebrow">ClassTools PDF</span>
-          <h1>{isVi ? 'Quét tài liệu bằng Camera (Scan to PDF)' : 'Scan to PDF'}</h1>
-          <p>
-            {isVi
-              ? 'Sử dụng camera máy tính hoặc điện thoại chụp các trang tài liệu, tự động lọc màu đen trắng và xuất file PDF chuẩn A4.'
-              : 'Use your device camera to scan paper documents, apply high-contrast filters and export to standard A4 PDF.'}
-          </p>
-        </div>
 
         <div className="scan-layout">
           {/* Camera Viewport */}

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Download, FileText, RotateCcw, RotateCw } from 'lucide-react';
+import { Download, FileText, RotateCcw, RotateCw } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
@@ -119,19 +119,6 @@ export function RotatePage() {
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
       <div className="rotate-container">
-        <div className="tool-page-heading tool-page-heading--compact">
-          <a className="tool-page-heading__back" href="/">
-            <ArrowLeft size={16} />
-            {isVi ? 'Trang chủ' : 'Home'}
-          </a>
-          <span className="ct-eyebrow">ClassTools PDF</span>
-          <h1>{isVi ? 'Xoay PDF' : 'Rotate PDF'}</h1>
-          <p>
-            {isVi
-              ? 'Xoay tất cả hoặc từng trang riêng lẻ theo góc 90° hoặc 180° cực nhanh trực tiếp trên trình duyệt.'
-              : 'Rotate all or specific PDF pages by 90° or 180° instantly in your browser.'}
-          </p>
-        </div>
 
         {!doc ? (
           <FileDrop

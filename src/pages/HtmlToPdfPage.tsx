@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, FileCode, Printer } from 'lucide-react';
+import { FileCode, Printer } from 'lucide-react';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
 import './html-to-pdf.css';
@@ -65,19 +65,6 @@ export function HtmlToPdfPage() {
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
       <div className="html-pdf-container">
-        <div className="tool-page-heading tool-page-heading--compact">
-          <a className="tool-page-heading__back" href="/">
-            <ArrowLeft size={16} />
-            {isVi ? 'Trang chủ' : 'Home'}
-          </a>
-          <span className="ct-eyebrow">ClassTools PDF</span>
-          <h1>{isVi ? 'HTML sang PDF (HTML to PDF)' : 'HTML to PDF'}</h1>
-          <p>
-            {isVi
-              ? 'Soạn thảo hoặc dán mã HTML/CSS bất kỳ, xem trước trực quan và in xuất PDF chuẩn A4 sắc nét theo chuẩn trình duyệt.'
-              : 'Compose or paste any HTML/CSS code, preview live and export crisp A4 PDFs using native high-fidelity print engines.'}
-          </p>
-        </div>
 
         <div className="html-pdf-layout">
           {/* Editor Side */}

@@ -1,10 +1,5 @@
 import { PDFDocument, degrees } from 'pdf-lib';
 
-export interface PageRotation {
-  pageIndex: number; // 0-based
-  angle: number; // 0, 90, 180, 270
-}
-
 /**
  * Rotates pages by a clockwise delta on top of their existing /Rotate: either one
  * delta for every page, or a per-page map (0-based index → delta). Pages missing

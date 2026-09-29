@@ -18,9 +18,9 @@
 }
 
 .camera-card {
-  background: var(--pdui-bg-surface);
-  border: 1px solid var(--pdui-border);
-  border-radius: var(--pdui-radius-lg);
+  background: var(--ct-surface-solid);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-lg);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -32,7 +32,7 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   background: #0f172a;
-  border-radius: var(--pdui-radius-md);
+  border-radius: var(--ct-radius-md);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -75,9 +75,9 @@
 }
 
 .gallery-card {
-  background: var(--pdui-bg-surface);
-  border: 1px solid var(--pdui-border);
-  border-radius: var(--pdui-radius-lg);
+  background: var(--ct-surface-solid);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-lg);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -107,7 +107,7 @@
 
 .scanned-thumb {
   background: var(--ct-canvas);
-  border: 1px solid var(--pdui-border);
+  border: 1px solid var(--ct-border);
   border-radius: 4px;
   padding: 4px;
   display: flex;

@@ -15,11 +15,11 @@
   gap: 1rem;
   padding: 1.25rem;
   background: var(--ct-canvas);
-  border: 1px solid var(--pdui-border);
-  border-radius: var(--pdui-radius-lg);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-lg);
 }
 
 .flatten-info-card .icon {
-  color: var(--pdui-primary);
+  color: var(--ct-cobalt-600);
   flex-shrink: 0;
 }

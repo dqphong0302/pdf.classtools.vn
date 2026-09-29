@@ -16,7 +16,7 @@
   padding: 1.25rem;
   background: var(--ct-yellow-100);
   border: 1px solid color-mix(in srgb, var(--ct-yellow-500) 45%, transparent);
-  border-radius: var(--pdui-radius-lg);
+  border-radius: var(--ct-radius-lg);
 }
 
 .repair-info-box .icon {

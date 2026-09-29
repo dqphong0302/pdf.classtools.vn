@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Download, EyeOff, FileText, Trash2 } from 'lucide-react';
+import { Download, EyeOff, FileText, Trash2 } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
@@ -208,19 +208,6 @@ export function RedactPage() {
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
       <div className="redact-container">
-        <div className="tool-page-heading tool-page-heading--compact">
-          <a className="tool-page-heading__back" href="/">
-            <ArrowLeft size={16} />
-            {isVi ? 'Trang chủ' : 'Home'}
-          </a>
-          <span className="ct-eyebrow">ClassTools PDF</span>
-          <h1>{isVi ? 'Bôi đen che thông tin mật (Redact PDF)' : 'Redact PDF'}</h1>
-          <p>
-            {isVi
-              ? 'Kéo chuột để bôi đen vĩnh viễn vùng thông tin nhạy cảm (số CCCD, tài khoản, mật khẩu) trước khi chia sẻ tài liệu.'
-              : 'Permanently blackout sensitive information (ID numbers, bank details, credentials) before sharing PDFs.'}
-          </p>
-        </div>
 
         {!doc ? (
           <FileDrop

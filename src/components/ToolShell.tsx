@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { ChevronRight, FileText, Languages, LayoutGrid, Moon, Search, ShieldCheck, Sun, X } from 'lucide-react';
 import type { Locale } from '../hooks/usePreferences';
 import { CATEGORIES, CATEGORY_TONE, TOOLS, searchTools, toolForPath, type ToolInfo } from '../lib/tools';
-import { rememberTool } from '../lib/recentTools';
 
 interface ToolShellProps {
   theme: 'light' | 'dark';
@@ -133,10 +132,6 @@ export function ToolShell({ theme, locale, onThemeToggle, onLocaleToggle, childr
   const currentTool = toolForPath(currentPath);
   const category = currentTool ? CATEGORIES.find((item) => item.id === currentTool.category) : undefined;
 
-  useEffect(() => {
-    if (currentTool) rememberTool(currentTool.to);
-  }, [currentTool]);
-
   // "/" or Ctrl/Cmd+K opens the tool finder from anywhere.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -198,6 +193,13 @@ export function ToolShell({ theme, locale, onThemeToggle, onLocaleToggle, childr
             <ChevronRight size={14} aria-hidden="true" />
             <span aria-current="page">{currentTool.title[locale]}</span>
           </nav>
+        )}
+
+        {currentTool && (
+          <div className="tool-page-heading">
+            <h1>{currentTool.title[locale]}</h1>
+            <p>{currentTool.description[locale]}</p>
+          </div>
         )}
 
         {children}

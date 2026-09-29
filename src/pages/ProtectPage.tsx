@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
-import { ArrowLeft, Download, FileText, Info, Lock, LockOpen, ShieldCheck } from 'lucide-react';
+import { Download, FileText, Info, Lock, LockOpen, ShieldCheck } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
+import { downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
 import { decryptPdf, encryptPdf, type EncryptionStrength } from '../lib/wasmQpdf';
 import './protect.css';
@@ -20,9 +20,7 @@ interface ProtectSource {
 }
 
 interface ProtectStrings {
-  back: string;
   title: string;
-  description: string;
   dropLabel: string;
   dropHint: string;
   pages: (count: number) => string;
@@ -53,9 +51,7 @@ interface ProtectStrings {
 
 const STRINGS: Record<'vi' | 'en', ProtectStrings> = {
   vi: {
-    back: 'Trang chủ',
     title: 'Bảo vệ PDF',
-    description: 'Đặt mật khẩu hoặc mở khóa tệp PDF bằng qpdf chạy ngay trên thiết bị của bạn. Không có tệp nào được gửi đi.',
     dropLabel: 'Chọn hoặc kéo thả tệp PDF',
     dropHint: 'Một tệp PDF duy nhất',
     pages: (count) => `${count} trang`,
@@ -84,9 +80,7 @@ const STRINGS: Record<'vi' | 'en', ProtectStrings> = {
     privacy: 'Mật khẩu chỉ dùng ngay trên thiết bị, không được gửi đi đâu.'
   },
   en: {
-    back: 'Home',
     title: 'Protect PDF',
-    description: 'Set a password or unlock PDF files with qpdf running right on your device. No file is ever uploaded.',
     dropLabel: 'Drop or choose a PDF file',
     dropHint: 'A single PDF file',
     pages: (count) => `${count} pages`,
@@ -115,15 +109,6 @@ const STRINGS: Record<'vi' | 'en', ProtectStrings> = {
     privacy: 'Passwords are used only on this device and never sent anywhere.'
   }
 };
-
-function readFileBytes(file: File): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(reader.error ?? new Error('READ_FAILED'));
-    reader.readAsArrayBuffer(file);
-  });
-}
 
 function baseName(name: string): string {
   return name.replace(/\.pdf$/i, '');
@@ -230,16 +215,6 @@ export function ProtectPage() {
 
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
-      <div className="tool-page-heading tool-page-heading--compact">
-        <a className="tool-page-heading__back" href="/">
-          <ArrowLeft size={17} aria-hidden="true" /> {t.back}
-        </a>
-        <span className="ct-eyebrow">
-          <Lock size={14} aria-hidden="true" /> ClassTools PDF
-        </span>
-        <h1>{t.title}</h1>
-        <p>{t.description}</p>
-      </div>
 
       <div className="pdf-workspace pdf-workspace--two protect-workspace">
         <section className="ct-panel panel-section protect-panel" aria-label={t.dropLabel}>

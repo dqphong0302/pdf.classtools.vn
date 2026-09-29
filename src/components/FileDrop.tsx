@@ -15,7 +15,7 @@ interface FileDropProps {
   maxBytes?: number;
 }
 
-export const DEFAULT_MAX_BYTES = 100 * 1024 * 1024;
+const DEFAULT_MAX_BYTES = 100 * 1024 * 1024;
 
 export function FileDrop({
   multiple = false,

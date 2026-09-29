@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ArrowLeft, Download, FileSpreadsheet, FileText } from 'lucide-react';
+import { Download, FileSpreadsheet, FileText } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
@@ -61,19 +61,6 @@ export function PdfToExcelPage() {
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
       <div className="pdf-excel-container">
-        <div className="tool-page-heading tool-page-heading--compact">
-          <a className="tool-page-heading__back" href="/">
-            <ArrowLeft size={16} />
-            {isVi ? 'Trang chủ' : 'Home'}
-          </a>
-          <span className="ct-eyebrow">ClassTools PDF</span>
-          <h1>{isVi ? 'PDF sang Excel (PDF to Excel)' : 'PDF to Excel'}</h1>
-          <p>
-            {isVi
-              ? 'Trích xuất dữ liệu bảng biểu và các dòng văn bản từ tệp PDF thành trang tính Microsoft Excel (.xlsx) chỉnh sửa được ngay.'
-              : 'Extract tabular data and lines of text from PDF documents into editable Microsoft Excel (.xlsx) spreadsheets.'}
-          </p>
-        </div>
 
         {!doc ? (
           <FileDrop

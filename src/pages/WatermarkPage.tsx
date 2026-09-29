@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Download, FileText, Image as ImageIcon, Stamp, Type } from 'lucide-react';
+import { Download, FileText, Image as ImageIcon, Stamp, Type } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
@@ -205,19 +205,6 @@ export function WatermarkPage() {
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
       <div className="watermark-container">
-        <div className="tool-page-heading tool-page-heading--compact">
-          <a className="tool-page-heading__back" href="/">
-            <ArrowLeft size={16} />
-            {isVi ? 'Trang chủ' : 'Home'}
-          </a>
-          <span className="ct-eyebrow">ClassTools PDF</span>
-          <h1>{isVi ? 'Đóng dấu bản quyền (Watermark)' : 'Add Watermark'}</h1>
-          <p>
-            {isVi
-              ? 'Đóng dấu văn bản hoặc chèn logo mờ vào tài liệu PDF, tùy chỉnh góc nghiêng 45°, độ trong suốt và lặp lại.'
-              : 'Stamp text or image watermarks onto PDF pages with custom angles, transparency and tiling.'}
-          </p>
-        </div>
 
         {!doc ? (
           <FileDrop

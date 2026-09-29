@@ -105,12 +105,6 @@
   margin-bottom: 1.4rem;
 }
 
-/* The breadcrumb in ToolShell replaces the per-page back link and eyebrow. */
-.tool-page-heading__back,
-.tool-page-heading .ct-eyebrow {
-  display: none;
-}
-
 .tool-page-heading h1 {
   margin: 0;
   font-family: var(--ct-font-display);
@@ -247,13 +241,6 @@
   white-space: nowrap;
   font-weight: 700;
   color: var(--ct-ink-800);
-}
-
-.file-list .file-list__meta {
-  color: var(--ct-ink-500);
-  font-size: 0.75rem;
-  font-weight: 700;
-  white-space: nowrap;
 }
 
 /* Result / action bars */
@@ -451,18 +438,6 @@
 .pd-eco-line a { color: var(--ct-ink-950); font-weight: 500; text-decoration: none; }
 .pd-eco-line a:hover { color: var(--ct-cobalt-600); }
 
-/* Aliases for tool pages written against PDUI v2 token names — resolve to the
-   ClassTools tokens so they follow light/dark theme. */
-:root {
-  --pdui-text: var(--ct-ink-900);
-  --pdui-text-muted: var(--ct-ink-500);
-  --pdui-border: var(--ct-border);
-  --pdui-bg-surface: var(--ct-surface-solid);
-  --pdui-bg-subtle: var(--ct-canvas);
-  --pdui-primary: var(--ct-cobalt-500);
-  --pdui-radius-md: var(--ct-radius-md);
-  --pdui-radius-lg: var(--ct-radius-lg);
-}
 
 /* Generic buttons used by the tool pages (same look as .ct-button). */
 .btn {
@@ -511,7 +486,6 @@
 .select-sm { min-height: 2.25rem; padding: 0.3rem 0.6rem; font-size: 0.85rem; }
 
 /* Shared tool-page building blocks (were page-scoped, but CSS loads per route). */
-/* from rotate.css */
 .file-header-card {
   display: flex;
   align-items: center;
@@ -519,12 +493,11 @@
   flex-wrap: wrap;
   gap: 0.75rem;
   padding: 1rem 1.25rem;
-  background: var(--pdui-bg-surface);
-  border: 1px solid var(--pdui-border);
-  border-radius: var(--pdui-radius-lg);
+  background: var(--ct-surface-solid);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-lg);
 }
 
-/* from rotate.css */
 .file-info {
   display: flex;
   align-items: center;
@@ -532,12 +505,10 @@
   min-width: 0;
 }
 
-/* from rotate.css */
 .file-info .icon {
-  color: var(--pdui-primary);
+  color: var(--ct-cobalt-600);
 }
 
-/* from rotate.css */
 .file-name {
   font-size: 1rem;
   font-weight: 600;
@@ -545,39 +516,34 @@
   overflow-wrap: anywhere;
 }
 
-/* from rotate.css */
 .file-meta {
   font-size: 0.8125rem;
-  color: var(--pdui-text-muted);
+  color: var(--ct-ink-500);
   margin: 0;
 }
 
-/* from rotate.css */
 .icon-btn {
   background: transparent;
-  border: 1px solid var(--pdui-border);
+  border: 1px solid var(--ct-border);
   border-radius: 4px;
   padding: 4px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--pdui-text);
+  color: var(--ct-ink-900);
 }
 
-/* from rotate.css */
 .icon-btn:hover {
-  background: var(--pdui-bg-subtle);
+  background: var(--ct-canvas);
 }
 
-/* from rotate.css */
 .action-row {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
-/* from page-numbers.css */
 .field-group {
   display: flex;
   flex-direction: column;
@@ -585,73 +551,64 @@
   margin-bottom: 0.875rem;
 }
 
-/* from page-numbers.css */
 .field-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1rem;
 }
 
-/* from page-numbers.css */
 .field-label {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--pdui-text-muted);
+  color: var(--ct-ink-500);
 }
 
-/* from page-numbers.css */
 .select-input,
 .text-input {
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--pdui-border);
-  border-radius: var(--pdui-radius-md);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
   font-size: 0.875rem;
-  background: var(--pdui-bg-surface);
+  background: var(--ct-surface-solid);
   color: inherit;
 }
 
-/* from page-numbers.css */
 .color-input {
   width: 100%;
   height: 38px;
   padding: 2px;
-  border: 1px solid var(--pdui-border);
-  border-radius: var(--pdui-radius-md);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
   cursor: pointer;
   background: none;
 }
 
-/* from page-numbers.css */
 .hint {
   font-size: 0.75rem;
-  color: var(--pdui-text-muted);
+  color: var(--ct-ink-500);
 }
 
-/* from page-numbers.css */
 .preview-label {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--pdui-text-muted);
+  color: var(--ct-ink-500);
 }
 
-/* from page-numbers.css */
 .preview-box {
   background: var(--ct-canvas);
-  border: 1px dashed var(--pdui-border);
-  border-radius: var(--pdui-radius-md);
+  border: 1px dashed var(--ct-border);
+  border-radius: var(--ct-radius-md);
   padding: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* from page-numbers.css */
 .preview-box canvas {
   max-width: 100%;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* from pdf-to-pdfa.css */
 .info-title {
   font-size: 1rem;
   font-weight: 600;
@@ -659,7 +616,6 @@
   margin: 0 0 0.375rem 0;
 }
 
-/* from pdf-to-pdfa.css */
 .info-desc {
   font-size: 0.875rem;
   color: inherit;
@@ -667,7 +623,6 @@
   line-height: 1.5;
 }
 
-/* from redact.css */
 .text-btn {
   background: none;
   border: none;

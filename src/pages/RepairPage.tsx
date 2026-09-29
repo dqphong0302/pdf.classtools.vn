@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ArrowLeft, Download, FileText, Wrench } from 'lucide-react';
+import { Download, FileText, Wrench } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
@@ -61,19 +61,6 @@ export function RepairPage() {
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
       <div className="repair-container">
-        <div className="tool-page-heading tool-page-heading--compact">
-          <a className="tool-page-heading__back" href="/">
-            <ArrowLeft size={16} />
-            {isVi ? 'Trang chủ' : 'Home'}
-          </a>
-          <span className="ct-eyebrow">ClassTools PDF</span>
-          <h1>{isVi ? 'Sửa lỗi PDF (Repair PDF)' : 'Repair PDF'}</h1>
-          <p>
-            {isVi
-              ? 'Khắc phục các lỗi tệp PDF không mở được, hỏng bảng tham chiếu chéo (xref table) hoặc luồng stream bị lỗi bằng QPDF WebAssembly.'
-              : 'Recover corrupted or unreadable PDF files by rebuilding damaged xref tables and linearized streams with QPDF WASM.'}
-          </p>
-        </div>
 
         {!doc ? (
           <FileDrop

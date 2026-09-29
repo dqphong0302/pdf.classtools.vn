@@ -38,10 +38,6 @@
   border-color: transparent;
 }
 
-.nup-side {
-  gap: 1.1rem;
-}
-
 .nup-presets {
   display: flex;
   flex-wrap: wrap;
@@ -95,38 +91,4 @@
   margin: 0;
   accent-color: var(--ct-cobalt-500);
   cursor: pointer;
-}
-
-.nup-output input {
-  width: 100%;
-}
-
-.nup-action {
-  min-width: 11rem;
-}
-
-.nup-action:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.nup-estimate {
-  color: var(--ct-teal-700);
-  background: var(--ct-teal-100);
-  border-color: transparent;
-}
-
-.nup-result {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.8rem;
-  flex-wrap: wrap;
-}
-
-.nup-result .ct-button {
-  min-height: 2.5rem;
-  font-size: 0.86rem;
 }

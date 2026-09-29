@@ -1,17 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ArrowLeft,
-  Download,
-  FileText,
-  LayoutGrid,
-  ListOrdered,
-  Scissors,
-  SquareSplitHorizontal
-} from 'lucide-react';
+import { Download, FileText, LayoutGrid, ListOrdered, Scissors, SquareSplitHorizontal } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, sanitizeFilename, withPdfSuffix } from '../lib/download';
+import { downloadBytes, fileSummary, readFileBytes, sanitizeFilename, withPdfSuffix } from '../lib/download';
 import { EncryptedPdfError, extractPages, getPdfPageCount, splitEveryN } from '../lib/pdfOps';
 import { openPdfView } from '../lib/pdfPreview';
 import type { OpenedPdfView } from '../lib/pdfPreview';
@@ -19,8 +11,6 @@ import { chunkEvery, formatPageLabel, parsePageRanges } from '../lib/ranges';
 import { renderPdfToImages, type PageImageFormat } from '../lib/pdfPageImages';
 import { zipFiles } from '../lib/zip';
 import './split.css';
-
-const MAX_FILE_BYTES = 100 * 1024 * 1024;
 
 type Mode = 'ranges' | 'every' | 'select';
 
@@ -43,14 +33,11 @@ interface SplitPart {
 }
 
 interface SplitStrings {
-  back: string;
   title: string;
-  description: string;
   dropLabel: string;
   dropHint: string;
   emptyHint: string;
   pages: (count: number) => string;
-  oversized: (name: string) => string;
   encrypted: string;
   unreadable: (name: string) => string;
   modeLabel: string;
@@ -89,15 +76,11 @@ interface SplitStrings {
 
 const STRINGS: Record<'vi' | 'en', SplitStrings> = {
   vi: {
-    back: 'Trang chủ',
     title: 'Tách / Trích trang',
-    description:
-      'Trích các trang theo khoảng (vd 1-3, 5), tách tệp mỗi N trang hoặc chọn trang trực tiếp trên bản xem trước. Mọi thao tác chạy ngay trên thiết bị của bạn.',
     dropLabel: 'Chọn hoặc kéo thả tệp PDF',
     dropHint: 'Một tệp PDF duy nhất',
     emptyHint: 'Tải lên một tệp PDF để bắt đầu tách trang.',
     pages: (count) => `${count} trang`,
-    oversized: (name) => `Bỏ qua tệp quá 100 MB: ${name}.`,
     encrypted: 'Tệp được bảo vệ bằng mật khẩu. Hãy mở khóa trước khi tách.',
     unreadable: (name) => `Không đọc được tệp: ${name}. Tệp có thể bị hỏng hoặc không phải PDF.`,
     modeLabel: 'Chế độ tách',
@@ -134,15 +117,11 @@ const STRINGS: Record<'vi' | 'en', SplitStrings> = {
     opError: 'Không thể xử lý tệp PDF này. Tệp có thể bị hỏng hoặc không đúng chuẩn.'
   },
   en: {
-    back: 'Home',
     title: 'Split & Extract',
-    description:
-      'Extract pages by range (e.g. 1-3, 5), split the file every N pages or pick pages directly on the preview. Everything runs on your device.',
     dropLabel: 'Drop or choose a PDF file',
     dropHint: 'A single PDF file',
     emptyHint: 'Upload a PDF file to start splitting pages.',
     pages: (count) => `${count} pages`,
-    oversized: (name) => `Skipped file over 100 MB: ${name}.`,
     encrypted: 'This file is password protected. Unlock it before splitting.',
     unreadable: (name) => `Could not read file: ${name}. It may be corrupted or not a PDF.`,
     modeLabel: 'Split mode',
@@ -185,15 +164,6 @@ function rangeErrorMessage(error: string | null, pageCount: number, t: SplitStri
   if (error === 'order') return t.rangeOrder;
   if (error === 'bounds') return t.rangeBounds(pageCount);
   return t.rangeEmpty;
-}
-
-function readFileBytes(file: File): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(reader.error ?? new Error('READ_FAILED'));
-    reader.readAsArrayBuffer(file);
-  });
 }
 
 interface PageThumbProps {
@@ -309,11 +279,6 @@ export function SplitPage() {
       setPreviewFailed(false);
       setSelected(new Set());
       setRangeInput('');
-      if (file.size > MAX_FILE_BYTES) {
-        setSource(null);
-        setNotice(t.oversized(file.name));
-        return;
-      }
       void (async () => {
         try {
           const bytes = new Uint8Array(await readFileBytes(file));
@@ -446,16 +411,6 @@ export function SplitPage() {
 
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
-      <div className="tool-page-heading tool-page-heading--compact">
-        <a className="tool-page-heading__back" href="/">
-          <ArrowLeft size={17} aria-hidden="true" /> {t.back}
-        </a>
-        <span className="ct-eyebrow">
-          <Scissors size={14} aria-hidden="true" /> ClassTools PDF
-        </span>
-        <h1>{t.title}</h1>
-        <p>{t.description}</p>
-      </div>
 
       <div className="pdf-workspace pdf-workspace--side split-workspace">
         <section className="ct-panel panel-section split-source" aria-label={t.dropLabel}>

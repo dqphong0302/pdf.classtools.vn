@@ -1,16 +1,15 @@
 import { useCallback, useRef, useState } from 'react';
-import { ArrowLeft, Download, FileText, Image as ImageIcon } from 'lucide-react';
+import { Download, FileText, Image as ImageIcon } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, formatBytes, sanitizeFilename } from '../lib/download';
+import { downloadBytes, fileSummary, formatBytes, readFileBytes, sanitizeFilename } from '../lib/download';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
 import { openPdfView } from '../lib/pdfPreview';
 import type { OpenedPdfView } from '../lib/pdfPreview';
 import { zipFiles } from '../lib/zip';
 import './pdf-to-images.css';
 
-const MAX_FILE_BYTES = 100 * 1024 * 1024;
 const RESOLUTIONS = [720, 1080, 1440] as const;
 type OutputFormat = 'jpg' | 'png';
 
@@ -28,14 +27,11 @@ interface RenderedImage {
 }
 
 interface P2iStrings {
-  back: string;
   title: string;
-  description: string;
   dropLabel: string;
   dropHint: string;
   emptyHint: string;
   pages: (count: number) => string;
-  oversized: (name: string) => string;
   encrypted: string;
   unreadable: (name: string) => string;
   formatLabel: string;
@@ -55,14 +51,11 @@ interface P2iStrings {
 
 const STRINGS: Record<'vi' | 'en', P2iStrings> = {
   vi: {
-    back: 'Trang chủ',
     title: 'PDF thành ảnh',
-    description: 'Chuyển từng trang PDF thành ảnh JPG hoặc PNG ngay trên thiết bị, tải riêng lẻ hoặc gộp ZIP.',
     dropLabel: 'Chọn hoặc kéo thả tệp PDF',
     dropHint: 'Một tệp PDF duy nhất',
     emptyHint: 'Tải lên một tệp PDF để bắt đầu chuyển đổi.',
     pages: (count) => `${count} trang`,
-    oversized: (name) => `Bỏ qua tệp quá 100 MB: ${name}.`,
     encrypted: 'Tệp được bảo vệ bằng mật khẩu. Hãy mở khóa trước khi chuyển đổi.',
     unreadable: (name) => `Không đọc được tệp: ${name}. Tệp có thể bị hỏng hoặc không phải PDF.`,
     formatLabel: 'Định dạng ảnh',
@@ -80,14 +73,11 @@ const STRINGS: Record<'vi' | 'en', P2iStrings> = {
     fileSize: 'Dung lượng'
   },
   en: {
-    back: 'Home',
     title: 'PDF to images',
-    description: 'Turn each PDF page into a JPG or PNG image on your device, download individually or as a ZIP.',
     dropLabel: 'Drop or choose a PDF file',
     dropHint: 'A single PDF file',
     emptyHint: 'Upload a PDF file to start converting.',
     pages: (count) => `${count} pages`,
-    oversized: (name) => `Skipped file over 100 MB: ${name}.`,
     encrypted: 'This file is password protected. Unlock it before converting.',
     unreadable: (name) => `Could not read file: ${name}. It may be corrupted or not a PDF.`,
     formatLabel: 'Image format',
@@ -132,18 +122,6 @@ function canvasToBytes(canvas: HTMLCanvasElement, format: OutputFormat, quality:
   });
 }
 
-function readFileBytes(file: File): Promise<ArrayBuffer> {
-  if (typeof file.arrayBuffer === 'function') {
-    return file.arrayBuffer();
-  }
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(reader.error ?? new Error('READ_FAILED'));
-    reader.readAsArrayBuffer(file);
-  });
-}
-
 export function PdfToImagesPage() {
   const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
   const t = STRINGS[locale];
@@ -175,11 +153,6 @@ export function PdfToImagesPage() {
       setOpError(null);
       releaseImages();
       setProgress(null);
-      if (file.size > MAX_FILE_BYTES) {
-        setSource(null);
-        setNotice(t.oversized(file.name));
-        return;
-      }
       void (async () => {
         try {
           const bytes = new Uint8Array(await readFileBytes(file));
@@ -246,16 +219,6 @@ export function PdfToImagesPage() {
 
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
-      <div className="tool-page-heading tool-page-heading--compact">
-        <a className="tool-page-heading__back" href="/">
-          <ArrowLeft size={17} aria-hidden="true" /> {t.back}
-        </a>
-        <span className="ct-eyebrow">
-          <ImageIcon size={14} aria-hidden="true" /> ClassTools PDF
-        </span>
-        <h1>{t.title}</h1>
-        <p>{t.description}</p>
-      </div>
 
       <div className="pdf-workspace pdf-workspace--side p2i-workspace">
         <section className="ct-panel panel-section p2i-source" aria-label={t.dropLabel}>

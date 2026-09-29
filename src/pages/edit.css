@@ -237,15 +237,6 @@
   min-width: 14rem;
 }
 
-.edit-output {
-  flex: 1;
-  min-width: 12rem;
-}
-
-.edit-output input {
-  font-size: 0.84rem;
-}
-
 .edit-result {
   display: flex;
   align-items: center;

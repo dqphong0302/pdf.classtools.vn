@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDownUp,
-  ArrowLeft,
   Check,
   ChevronDown,
   ChevronUp,
@@ -9,7 +8,6 @@ import {
   Download,
   FilePlus,
   FileText,
-  LayoutList,
   RotateCcw,
   RotateCw,
   Trash2,
@@ -18,7 +16,7 @@ import {
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, withPdfSuffix } from '../lib/download';
+import { downloadBytes, readFileBytes, withPdfSuffix } from '../lib/download';
 import {
   EncryptedPdfError,
   getPdfPageCount,
@@ -30,8 +28,6 @@ import {
 import { openPdfView, type OpenedPdfView } from '../lib/pdfPreview';
 import { duplicatePages, insertBlankPage } from '../lib/pdfPages';
 import './organize.css';
-
-const MAX_FILE_BYTES = 100 * 1024 * 1024;
 
 interface OrgCard {
   id: number;
@@ -45,9 +41,7 @@ interface SourceDoc {
 }
 
 interface OrganizeStrings {
-  back: string;
   title: string;
-  description: string;
   dropLabel: string;
   dropHint: string;
   emptyHint: string;
@@ -69,7 +63,6 @@ interface OrganizeStrings {
   reverse: string;
   insertBlank: string;
   pageLabel: (page: number, rotation: number) => string;
-  oversized: string;
   encrypted: string;
   unreadable: string;
   opError: string;
@@ -77,10 +70,7 @@ interface OrganizeStrings {
 
 const STRINGS: Record<'vi' | 'en', OrganizeStrings> = {
   vi: {
-    back: 'Trang chủ',
     title: 'Sắp xếp trang',
-    description:
-      'Xem trước từng trang, xoay, xóa và đổi thứ tự rồi áp dụng một lần duy nhất. Mọi thao tác chạy ngay trên thiết bị của bạn.',
     dropLabel: 'Chọn hoặc kéo thả tệp PDF',
     dropHint: 'Một tệp PDF duy nhất',
     emptyHint: 'Tải lên một tệp PDF để bắt đầu sắp xếp trang.',
@@ -102,16 +92,12 @@ const STRINGS: Record<'vi' | 'en', OrganizeStrings> = {
     reverse: 'Đảo ngược',
     insertBlank: 'Chèn trang trắng',
     pageLabel: (page, rotation) => (rotation ? `Trang ${page} · ${rotation}°` : `Trang ${page}`),
-    oversized: 'Bỏ qua tệp quá 100 MB.',
     encrypted: 'Tệp được bảo vệ bằng mật khẩu nên không thể xử lý.',
     unreadable: 'Không đọc được tệp. Tệp có thể bị hỏng hoặc không phải PDF.',
     opError: 'Không thể áp dụng thay đổi. Vui lòng thử lại.'
   },
   en: {
-    back: 'Home',
     title: 'Organize Pages',
-    description:
-      'Preview each page, rotate, delete and reorder, then apply everything in one go. Everything runs on your device.',
     dropLabel: 'Drop or choose a PDF file',
     dropHint: 'A single PDF file',
     emptyHint: 'Upload a PDF file to start organizing pages.',
@@ -133,21 +119,11 @@ const STRINGS: Record<'vi' | 'en', OrganizeStrings> = {
     reverse: 'Reverse',
     insertBlank: 'Insert blank',
     pageLabel: (page, rotation) => (rotation ? `Page ${page} · ${rotation}°` : `Page ${page}`),
-    oversized: 'Skipped files over 100 MB.',
     encrypted: 'This file is password protected and cannot be processed.',
     unreadable: 'Could not read the file. It may be corrupted or not a PDF.',
     opError: 'Could not apply the changes. Please try again.'
   }
 };
-
-function readFileBytes(file: File): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(reader.error ?? new Error('READ_FAILED'));
-    reader.readAsArrayBuffer(file);
-  });
-}
 
 function identityCards(count: number): OrgCard[] {
   return Array.from({ length: count }, (_, index) => ({ id: index, src: index }));
@@ -373,16 +349,6 @@ export function OrganizePage() {
       const file = incoming[0];
       if (!file) return;
       clearOutcome();
-      if (file.size > MAX_FILE_BYTES) {
-        setOriginal(null);
-        setSource(null);
-        setCards([]);
-        setDeleted(new Set());
-        setRotations(new Map());
-        setStructureChanged(false);
-        setLoadNotice(t.oversized);
-        return;
-      }
       void (async () => {
         try {
           const bytes = new Uint8Array(await readFileBytes(file));
@@ -593,16 +559,6 @@ export function OrganizePage() {
 
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
-      <div className="tool-page-heading tool-page-heading--compact">
-        <a className="tool-page-heading__back" href="/">
-          <ArrowLeft size={17} aria-hidden="true" /> {t.back}
-        </a>
-        <span className="ct-eyebrow">
-          <LayoutList size={14} aria-hidden="true" /> ClassTools PDF
-        </span>
-        <h1>{t.title}</h1>
-        <p>{t.description}</p>
-      </div>
 
       <div className="pdf-workspace org-workspace">
         <section className="ct-panel panel-section org-panel" aria-label={t.title}>

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ArrowLeft, Download, FileText, Layers } from 'lucide-react';
+import { Download, FileText, Layers } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
@@ -60,19 +60,6 @@ export function FlattenPage() {
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
       <div className="flatten-container">
-        <div className="tool-page-heading tool-page-heading--compact">
-          <a className="tool-page-heading__back" href="/">
-            <ArrowLeft size={16} />
-            {isVi ? 'Trang chủ' : 'Home'}
-          </a>
-          <span className="ct-eyebrow">ClassTools PDF</span>
-          <h1>{isVi ? 'Làm phẳng PDF (Flatten PDF)' : 'Flatten PDF'}</h1>
-          <p>
-            {isVi
-              ? 'Hợp nhất toàn bộ biểu mẫu (Form fields), chữ ký và chú thích thành nội dung tĩnh của trang để ngăn chặn người khác chỉnh sửa.'
-              : 'Merge fillable form fields, comments and signatures into standard page graphics to prevent tampering.'}
-          </p>
-        </div>
 
         {!doc ? (
           <FileDrop

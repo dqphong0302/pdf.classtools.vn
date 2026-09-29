@@ -1,15 +1,13 @@
 import { useCallback, useState } from 'react';
-import { ArrowLeft, Download, Eraser, FileText, Save, Tags } from 'lucide-react';
+import { Download, Eraser, FileText, Save } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
+import { downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
 import { clearMetadata, formatKeywords, readMetadata, writeMetadata } from '../lib/pdfMeta';
 import type { PdfMetadata, PdfMetadataDraft } from '../lib/pdfMeta';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
 import './metadata.css';
-
-const MAX_FILE_BYTES = 100 * 1024 * 1024;
 
 interface SourceDoc {
   file: File;
@@ -19,14 +17,11 @@ interface SourceDoc {
 }
 
 interface MetadataStrings {
-  back: string;
   title: string;
-  description: string;
   dropLabel: string;
   dropHint: string;
   emptyHint: string;
   pages: (count: number) => string;
-  oversized: (name: string) => string;
   encrypted: string;
   unreadable: (name: string) => string;
   infoHeading: string;
@@ -52,15 +47,11 @@ interface MetadataStrings {
 
 const STRINGS: Record<'vi' | 'en', MetadataStrings> = {
   vi: {
-    back: 'Trang chủ',
     title: 'Metadata PDF',
-    description:
-      'Xem và sửa thông tin tài liệu PDF: tiêu đề, tác giả, chủ đề, từ khóa. Xóa metadata hoặc tải về tệp mới. Mọi thao tác chạy ngay trên thiết bị của bạn.',
     dropLabel: 'Chọn hoặc kéo thả tệp PDF',
     dropHint: 'Một tệp PDF duy nhất',
     emptyHint: 'Tải lên một tệp PDF để xem và chỉnh sửa metadata.',
     pages: (count) => `${count} trang`,
-    oversized: (name) => `Bỏ qua tệp quá 100 MB: ${name}.`,
     encrypted: 'Tệp được bảo vệ bằng mật khẩu nên không thể đọc metadata.',
     unreadable: (name) => `Không đọc được tệp: ${name}. Tệp có thể bị hỏng hoặc không phải PDF.`,
     infoHeading: 'Thông tin chỉ đọc',
@@ -84,15 +75,11 @@ const STRINGS: Record<'vi' | 'en', MetadataStrings> = {
     opError: 'Không thể xử lý tệp PDF này. Tệp có thể bị hỏng hoặc không đúng chuẩn.'
   },
   en: {
-    back: 'Home',
     title: 'PDF Metadata',
-    description:
-      'View and edit PDF document info: title, author, subject, keywords. Clear the metadata or download a new file. Everything runs on your device.',
     dropLabel: 'Drop or choose a PDF file',
     dropHint: 'A single PDF file',
     emptyHint: 'Upload a PDF file to view and edit its metadata.',
     pages: (count) => `${count} pages`,
-    oversized: (name) => `Skipped file over 100 MB: ${name}.`,
     encrypted: 'This file is password protected, so its metadata cannot be read.',
     unreadable: (name) => `Could not read file: ${name}. It may be corrupted or not a PDF.`,
     infoHeading: 'Read-only info',
@@ -138,15 +125,6 @@ function formatDate(value: string | null): string {
   return Number.isNaN(date.getTime()) ? '—' : date.toLocaleString();
 }
 
-function readFileBytes(file: File): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(reader.error ?? new Error('READ_FAILED'));
-    reader.readAsArrayBuffer(file);
-  });
-}
-
 export function MetadataPage() {
   const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
   const t = STRINGS[locale];
@@ -170,11 +148,6 @@ export function MetadataPage() {
       setStatus(null);
       setOutcomeBytes(null);
       setOpError(null);
-      if (file.size > MAX_FILE_BYTES) {
-        setSource(null);
-        setNotice(t.oversized(file.name));
-        return;
-      }
       void (async () => {
         try {
           const bytes = new Uint8Array(await readFileBytes(file));
@@ -243,16 +216,6 @@ export function MetadataPage() {
 
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
-      <div className="tool-page-heading tool-page-heading--compact">
-        <a className="tool-page-heading__back" href="/">
-          <ArrowLeft size={17} aria-hidden="true" /> {t.back}
-        </a>
-        <span className="ct-eyebrow">
-          <Tags size={14} aria-hidden="true" /> ClassTools PDF
-        </span>
-        <h1>{t.title}</h1>
-        <p>{t.description}</p>
-      </div>
 
       <div className="pdf-workspace pdf-workspace--side meta-workspace">
         <section className="ct-panel panel-section meta-source" aria-label={t.dropLabel}>

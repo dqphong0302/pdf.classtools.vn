@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent, RefObject } from 'react';
 import { PDFDocument } from 'pdf-lib';
-import { ArrowLeft, Download, Eraser, FileSignature, FileText, PenLine, Trash2, Type } from 'lucide-react';
+import { Download, Eraser, FileSignature, FileText, PenLine, Trash2, Type } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
+import { downloadBytes, fileSummary, readFileBytes, withPdfSuffix } from '../lib/download';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
 import { openPdfView } from '../lib/pdfPreview';
 import type { OpenedPdfView } from '../lib/pdfPreview';
 import { placeSignatures } from '../lib/pdfSign';
 import './sign.css';
 
-const MAX_FILE_BYTES = 100 * 1024 * 1024;
 const PAD_WIDTH = 480;
 const PAD_HEIGHT = 160;
 const DEFAULT_INK = '#1a1a2e';
@@ -40,14 +39,11 @@ interface SavedSignature {
 }
 
 interface SignStrings {
-  back: string;
   title: string;
-  description: string;
   dropLabel: string;
   dropHint: string;
   emptyHint: string;
   pages: (count: number) => string;
-  oversized: (name: string) => string;
   encrypted: string;
   unreadable: (name: string) => string;
   pageLabel: (page: number) => string;
@@ -83,15 +79,11 @@ interface SignStrings {
 
 const STRINGS: Record<'vi' | 'en', SignStrings> = {
   vi: {
-    back: 'Trang chủ',
     title: 'Ký PDF',
-    description:
-      'Vẽ hoặc gõ chữ ký, đặt vào đúng vị trí trên trang và tải xuống. Mọi thao tác chạy ngay trên thiết bị của bạn.',
     dropLabel: 'Chọn hoặc kéo thả tệp PDF',
     dropHint: 'Một tệp PDF duy nhất',
     emptyHint: 'Tải lên một tệp PDF để bắt đầu ký.',
     pages: (count) => `${count} trang`,
-    oversized: (name) => `Bỏ qua tệp quá 100 MB: ${name}.`,
     encrypted: 'Tệp được bảo vệ bằng mật khẩu. Hãy mở khóa trước khi ký.',
     unreadable: (name) => `Không đọc được tệp: ${name}. Tệp có thể bị hỏng hoặc không phải PDF.`,
     pageLabel: (page) => `Trang ${page}`,
@@ -125,15 +117,11 @@ const STRINGS: Record<'vi' | 'en', SignStrings> = {
     deleteSavedAria: (index) => `Xóa chữ ký đã lưu ${index}`
   },
   en: {
-    back: 'Home',
     title: 'Sign PDF',
-    description:
-      'Draw or type a signature, place it precisely on a page and download. Everything runs on your device.',
     dropLabel: 'Drop or choose a PDF file',
     dropHint: 'A single PDF file',
     emptyHint: 'Upload a PDF file to start signing.',
     pages: (count) => `${count} pages`,
-    oversized: (name) => `Skipped file over 100 MB: ${name}.`,
     encrypted: 'This file is password protected. Unlock it before signing.',
     unreadable: (name) => `Could not read file: ${name}. It may be corrupted or not a PDF.`,
     pageLabel: (page) => `Page ${page}`,
@@ -167,15 +155,6 @@ const STRINGS: Record<'vi' | 'en', SignStrings> = {
     deleteSavedAria: (index) => `Delete saved signature ${index}`
   }
 };
-
-function readFileBytes(file: File): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(reader.error ?? new Error('READ_FAILED'));
-    reader.readAsArrayBuffer(file);
-  });
-}
 
 async function blobToBytes(blob: Blob): Promise<Uint8Array> {
   if (typeof blob.arrayBuffer === 'function') {
@@ -419,11 +398,6 @@ export function SignPage() {
       setOpError(null);
       setResult(null);
       setSelected(0);
-      if (file.size > MAX_FILE_BYTES) {
-        setSource(null);
-        setNotice(t.oversized(file.name));
-        return;
-      }
       void (async () => {
         try {
           const bytes = new Uint8Array(await readFileBytes(file));
@@ -619,16 +593,6 @@ export function SignPage() {
 
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
-      <div className="tool-page-heading tool-page-heading--compact">
-        <a className="tool-page-heading__back" href="/">
-          <ArrowLeft size={17} aria-hidden="true" /> {t.back}
-        </a>
-        <span className="ct-eyebrow">
-          <FileSignature size={14} aria-hidden="true" /> ClassTools PDF
-        </span>
-        <h1>{t.title}</h1>
-        <p>{t.description}</p>
-      </div>
 
       <div className="pdf-workspace pdf-workspace--side sign-workspace">
         <section className="ct-panel panel-section sign-source" aria-label={t.dropLabel}>

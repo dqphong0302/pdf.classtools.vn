@@ -16,7 +16,7 @@
   padding: 1.25rem;
   background: var(--ct-teal-100);
   border: 1px solid color-mix(in srgb, var(--ct-success) 35%, transparent);
-  border-radius: var(--pdui-radius-lg);
+  border-radius: var(--ct-radius-lg);
 }
 
 .excel-info-card .icon {

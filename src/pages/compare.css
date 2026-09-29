@@ -18,9 +18,9 @@
 }
 
 .upload-box {
-  background: var(--pdui-bg-surface);
-  border: 2px dashed var(--pdui-border);
-  border-radius: var(--pdui-radius-lg);
+  background: var(--ct-surface-solid);
+  border: 2px dashed var(--ct-border);
+  border-radius: var(--ct-radius-lg);
   padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
@@ -62,9 +62,9 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding: 0.75rem 1.25rem;
-  background: var(--pdui-bg-surface);
-  border: 1px solid var(--pdui-border);
-  border-radius: var(--pdui-radius-md);
+  background: var(--ct-surface-solid);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-md);
 }
 
 .mode-toggle {
@@ -98,16 +98,16 @@
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  background: var(--pdui-bg-subtle);
-  border: 1px solid var(--pdui-border);
-  border-radius: var(--pdui-radius-lg);
+  background: var(--ct-canvas);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-lg);
   padding: 1.5rem;
 }
 
 .view-title {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--pdui-text);
+  color: var(--ct-ink-900);
 }
 
 .canvas-frame {

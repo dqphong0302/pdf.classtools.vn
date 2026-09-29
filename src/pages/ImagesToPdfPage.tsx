@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ChevronLeft, ChevronRight, FilePlus2, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FilePlus2, Trash2 } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ResultCard } from '../components/ResultCard';
 import { SortableCard, SortableCards } from '../components/SortableCards';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, formatBytes, sanitizeFilename, withPdfSuffix } from '../lib/download';
+import { downloadBytes, formatBytes, readFileBytes, sanitizeFilename, withPdfSuffix } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { imagesToPdf, type ImageOrientation, type ImagePageSize } from '../lib/pdfImages';
 import './images-to-pdf.css';
@@ -21,9 +21,7 @@ interface ImageItem {
 }
 
 interface I2pStrings {
-  back: string;
   title: string;
-  description: string;
   choose: string;
   emptyHint: string;
   images: (count: number) => string;
@@ -52,9 +50,7 @@ interface I2pStrings {
 
 const STRINGS: Record<'vi' | 'en', I2pStrings> = {
   vi: {
-    back: 'Trang chủ',
     title: 'Ảnh thành PDF',
-    description: 'Ghép nhiều ảnh JPG/PNG thành một tệp PDF, sắp thứ tự và chọn khổ giấy ngay trên thiết bị.',
     choose: 'Chọn ảnh (PNG/JPG)',
     emptyHint: 'Chưa có ảnh nào. Hãy chọn ảnh để bắt đầu.',
     images: (count) => `${count} ảnh`,
@@ -81,9 +77,7 @@ const STRINGS: Record<'vi' | 'en', I2pStrings> = {
     needImage: 'Hãy chọn ít nhất một ảnh.'
   },
   en: {
-    back: 'Home',
     title: 'Images to PDF',
-    description: 'Combine multiple JPG/PNG images into one PDF, reorder them and pick a page size — all on your device.',
     choose: 'Choose images (PNG/JPG)',
     emptyHint: 'No images yet. Choose images to start.',
     images: (count) => `${count} images`,
@@ -110,18 +104,6 @@ const STRINGS: Record<'vi' | 'en', I2pStrings> = {
     needImage: 'Choose at least one image.'
   }
 };
-
-function readFileBytes(file: File): Promise<ArrayBuffer> {
-  if (typeof file.arrayBuffer === 'function') {
-    return file.arrayBuffer();
-  }
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(reader.error ?? new Error('READ_FAILED'));
-    reader.readAsArrayBuffer(file);
-  });
-}
 
 export function ImagesToPdfPage() {
   const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
@@ -245,16 +227,6 @@ export function ImagesToPdfPage() {
 
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
-      <div className="tool-page-heading tool-page-heading--compact">
-        <a className="tool-page-heading__back" href="/">
-          <ArrowLeft size={17} aria-hidden="true" /> {t.back}
-        </a>
-        <span className="ct-eyebrow">
-          <FilePlus2 size={14} aria-hidden="true" /> ClassTools PDF
-        </span>
-        <h1>{t.title}</h1>
-        <p>{t.description}</p>
-      </div>
 
       <div className="flow i2p-workspace">
         {result ? (
@@ -374,7 +346,6 @@ export function ImagesToPdfPage() {
               <output>{marginMm}mm</output>
             </label>
           </div>
-
 
                 {opError && <p className="notice" role="alert">{opError}</p>}
 

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Archive, ArrowLeft, Download, FileText, ShieldCheck } from 'lucide-react';
+import { Archive, Download, FileText, ShieldCheck } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
@@ -64,19 +64,6 @@ export function PdfToPdfaPage() {
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
       <div className="pdfa-container">
-        <div className="tool-page-heading tool-page-heading--compact">
-          <a className="tool-page-heading__back" href="/">
-            <ArrowLeft size={16} />
-            {isVi ? 'Trang chủ' : 'Home'}
-          </a>
-          <span className="ct-eyebrow">ClassTools PDF</span>
-          <h1>{isVi ? 'PDF sang PDF/A (Chuẩn lưu trữ ISO)' : 'PDF to PDF/A'}</h1>
-          <p>
-            {isVi
-              ? 'Chuyển đổi tài liệu PDF thông thường sang chuẩn lưu trữ dài hạn ISO 19005 (PDF/A-2b), nhúng trọn bộ font và cấu hình màu độc lập.'
-              : 'Convert standard PDFs into long-term archival ISO 19005 (PDF/A-2b) compliant files with device-independent colors and embedded fonts.'}
-          </p>
-        </div>
 
         {!doc ? (
           <FileDrop

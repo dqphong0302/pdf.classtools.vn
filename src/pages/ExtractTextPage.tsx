@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Check, Copy, Download, FileText, LayoutList, Type } from 'lucide-react';
+import { Check, Copy, Download, FileText, LayoutList, Type } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary } from '../lib/download';
+import { downloadBytes, fileSummary, readFileBytes } from '../lib/download';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
 import { extractText, textFileName } from '../lib/pdfText';
 import type { ExtractedText } from '../lib/pdfText';
 import './extract-text.css';
-
-const MAX_FILE_BYTES = 100 * 1024 * 1024;
 
 type ViewMode = 'full' | 'page';
 
@@ -20,14 +18,11 @@ interface SourceDoc {
 }
 
 interface ExtractStrings {
-  back: string;
   title: string;
-  description: string;
   dropLabel: string;
   dropHint: string;
   emptyHint: string;
   pages: (count: number) => string;
-  oversized: (name: string) => string;
   encrypted: string;
   unreadable: (name: string) => string;
   extractAction: string;
@@ -49,15 +44,11 @@ interface ExtractStrings {
 
 const STRINGS: Record<'vi' | 'en', ExtractStrings> = {
   vi: {
-    back: 'Trang chủ',
     title: 'Trích xuất chữ',
-    description:
-      'Lấy toàn bộ chữ từ PDF ra văn bản thuần, xem theo toàn bộ tài liệu hoặc từng trang, rồi sao chép hoặc tải về dạng .txt. Mọi thao tác chạy ngay trên thiết bị của bạn.',
     dropLabel: 'Chọn hoặc kéo thả tệp PDF',
     dropHint: 'Một tệp PDF duy nhất',
     emptyHint: 'Tải lên một tệp PDF để bắt đầu trích xuất chữ.',
     pages: (count) => `${count} trang`,
-    oversized: (name) => `Bỏ qua tệp quá 100 MB: ${name}.`,
     encrypted: 'Tệp được bảo vệ bằng mật khẩu nên không thể trích xuất chữ.',
     unreadable: (name) => `Không đọc được tệp: ${name}. Tệp có thể bị hỏng hoặc không phải PDF.`,
     extractAction: 'Trích xuất chữ',
@@ -77,15 +68,11 @@ const STRINGS: Record<'vi' | 'en', ExtractStrings> = {
     opError: 'Không thể trích xuất chữ từ tệp này. Tệp có thể bị hỏng hoặc không đúng chuẩn.'
   },
   en: {
-    back: 'Home',
     title: 'Extract Text',
-    description:
-      'Pull all text out of a PDF into plain text, view the whole document or one page at a time, then copy or download as .txt. Everything runs on your device.',
     dropLabel: 'Drop or choose a PDF file',
     dropHint: 'A single PDF file',
     emptyHint: 'Upload a PDF file to start extracting text.',
     pages: (count) => `${count} pages`,
-    oversized: (name) => `Skipped file over 100 MB: ${name}.`,
     encrypted: 'This file is password protected, so its text cannot be extracted.',
     unreadable: (name) => `Could not read file: ${name}. It may be corrupted or not a PDF.`,
     extractAction: 'Extract text',
@@ -105,15 +92,6 @@ const STRINGS: Record<'vi' | 'en', ExtractStrings> = {
     opError: 'Could not extract text from this file. It may be corrupted or not a valid PDF.'
   }
 };
-
-function readFileBytes(file: File): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(reader.error ?? new Error('READ_FAILED'));
-    reader.readAsArrayBuffer(file);
-  });
-}
 
 export function ExtractTextPage() {
   const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
@@ -151,11 +129,6 @@ export function ExtractTextPage() {
       setNotice(undefined);
       setView('full');
       setSelectedPage(1);
-      if (file.size > MAX_FILE_BYTES) {
-        setSource(null);
-        setNotice(t.oversized(file.name));
-        return;
-      }
       void (async () => {
         try {
           const bytes = new Uint8Array(await readFileBytes(file));
@@ -218,16 +191,6 @@ export function ExtractTextPage() {
 
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
-      <div className="tool-page-heading tool-page-heading--compact">
-        <a className="tool-page-heading__back" href="/">
-          <ArrowLeft size={17} aria-hidden="true" /> {t.back}
-        </a>
-        <span className="ct-eyebrow">
-          <Type size={14} aria-hidden="true" /> ClassTools PDF
-        </span>
-        <h1>{t.title}</h1>
-        <p>{t.description}</p>
-      </div>
 
       <div className="pdf-workspace pdf-workspace--side xt-workspace">
         <section className="ct-panel panel-section xt-source" aria-label={t.dropLabel}>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Download, FileText, Hash } from 'lucide-react';
+import { Download, FileText, Hash } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
@@ -138,19 +138,6 @@ export function PageNumbersPage() {
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
       <div className="page-numbers-container">
-        <div className="tool-page-heading tool-page-heading--compact">
-          <a className="tool-page-heading__back" href="/">
-            <ArrowLeft size={16} />
-            {isVi ? 'Trang chủ' : 'Home'}
-          </a>
-          <span className="ct-eyebrow">ClassTools PDF</span>
-          <h1>{isVi ? 'Đánh số trang PDF' : 'Add Page Numbers'}</h1>
-          <p>
-            {isVi
-              ? 'Đánh số trang tự động vào tài liệu PDF, tùy biến vị trí, định dạng chữ và bỏ qua trang bìa.'
-              : 'Automatically add page numbers to PDF documents with custom position, format and cover page skipping.'}
-          </p>
-        </div>
 
         {!doc ? (
           <FileDrop

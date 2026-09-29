@@ -35,3 +35,14 @@ export function withPdfSuffix(name: string): string {
 export function fileSummary(file: File): string {
   return `${file.name} · ${formatBytes(file.size)}`;
 }
+
+/** Reads a picked/dropped file into memory. */
+export function readFileBytes(file: File): Promise<ArrayBuffer> {
+  if (typeof file.arrayBuffer === 'function') return file.arrayBuffer();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as ArrayBuffer);
+    reader.onerror = () => reject(reader.error ?? new Error('READ_FAILED'));
+    reader.readAsArrayBuffer(file);
+  });
+}

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Columns, Eye, FileText } from 'lucide-react';
+import { Columns, Eye, FileText } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
@@ -129,19 +129,6 @@ export function ComparePage() {
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
       <div className="compare-container">
-        <div className="tool-page-heading tool-page-heading--compact">
-          <a className="tool-page-heading__back" href="/">
-            <ArrowLeft size={16} />
-            {isVi ? 'Trang chủ' : 'Home'}
-          </a>
-          <span className="ct-eyebrow">ClassTools PDF</span>
-          <h1>{isVi ? 'So sánh 2 tệp PDF (Compare PDF)' : 'Compare PDF'}</h1>
-          <p>
-            {isVi
-              ? 'So sánh trực quan hai phiên bản tài liệu PDF, làm nổi bật chính xác từng thay đổi và hiển thị tỷ lệ khác biệt.'
-              : 'Visually compare two PDF documents, highlight exact pixel changes and view difference percentages.'}
-          </p>
-        </div>
 
         {(!docA || !docB) && (
           <div className="upload-dual-grid">

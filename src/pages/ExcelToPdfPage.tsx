@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { ArrowLeft, Download, FileSpreadsheet, Table } from 'lucide-react';
+import { Download, FileSpreadsheet, Table } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
@@ -67,19 +67,6 @@ export function ExcelToPdfPage() {
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
       <div className="excel-pdf-container">
-        <div className="tool-page-heading tool-page-heading--compact">
-          <a className="tool-page-heading__back" href="/">
-            <ArrowLeft size={16} />
-            {isVi ? 'Trang chủ' : 'Home'}
-          </a>
-          <span className="ct-eyebrow">ClassTools PDF</span>
-          <h1>{isVi ? 'Excel sang PDF (Excel to PDF)' : 'Excel to PDF'}</h1>
-          <p>
-            {isVi
-              ? 'Chuyển đổi bảng tính Excel (.xlsx, .xls, .csv) thành tệp PDF khổ A4 trình bày dạng lưới chuyên nghiệp, hỗ trợ tiếng Việt đầy đủ.'
-              : 'Convert Excel spreadsheets (.xlsx, .xls, .csv) into clean, professional A4 grid-table PDFs with full Unicode font support.'}
-          </p>
-        </div>
 
         {!doc ? (
           <FileDrop

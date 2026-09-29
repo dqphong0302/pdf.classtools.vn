@@ -23,9 +23,9 @@
 }
 
 .pn-settings-panel {
-  background: var(--pdui-bg-surface);
-  border: 1px solid var(--pdui-border);
-  border-radius: var(--pdui-radius-lg);
+  background: var(--ct-surface-solid);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-lg);
   padding: 1.5rem;
 }
 
@@ -33,7 +33,7 @@
   font-size: 0.9375rem;
   font-weight: 600;
   margin: 0 0 0.75rem 0;
-  color: var(--pdui-text);
+  color: var(--ct-ink-900);
 }
 
 .position-grid {
@@ -44,9 +44,9 @@
 
 .pos-box {
   padding: 0.625rem 0.5rem;
-  border: 1px solid var(--pdui-border);
-  background: var(--pdui-bg-subtle);
-  border-radius: var(--pdui-radius-md);
+  border: 1px solid var(--ct-border);
+  background: var(--ct-canvas);
+  border-radius: var(--ct-radius-md);
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
@@ -60,9 +60,9 @@
 }
 
 .pos-box.active {
-  border-color: var(--pdui-primary);
+  border-color: var(--ct-cobalt-600);
   background: var(--ct-cobalt-100);
-  color: var(--pdui-primary);
+  color: var(--ct-cobalt-600);
   font-weight: 600;
 }
 

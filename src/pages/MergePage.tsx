@@ -1,17 +1,16 @@
 import { useCallback, useRef, useState } from 'react';
-import { ArrowLeft, ChevronLeft, ChevronRight, Combine, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Combine, Trash2 } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { PdfThumb } from '../components/PdfThumb';
 import { ResultCard } from '../components/ResultCard';
 import { SortableCard, SortableCards } from '../components/SortableCards';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
+import { downloadBytes, formatBytes, readFileBytes, withPdfSuffix } from '../lib/download';
 import { EncryptedPdfError, getPdfPageCount, mergePdfs } from '../lib/pdfOps';
 import { imagesToPdf } from '../lib/pdfImages';
 import './merge.css';
 
-const MAX_FILE_BYTES = 100 * 1024 * 1024;
 const IMAGE_PATTERN = /\.(png|jpe?g)$/i;
 
 interface MergeEntry {
@@ -23,9 +22,7 @@ interface MergeEntry {
 }
 
 interface MergeStrings {
-  back: string;
   title: string;
-  description: string;
   dropLabel: string;
   dropHint: string;
   pages: (count: number) => string;
@@ -42,14 +39,11 @@ interface MergeStrings {
   mergeError: string;
   encrypted: (names: string[]) => string;
   unreadable: (names: string[]) => string;
-  oversized: (names: string[]) => string;
 }
 
 const STRINGS: Record<'vi' | 'en', MergeStrings> = {
   vi: {
-    back: 'Trang chủ',
     title: 'Ghép PDF',
-    description: 'Gộp nhiều tệp PDF thành một, đổi thứ tự trước khi ghép. Mọi thao tác chạy ngay trên thiết bị của bạn.',
     dropLabel: 'Chọn tệp PDF hoặc ảnh',
     dropHint: 'PDF, JPG, PNG · từ 2 tệp trở lên',
     pages: (count) => `${count} trang`,
@@ -65,13 +59,10 @@ const STRINGS: Record<'vi' | 'en', MergeStrings> = {
     download: 'Tải xuống',
     mergeError: 'Không thể ghép các tệp này. Tệp PDF có thể bị hỏng hoặc không đúng chuẩn.',
     encrypted: (names) => `Tệp được bảo vệ bằng mật khẩu nên không thể xử lý: ${names.join(', ')}.`,
-    unreadable: (names) => `Không đọc được tệp: ${names.join(', ')}.`,
-    oversized: (names) => `Bỏ qua tệp quá 100 MB: ${names.join(', ')}.`
+    unreadable: (names) => `Không đọc được tệp: ${names.join(', ')}.`
   },
   en: {
-    back: 'Home',
     title: 'Merge PDF',
-    description: 'Combine multiple PDFs into one and reorder files before merging. Everything runs on your device.',
     dropLabel: 'Choose PDF or image files',
     dropHint: 'PDF, JPG, PNG · 2 files or more',
     pages: (count) => `${count} pages`,
@@ -87,22 +78,12 @@ const STRINGS: Record<'vi' | 'en', MergeStrings> = {
     download: 'Download',
     mergeError: 'Could not merge these files. A PDF may be corrupted or not a valid PDF.',
     encrypted: (names) => `Password protected files cannot be processed: ${names.join(', ')}.`,
-    unreadable: (names) => `Could not read files: ${names.join(', ')}.`,
-    oversized: (names) => `Skipped files over 100 MB: ${names.join(', ')}.`
+    unreadable: (names) => `Could not read files: ${names.join(', ')}.`
   }
 };
 
 function buildNotice(parts: string[]): string | undefined {
   return parts.length ? parts.join(' ') : undefined;
-}
-
-function readFileBytes(file: File): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(reader.error ?? new Error('READ_FAILED'));
-    reader.readAsArrayBuffer(file);
-  });
 }
 
 export function MergePage() {
@@ -127,16 +108,11 @@ export function MergePage() {
 
   const handleFiles = useCallback(
     (incoming: File[]) => {
-      const oversized: string[] = [];
       const encrypted: string[] = [];
       const unreadable: string[] = [];
       clearOutcome();
       void (async () => {
         for (const file of incoming) {
-          if (file.size > MAX_FILE_BYTES) {
-            oversized.push(file.name);
-            continue;
-          }
           idRef.current += 1;
           const id = idRef.current;
           setEntries((prev) => [...prev, { id, file, bytes: new Uint8Array(), pages: -1 }]);
@@ -156,7 +132,6 @@ export function MergePage() {
         }
         setNotice(
           buildNotice([
-            ...(oversized.length ? [t.oversized(oversized)] : []),
             ...(encrypted.length ? [t.encrypted(encrypted)] : []),
             ...(unreadable.length ? [t.unreadable(unreadable)] : [])
           ])
@@ -219,16 +194,6 @@ export function MergePage() {
 
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
-      <div className="tool-page-heading tool-page-heading--compact">
-        <a className="tool-page-heading__back" href="/">
-          <ArrowLeft size={17} aria-hidden="true" /> {t.back}
-        </a>
-        <span className="ct-eyebrow">
-          <Combine size={14} aria-hidden="true" /> ClassTools PDF
-        </span>
-        <h1>{t.title}</h1>
-        <p>{t.description}</p>
-      </div>
 
       <div className="flow merge-workspace">
         {result ? (

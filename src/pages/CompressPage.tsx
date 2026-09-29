@@ -1,23 +1,12 @@
 import { useCallback, useState } from 'react';
-import {
-  ArrowLeft,
-  BookOpen,
-  Download,
-  FileText,
-  HardDrive,
-  Minimize2,
-  Printer,
-  Smartphone
-} from 'lucide-react';
+import { BookOpen, Download, FileText, HardDrive, Minimize2, Printer, Smartphone } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
+import { downloadBytes, formatBytes, readFileBytes, withPdfSuffix } from '../lib/download';
 import { EncryptedPdfError, getPdfPageCount } from '../lib/pdfOps';
 import { compressPdf, type CompressionPreset, type CompressionResult } from '../lib/wasmGhostscript';
 import './compress.css';
-
-const MAX_FILE_BYTES = 100 * 1024 * 1024;
 
 interface SourceFile {
   file: File;
@@ -26,9 +15,7 @@ interface SourceFile {
 }
 
 interface CompressStrings {
-  back: string;
   title: string;
-  description: string;
   dropLabel: string;
   dropHint: string;
   presetLabel: string;
@@ -46,15 +33,11 @@ interface CompressStrings {
   compressError: string;
   encrypted: string;
   unreadable: string;
-  oversized: string;
 }
 
 const STRINGS: Record<'vi' | 'en', CompressStrings> = {
   vi: {
-    back: 'Trang chủ',
     title: 'Nén PDF',
-    description:
-      'Giảm dung lượng tệp PDF ngay trên thiết bị của bạn. Bộ nén chạy hoàn toàn trong trình duyệt, không có tệp nào được tải lên.',
     dropLabel: 'Chọn hoặc kéo thả tệp PDF',
     dropHint: 'Chỉ cần một tệp PDF',
     presetLabel: 'Mức nén',
@@ -80,13 +63,9 @@ const STRINGS: Record<'vi' | 'en', CompressStrings> = {
     compressError: 'Không thể nén tệp này. Tệp PDF có thể bị hỏng hoặc không đúng chuẩn.',
     encrypted: 'Tệp được bảo vệ bằng mật khẩu nên không thể nén. Hãy mở khóa tệp trước.',
     unreadable: 'Không đọc được tệp này. Tệp PDF có thể bị hỏng hoặc không đúng chuẩn.',
-    oversized: 'Tệp quá 100 MB. Hãy chọn tệp nhỏ hơn.'
   },
   en: {
-    back: 'Home',
     title: 'Compress PDF',
-    description:
-      'Shrink PDF files right on your device. The compressor runs fully in your browser — no file is ever uploaded.',
     dropLabel: 'Drop or choose a PDF file',
     dropHint: 'A single PDF is enough',
     presetLabel: 'Compression level',
@@ -112,7 +91,6 @@ const STRINGS: Record<'vi' | 'en', CompressStrings> = {
     compressError: 'Could not compress this file. The PDF may be corrupted or not a valid PDF.',
     encrypted: 'This file is password protected and cannot be compressed. Unlock it first.',
     unreadable: 'Could not read this file. The PDF may be corrupted or not a valid PDF.',
-    oversized: 'File is over 100 MB. Please choose a smaller file.'
   }
 };
 
@@ -121,15 +99,6 @@ const PRESETS: { id: CompressionPreset; icon: typeof Printer }[] = [
   { id: 'ebook', icon: BookOpen },
   { id: 'screen', icon: Smartphone }
 ];
-
-function readFileBytes(file: File): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as ArrayBuffer);
-    reader.onerror = () => reject(reader.error ?? new Error('READ_FAILED'));
-    reader.readAsArrayBuffer(file);
-  });
-}
 
 export function CompressPage() {
   const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
@@ -163,10 +132,6 @@ export function CompressPage() {
       clearOutcome();
       setSource(null);
       setNotice(undefined);
-      if (file.size > MAX_FILE_BYTES) {
-        setNotice(t.oversized);
-        return;
-      }
       setReading(true);
       void (async () => {
         try {
@@ -205,16 +170,6 @@ export function CompressPage() {
 
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
-      <div className="tool-page-heading tool-page-heading--compact">
-        <a className="tool-page-heading__back" href="/">
-          <ArrowLeft size={17} aria-hidden="true" /> {t.back}
-        </a>
-        <span className="ct-eyebrow">
-          <Minimize2 size={14} aria-hidden="true" /> ClassTools PDF
-        </span>
-        <h1>{t.title}</h1>
-        <p>{t.description}</p>
-      </div>
 
       <div className="pdf-workspace pdf-workspace--two compress-workspace">
         <section className="ct-panel panel-section compress-panel" aria-label={t.title}>

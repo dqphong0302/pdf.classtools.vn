@@ -10,7 +10,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'pdf-lib': ['pdf-lib', '@pdf-lib/fontkit'],
+          'pdf-lib': ['pdf-lib'],
           'pdf-viewer': ['pdfjs-dist']
         }
       }
