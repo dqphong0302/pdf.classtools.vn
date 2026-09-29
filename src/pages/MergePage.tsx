@@ -8,9 +8,11 @@ import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
 import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { EncryptedPdfError, getPdfPageCount, mergePdfs } from '../lib/pdfOps';
+import { imagesToPdf } from '../lib/pdfImages';
 import './merge.css';
 
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
+const IMAGE_PATTERN = /\.(png|jpe?g)$/i;
 
 interface MergeEntry {
   id: number;
@@ -48,8 +50,8 @@ const STRINGS: Record<'vi' | 'en', MergeStrings> = {
     back: 'Trang chủ',
     title: 'Ghép PDF',
     description: 'Gộp nhiều tệp PDF thành một, đổi thứ tự trước khi ghép. Mọi thao tác chạy ngay trên thiết bị của bạn.',
-    dropLabel: 'Chọn hoặc kéo thả tệp PDF',
-    dropHint: 'Thêm từ 2 tệp trở lên để ghép',
+    dropLabel: 'Chọn tệp PDF hoặc ảnh',
+    dropHint: 'PDF, JPG, PNG · từ 2 tệp trở lên',
     pages: (count) => `${count} trang`,
     moveUp: (name) => `Di chuyển ${name} lên trên`,
     moveDown: (name) => `Di chuyển ${name} xuống dưới`,
@@ -70,8 +72,8 @@ const STRINGS: Record<'vi' | 'en', MergeStrings> = {
     back: 'Home',
     title: 'Merge PDF',
     description: 'Combine multiple PDFs into one and reorder files before merging. Everything runs on your device.',
-    dropLabel: 'Drop or choose PDF files',
-    dropHint: 'Add at least 2 files to merge',
+    dropLabel: 'Choose PDF or image files',
+    dropHint: 'PDF, JPG, PNG · 2 files or more',
     pages: (count) => `${count} pages`,
     moveUp: (name) => `Move ${name} up`,
     moveDown: (name) => `Move ${name} down`,
@@ -139,7 +141,11 @@ export function MergePage() {
           const id = idRef.current;
           setEntries((prev) => [...prev, { id, file, bytes: new Uint8Array(), pages: -1 }]);
           try {
-            const bytes = new Uint8Array(await readFileBytes(file));
+            const raw = new Uint8Array(await readFileBytes(file));
+            // Images become a one-page A4 PDF so they merge like any other document.
+            const bytes = IMAGE_PATTERN.test(file.name) || file.type.startsWith('image/')
+              ? await imagesToPdf([raw], { pageSize: 'a4', orientation: 'auto', marginMm: 0 })
+              : raw;
             const pages = await getPdfPageCount(bytes);
             setEntries((prev) => prev.map((entry) => (entry.id === id ? { ...entry, bytes, pages } : entry)));
           } catch (error) {
@@ -238,7 +244,17 @@ export function MergePage() {
           />
         ) : (
           <section className="ct-panel panel-section merge-panel" aria-label={t.title}>
-            <FileDrop multiple compact={entries.length > 0} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+            <FileDrop
+              multiple
+              compact={entries.length > 0}
+              label={t.dropLabel}
+              hint={t.dropHint}
+              accept="application/pdf,.pdf,image/png,image/jpeg"
+              acceptPattern={/\.(pdf|png|jpe?g)$/i}
+              formatLabel="PDF · JPG · PNG"
+              onFiles={handleFiles}
+              notice={notice}
+            />
 
             {entries.length > 0 && (
               <SortableCards ids={entries.map((entry) => entry.id)} label={vi ? 'Danh sách tệp' : 'Files'} onReorder={reorderEntries}>
@@ -259,7 +275,7 @@ export function MergePage() {
                     <div className="file-card__meta">
                       <span className="file-card__name" title={entry.file.name}>{entry.file.name}</span>
                       <span className="file-card__sub">
-                        {entry.pages >= 0 ? `${t.pages(entry.pages)} · ${formatBytes(entry.file.size)}` : '…'}
+                        {entry.pages < 0 ? '…' : IMAGE_PATTERN.test(entry.file.name) ? `${vi ? 'Ảnh' : 'Image'} · ${formatBytes(entry.file.size)}` : `${t.pages(entry.pages)} · ${formatBytes(entry.file.size)}`}
                       </span>
                       <span className="file-card__move">
                         <button

@@ -74,8 +74,15 @@ export async function imagesToPdf(files: Uint8Array[], options: ImagesToPdfOptio
     if (options.pageSize === 'auto') {
       const naturalWidth = embedded.width * PX_TO_PT;
       const naturalHeight = embedded.height * PX_TO_PT;
-      const landscape = options.orientation === 'landscape' || (options.orientation === 'auto' && naturalWidth > naturalHeight);
-      page = landscape ? [naturalHeight, naturalWidth] : [naturalWidth, naturalHeight];
+      const long = Math.max(naturalWidth, naturalHeight);
+      const short = Math.min(naturalWidth, naturalHeight);
+      // "auto" keeps the image's own shape; a forced orientation turns the page to match.
+      page =
+        options.orientation === 'landscape'
+          ? [long, short]
+          : options.orientation === 'portrait'
+            ? [short, long]
+            : [naturalWidth, naturalHeight];
     } else {
       const orientation = options.orientation === 'auto'
         ? (embedded.width >= embedded.height ? 'landscape' : 'portrait')

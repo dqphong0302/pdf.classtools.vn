@@ -117,4 +117,19 @@ describe('MergePage', () => {
     expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Ghép \d+ tệp/ })).not.toBeInTheDocument();
   });
+
+  it('accepts images and merges them as pages', async () => {
+    const png = new File(
+      [Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAEElEQVR4nGP8z8DwnwEAAMIByR/6d1AAAAAASUVORK5CYII='), (c) => c.charCodeAt(0))],
+      'anh.png',
+      { type: 'image/png' }
+    );
+    const { container } = render(<MergePage />);
+    upload(container, [twoPage, png]);
+
+    expect(await screen.findByText('anh.png')).toBeInTheDocument();
+    await screen.findByText(/^Ảnh ·/);
+    fireEvent.click(screen.getByRole('button', { name: /Ghép 2 tệp/ }));
+    expect(await screen.findByText(/Đã ghép 3 trang/)).toBeInTheDocument();
+  });
 });
