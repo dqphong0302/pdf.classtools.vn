@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @layer reset, tokens, base, components, utilities;
 
@@ -6,41 +6,40 @@
 @layer tokens {
   :root {
     color-scheme: light;
-    /* Ink: xám ấm */
-    --ct-ink-950: #1c1917;
-    --ct-ink-900: #292524;
-    --ct-ink-800: #44403c;
-    --ct-ink-700: #57504a;
-    --ct-ink-600: #6b625a;
-    --ct-ink-500: #736960;
-    --ct-ink-300: #d9cfc3;
-    --ct-ink-200: #e8e2da;
-    --ct-ink-100: #f6f2ed;
-    --ct-paper: #faf8f5;
+    /* Neutral, near-monochrome palette: black actions, hairline borders. */
+    --ct-ink-950: #0a0a0a;
+    --ct-ink-900: #111111;
+    --ct-ink-800: #262626;
+    --ct-ink-700: #404040;
+    --ct-ink-600: #595959;
+    --ct-ink-500: #737373;
+    --ct-ink-300: #d4d4d4;
+    --ct-ink-200: #e5e5e5;
+    --ct-ink-100: #f4f4f4;
+    --ct-paper: #fafafa;
     --ct-paper-strong: #ffffff;
     --ct-surface: #ffffff;
     --ct-surface-solid: #ffffff;
-    --ct-canvas: #f6f2ed;
-    /* Cobalt → xanh thương hiệu (hành động) */
-    --ct-cobalt-700: #173f75;
-    --ct-cobalt-600: #1d4f91;
-    --ct-cobalt-500: #3f6fb0;
-    --ct-cobalt-100: #eaf1fa;
-    --ct-teal-700: #2f7a4f;
-    --ct-teal-500: #4a9d6c;
-    --ct-teal-100: #e7f3ec;
-    /* Coral → nâu nhấn (badge, nhãn) */
+    --ct-canvas: #f4f4f4;
+    /* "cobalt" = primary action colour → ink */
+    --ct-cobalt-700: #000000;
+    --ct-cobalt-600: #000000;
+    --ct-cobalt-500: #111111;
+    --ct-cobalt-100: #f1f1f1;
+    --ct-teal-700: #166534;
+    --ct-teal-500: #16a34a;
+    --ct-teal-100: #ecfdf3;
     --ct-coral-600: #8a5a34;
     --ct-coral-500: #a8744a;
-    --ct-coral-100: #f4ece3;
-    --ct-yellow-500: #d99a2b;
-    --ct-yellow-100: #fbf1dc;
-    --ct-success: #2f7a4f;
-    --ct-danger: #c53030;
-    --ct-focus: #1d4f91;
+    --ct-coral-100: #f6efe7;
+    --ct-yellow-500: #b7791f;
+    --ct-yellow-100: #fdf6e3;
+    --ct-success: #15803d;
+    --ct-danger: #dc2626;
+    --ct-focus: #111111;
 
-    --ct-font-display: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --ct-font-body: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --ct-font-display: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --ct-font-body: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
     --ct-font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
     --ct-space-1: 0.25rem;
@@ -56,20 +55,20 @@
     --ct-space-20: 5rem;
     --ct-space-24: 6rem;
 
-    --ct-radius-sm: 8px;
-    --ct-radius-md: 10px;
-    --ct-radius-lg: 14px;
-    --ct-radius-xl: 18px;
-    --ct-radius-2xl: 22px;
+    --ct-radius-sm: 6px;
+    --ct-radius-md: 8px;
+    --ct-radius-lg: 12px;
+    --ct-radius-xl: 16px;
+    --ct-radius-2xl: 20px;
     --ct-radius-pill: 999px;
 
-    --ct-shadow-xs: 0 1px 2px rgba(28, 25, 23, 0.05);
-    --ct-shadow-sm: 0 4px 12px -2px rgba(28, 25, 23, 0.08), 0 1px 2px rgba(28, 25, 23, 0.04);
-    --ct-shadow-md: 0 12px 28px -8px rgba(28, 25, 23, 0.14);
-    --ct-shadow-lg: 0 24px 48px -12px rgba(28, 25, 23, 0.2);
-    --ct-ring: 0 0 0 3px rgba(29, 79, 145, 0.18);
-    --ct-border: #e8e2da;
-    --ct-border-strong: #d9cfc3;
+    --ct-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --ct-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px -4px rgba(0, 0, 0, 0.06);
+    --ct-shadow-md: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px -12px rgba(0, 0, 0, 0.12);
+    --ct-shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.04), 0 28px 64px -16px rgba(0, 0, 0, 0.22);
+    --ct-ring: 0 0 0 3px rgba(17, 17, 17, 0.12);
+    --ct-border: #ebebeb;
+    --ct-border-strong: #d4d4d4;
     --ct-container: 72rem;
     --ct-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
     --ct-fast: 150ms;
@@ -78,36 +77,40 @@
 
   [data-theme="dark"] {
     color-scheme: dark;
-    --ct-paper: #151d2b;
-    --ct-paper-strong: #1c2636;
-    --ct-surface: #1c2636;
-    --ct-surface-solid: #1c2636;
-    --ct-canvas: #121a27;
-    --ct-ink-950: #f3efe9;
-    --ct-ink-900: #ece6de;
-    --ct-ink-800: #ddd5cb;
-    --ct-ink-700: #c7bdb2;
-    --ct-ink-600: #b7ada2;
-    --ct-ink-500: #9a9086;
-    --ct-ink-300: #4a5a75;
-    --ct-ink-200: #2c3850;
-    --ct-ink-100: #243044;
-    --ct-cobalt-700: #9cc3f3;
-    --ct-cobalt-600: #7fb0ee;
-    --ct-cobalt-500: #7fb0ee;
-    --ct-cobalt-100: #1f2f4a;
-    --ct-teal-100: #1b3a2a;
+    --ct-paper: #0a0a0a;
+    --ct-paper-strong: #161616;
+    --ct-surface: #141414;
+    --ct-surface-solid: #141414;
+    --ct-canvas: #1c1c1c;
+    --ct-ink-950: #fafafa;
+    --ct-ink-900: #f5f5f5;
+    --ct-ink-800: #e5e5e5;
+    --ct-ink-700: #cfcfcf;
+    --ct-ink-600: #a3a3a3;
+    --ct-ink-500: #8a8a8a;
+    --ct-ink-300: #3a3a3a;
+    --ct-ink-200: #2a2a2a;
+    --ct-ink-100: #1f1f1f;
+    --ct-cobalt-700: #ffffff;
+    --ct-cobalt-600: #ffffff;
+    --ct-cobalt-500: #f5f5f5;
+    --ct-cobalt-100: #232323;
+    --ct-teal-700: #4ade80;
+    --ct-teal-100: #0f2a1a;
     --ct-coral-600: #e0b98f;
     --ct-coral-500: #e0b98f;
-    --ct-coral-100: #3b2a1d;
-    --ct-yellow-100: #3d321c;
-    --ct-focus: #7fb0ee;
-    --ct-border: #2c3850;
-    --ct-border-strong: #3d4c65;
-    --ct-shadow-xs: 0 1px 2px rgba(3, 7, 18, 0.35);
-    --ct-shadow-sm: 0 6px 16px -4px rgba(3, 7, 18, 0.5);
-    --ct-shadow-md: 0 16px 36px -10px rgba(3, 7, 18, 0.6);
-    --ct-shadow-lg: 0 28px 56px -14px rgba(3, 7, 18, 0.7);
+    --ct-coral-100: #2b2016;
+    --ct-yellow-100: #2b2412;
+    --ct-success: #4ade80;
+    --ct-danger: #f87171;
+    --ct-focus: #f5f5f5;
+    --ct-ring: 0 0 0 3px rgba(255, 255, 255, 0.18);
+    --ct-border: #262626;
+    --ct-border-strong: #383838;
+    --ct-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --ct-shadow-sm: 0 4px 12px -4px rgba(0, 0, 0, 0.6);
+    --ct-shadow-md: 0 12px 32px -12px rgba(0, 0, 0, 0.7);
+    --ct-shadow-lg: 0 28px 64px -16px rgba(0, 0, 0, 0.8);
   }
 }
 
@@ -226,14 +229,14 @@
     border-radius: var(--ct-radius-pill);
     background: transparent;
     color: var(--ct-ink-900);
-    font-weight: 750;
+    font-weight: 600;
     letter-spacing: -0.01em;
     cursor: pointer;
     transition: transform var(--ct-fast) var(--ct-ease), box-shadow var(--ct-fast) var(--ct-ease), background var(--ct-fast) ease, border-color var(--ct-fast) ease;
   }
 
   .ct-button:hover {
-    transform: translateY(-2px);
+    transform: none;
   }
 
   .ct-button:active {
@@ -243,17 +246,15 @@
   .ct-button--primary {
     background: var(--ct-ink-900);
     color: var(--ct-paper-strong);
-    box-shadow: 0 10px 25px rgba(23, 32, 61, 0.2);
   }
 
   .ct-button--primary:hover {
-    box-shadow: 0 14px 32px rgba(23, 32, 61, 0.28);
+    background: var(--ct-ink-800);
   }
 
   .ct-button--accent {
-    background: var(--ct-cobalt-500);
-    color: #fff;
-    box-shadow: 0 10px 24px rgba(89, 103, 255, 0.25);
+    background: var(--ct-ink-900);
+    color: var(--ct-paper-strong);
   }
 
   .ct-button--soft {

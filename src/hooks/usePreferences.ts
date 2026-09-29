@@ -37,7 +37,7 @@ export function usePreferences() {
     writePref('classtools-theme', theme);
     document.querySelector('meta[name="theme-color"]')?.setAttribute(
       'content',
-      theme === 'dark' ? '#10162d' : '#f7f5ef'
+      theme === 'dark' ? '#0a0a0a' : '#fafafa'
     );
   }, [theme]);
 

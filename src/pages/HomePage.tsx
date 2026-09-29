@@ -17,6 +17,7 @@ export function HomePage() {
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
       <section className="home-hero" aria-labelledby="home-title">
+        <span className="home-eyebrow">{vi ? `${TOOLS.length} công cụ · Miễn phí · Riêng tư` : `${TOOLS.length} tools · Free · Private`}</span>
         <h1 id="home-title">{vi ? 'Mọi công cụ PDF bạn cần, ở một nơi' : 'Every tool you need to work with PDFs'}</h1>
         <p>
           {vi
@@ -43,10 +44,10 @@ export function HomePage() {
       </div>
 
       <div className="tool-grid">
-        {tools.map(({ to, icon: Icon, accent, title, description }) => (
+        {tools.map(({ to, icon: Icon, title, description }) => (
           <a key={to} className="tool-card" href={to}>
-            <span className="tool-card__icon" style={{ background: accent }} aria-hidden="true">
-              <Icon size={30} />
+            <span className="tool-card__icon" aria-hidden="true">
+              <Icon size={22} strokeWidth={1.75} />
             </span>
             <strong>{title[locale]}</strong>
             <span className="tool-card__desc">{description[locale]}</span>

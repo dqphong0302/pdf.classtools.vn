@@ -17,8 +17,8 @@ function ToolLink({ tool, locale, onNavigate }: { tool: ToolInfo; locale: Locale
   const Icon = tool.icon;
   return (
     <a className="menu-tool" href={tool.to} onClick={onNavigate}>
-      <span className="menu-tool__icon" style={{ background: tool.accent }} aria-hidden="true">
-        <Icon size={16} />
+      <span className="menu-tool__icon" aria-hidden="true">
+        <Icon size={16} strokeWidth={1.75} />
       </span>
       <span className="menu-tool__text">
         <strong>{tool.title[locale]}</strong>

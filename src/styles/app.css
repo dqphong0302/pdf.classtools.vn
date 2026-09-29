@@ -15,10 +15,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background:
-    radial-gradient(circle at 5% 6%, rgba(89, 103, 255, 0.1), transparent 22rem),
-    radial-gradient(circle at 92% 25%, rgba(37, 191, 166, 0.08), transparent 20rem),
-    var(--ct-paper);
+  background: var(--ct-paper);
 }
 
 .tool-app-header {
@@ -75,8 +72,8 @@
   display: grid;
   place-items: center;
   border-radius: var(--ct-radius-md);
-  background: linear-gradient(135deg, var(--ct-cobalt-500), var(--ct-teal-500));
-  color: #fff;
+  background: var(--ct-ink-900);
+  color: var(--ct-paper-strong);
 }
 
 .brand__name strong {
@@ -117,17 +114,17 @@
 .tool-page-heading h1 {
   margin: 0;
   font-family: var(--ct-font-display);
-  font-size: clamp(1.6rem, 3.4vw, 2.3rem);
-  font-weight: 750;
-  letter-spacing: -0.025em;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
   line-height: 1.15;
   text-wrap: balance;
 }
 
 .tool-page-heading > p {
   max-width: 44rem;
-  margin: 0.55rem 0 0;
-  color: var(--ct-ink-600);
+  margin: 0.6rem 0 0;
+  color: var(--ct-ink-500);
   font-size: 1rem;
   line-height: 1.55;
   text-wrap: pretty;
@@ -144,11 +141,9 @@
   justify-items: center;
   gap: 0.5rem;
   padding: clamp(2rem, 6vw, 3.4rem) 1.2rem;
-  border: 2px dashed var(--ct-border-strong);
+  border: 1.5px dashed var(--ct-border-strong);
   border-radius: var(--ct-radius-2xl);
-  background:
-    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--ct-cobalt-500) 7%, transparent), transparent 70%),
-    var(--ct-surface-solid);
+  background: var(--ct-surface-solid);
   color: var(--ct-ink-600);
   text-align: center;
   cursor: pointer;
@@ -197,10 +192,10 @@
   padding: 0 1.4rem;
   border-radius: var(--ct-radius-pill);
   background: var(--ct-cobalt-500);
-  color: #fff;
+  color: var(--ct-paper-strong);
   font-size: 0.95rem;
   font-weight: 750;
-  box-shadow: 0 10px 24px rgba(89, 103, 255, 0.25);
+  box-shadow: none;
 }
 
 .file-drop:hover .file-drop__button {
@@ -492,11 +487,11 @@
 .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
 .btn:focus-visible { outline: 2px solid var(--ct-focus, var(--ct-cobalt-500)); outline-offset: 2px; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
-.btn-primary { background: var(--ct-cobalt-500); color: #fff; box-shadow: 0 10px 24px rgba(89, 103, 255, 0.22); }
-.btn-primary:hover:not(:disabled) { background: var(--ct-cobalt-600); color: #fff; }
+.btn-primary { background: var(--ct-cobalt-500); color: var(--ct-paper-strong); box-shadow: none; }
+.btn-primary:hover:not(:disabled) { background: var(--ct-cobalt-600); color: var(--ct-paper-strong); }
 .btn-secondary { background: var(--ct-surface-solid); border-color: var(--ct-border); box-shadow: var(--ct-shadow-xs); }
 .btn-secondary:hover:not(:disabled) { border-color: var(--ct-border-strong); }
-.btn-success { background: var(--ct-success); color: #fff; box-shadow: 0 10px 24px rgba(47, 122, 79, 0.22); }
+.btn-success { background: var(--ct-ink-900); color: var(--ct-paper-strong); box-shadow: none; }
 .btn-sm { min-height: 2.25rem; padding: 0.4rem 0.85rem; font-size: 0.85rem; }
 .btn-lg { min-height: 3rem; padding: 0.75rem 1.3rem; font-size: 1rem; }
 .btn-group, .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
@@ -917,8 +912,10 @@
   height: 2rem;
   display: grid;
   place-items: center;
+  border: 1px solid var(--ct-border);
   border-radius: var(--ct-radius-md);
-  color: #fff;
+  background: var(--ct-canvas);
+  color: var(--ct-ink-900);
 }
 
 .related {
@@ -1088,11 +1085,11 @@
   border: 0;
   border-radius: var(--ct-radius-pill);
   background: var(--ct-cobalt-500);
-  color: #fff;
+  color: var(--ct-paper-strong);
   font: inherit;
   font-size: 1.05rem;
   font-weight: 750;
-  box-shadow: 0 12px 26px rgba(89, 103, 255, 0.28);
+  box-shadow: none;
   cursor: pointer;
 }
 
@@ -1130,11 +1127,11 @@
   border: 0;
   border-radius: var(--ct-radius-pill);
   background: var(--ct-cobalt-500);
-  color: #fff;
+  color: var(--ct-paper-strong);
   font: inherit;
   font-size: 1rem;
   font-weight: 750;
-  box-shadow: 0 12px 26px rgba(89, 103, 255, 0.28);
+  box-shadow: none;
   cursor: pointer;
 }
 
