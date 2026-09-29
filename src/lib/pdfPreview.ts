@@ -24,7 +24,11 @@ export interface PdfTextItem {
 export interface OpenedPdfView {
   pageCount: number;
   pages: PdfPageView[];
-  render(pageNumber: number, canvas: HTMLCanvasElement, targetWidth: number): Promise<void>;
+  /**
+   * `forExport` renders with the "print" intent, which does not wait on
+   * requestAnimationFrame — so exports keep going when the tab is in the background.
+   */
+  render(pageNumber: number, canvas: HTMLCanvasElement, targetWidth: number, options?: { forExport?: boolean }): Promise<void>;
   getPageText(pageNumber: number): Promise<string>;
   getPageTextItems(pageNumber: number): Promise<PdfTextItem[]>;
   destroy(): void;
@@ -55,7 +59,7 @@ export async function openPdfView(sourceBytes: Uint8Array): Promise<OpenedPdfVie
   return {
     pageCount: doc.numPages,
     pages,
-    async render(pageNumber, canvas, targetWidth) {
+    async render(pageNumber, canvas, targetWidth, options) {
       const page = await doc.getPage(pageNumber);
       const base = page.getViewport({ scale: 1 });
       const scale = targetWidth / base.width;
@@ -64,7 +68,7 @@ export async function openPdfView(sourceBytes: Uint8Array): Promise<OpenedPdfVie
       if (!context) return;
       canvas.width = Math.floor(viewport.width);
       canvas.height = Math.floor(viewport.height);
-      await page.render({ canvas, canvasContext: context, viewport }).promise;
+      await page.render({ canvas, canvasContext: context, viewport, intent: options?.forExport ? 'print' : 'display' }).promise;
     },
     async getPageText(pageNumber) {
       const page = await doc.getPage(pageNumber);

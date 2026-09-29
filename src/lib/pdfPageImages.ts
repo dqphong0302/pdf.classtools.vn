@@ -38,7 +38,7 @@ export async function renderPdfToImages(
     const images: PageImage[] = [];
     for (let pageNumber = 1; pageNumber <= view.pageCount; pageNumber += 1) {
       const canvas = document.createElement('canvas');
-      await view.render(pageNumber, canvas, width);
+      await view.render(pageNumber, canvas, width, { forExport: true });
       images.push({ pageNumber, bytes: await canvasToBytes(canvas, format, quality) });
       canvas.width = 0;
       canvas.height = 0;

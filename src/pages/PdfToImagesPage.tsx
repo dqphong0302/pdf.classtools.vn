@@ -206,7 +206,7 @@ export function PdfToImagesPage() {
       for (let pageNumber = 1; pageNumber <= opened.pageCount; pageNumber += 1) {
         setProgress({ done: pageNumber - 1, total: opened.pageCount });
         const canvas = document.createElement('canvas');
-        await opened.render(pageNumber, canvas, width);
+        await opened.render(pageNumber, canvas, width, { forExport: true });
         const bytes = await canvasToBytes(canvas, format, quality / 100);
         const blob = new Blob([new Uint8Array(bytes)], { type: format === 'jpg' ? 'image/jpeg' : 'image/png' });
         created.push({

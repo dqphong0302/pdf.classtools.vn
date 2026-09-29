@@ -37,7 +37,7 @@ export function createCanvasRasterizer(sourceBytes: Uint8Array): { rasterize: Pa
       const view = await getView();
       const info = view.pages[pageIndex];
       const canvas = document.createElement('canvas');
-      await view.render(pageIndex + 1, canvas, info.width * RASTER_SCALE);
+      await view.render(pageIndex + 1, canvas, info.width * RASTER_SCALE, { forExport: true });
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('CANVAS_UNAVAILABLE');
       const scale = canvas.width / info.width;
