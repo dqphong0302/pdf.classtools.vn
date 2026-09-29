@@ -28,7 +28,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 
 export type Locale = 'vi' | 'en';
-export type ToolCategory = 'organize' | 'edit' | 'optimize' | 'security' | 'convert';
+export type ToolCategory = 'organize' | 'optimize' | 'toPdf' | 'fromPdf' | 'edit' | 'security';
 
 export interface ToolInfo {
   category: ToolCategory;
@@ -42,18 +42,20 @@ export interface ToolInfo {
 /** ClassTools tone family per category (cobalt / teal / coral / yellow). */
 export const CATEGORY_TONE: Record<ToolCategory, 'cobalt' | 'teal' | 'coral' | 'yellow'> = {
   organize: 'cobalt',
-  edit: 'coral',
   optimize: 'teal',
-  security: 'yellow',
-  convert: 'cobalt'
+  toPdf: 'yellow',
+  fromPdf: 'yellow',
+  edit: 'coral',
+  security: 'cobalt'
 };
 
 export const CATEGORIES: { id: ToolCategory; title: Record<Locale, string>; hint: Record<Locale, string> }[] = [
-  { id: 'organize', title: { vi: 'Tổ chức trang', en: 'Organize' }, hint: { vi: 'Ghép, tách, sắp xếp, xoay, đánh số', en: 'Merge, split, reorder, rotate, number' } },
-  { id: 'edit', title: { vi: 'Chỉnh sửa & ký', en: 'Edit & sign' }, hint: { vi: 'Thêm chữ, chữ ký, che thông tin mật', en: 'Add text, sign, redact' } },
-  { id: 'optimize', title: { vi: 'Tối ưu & sửa lỗi', en: 'Optimize & repair' }, hint: { vi: 'Nén nhẹ, sửa file hỏng, lưu trữ', en: 'Compress, repair, archive' } },
-  { id: 'security', title: { vi: 'Bảo mật & kiểm tra', en: 'Security & checks' }, hint: { vi: 'Mật khẩu, làm phẳng, so sánh, quét', en: 'Passwords, flatten, compare, scan' } },
-  { id: 'convert', title: { vi: 'Chuyển đổi', en: 'Convert' }, hint: { vi: 'PDF ⇄ ảnh, Excel, HTML, văn bản', en: 'PDF ⇄ images, Excel, HTML, text' } }
+  { id: 'organize', title: { vi: 'Sắp xếp PDF', en: 'Organize PDF' }, hint: { vi: 'Ghép, tách, sắp xếp, quét', en: 'Merge, split, reorder, scan' } },
+  { id: 'optimize', title: { vi: 'Tối ưu PDF', en: 'Optimize PDF' }, hint: { vi: 'Nén, sửa lỗi, làm phẳng', en: 'Compress, repair, flatten' } },
+  { id: 'toPdf', title: { vi: 'Chuyển sang PDF', en: 'Convert to PDF' }, hint: { vi: 'Ảnh, Excel, HTML sang PDF', en: 'Images, Excel, HTML to PDF' } },
+  { id: 'fromPdf', title: { vi: 'Chuyển từ PDF', en: 'Convert from PDF' }, hint: { vi: 'PDF sang ảnh, Excel, PDF/A, văn bản', en: 'PDF to images, Excel, PDF/A, text' } },
+  { id: 'edit', title: { vi: 'Chỉnh sửa PDF', en: 'Edit PDF' }, hint: { vi: 'Sửa, xoay, đánh số, đóng dấu, cắt', en: 'Edit, rotate, number, watermark, crop' } },
+  { id: 'security', title: { vi: 'Bảo mật PDF', en: 'PDF security' }, hint: { vi: 'Mật khẩu, ký, che thông tin, so sánh', en: 'Password, sign, redact, compare' } }
 ];
 
 export const TOOLS: ToolInfo[] = [
@@ -64,8 +66,8 @@ export const TOOLS: ToolInfo[] = [
     accent: 'linear-gradient(135deg, #60a5e3, #1d5d97)',
     title: { vi: 'Ghép PDF', en: 'Merge PDF' },
     description: {
-      vi: 'Gộp nhiều tệp PDF thành một, kéo đổi thứ tự trước khi ghép.',
-      en: 'Combine multiple PDFs into one and reorder files before merging.'
+      vi: 'Gộp nhiều tệp PDF thành một theo thứ tự bạn muốn.',
+      en: 'Combine PDFs in the order you want.'
     }
   },
   {
@@ -73,113 +75,12 @@ export const TOOLS: ToolInfo[] = [
     to: '/split',
     icon: Scissors,
     accent: 'linear-gradient(135deg, #ffb242, #b85b39)',
-    title: { vi: 'Tách / Trích trang', en: 'Split & Extract' },
+    title: { vi: 'Tách PDF', en: 'Split PDF' },
     description: {
-      vi: 'Cắt theo khoảng trang (vd 1-3, 5), tách mỗi N trang, tải ZIP.',
-      en: 'Cut by page ranges (e.g. 1-3, 5), split every N pages, download ZIP.'
+      vi: 'Tách một trang, một nhóm trang hoặc chia tệp thành nhiều PDF.',
+      en: 'Extract pages or split one PDF into several files.'
     }
   },
-  {
-    category: 'organize',
-    to: '/organize',
-    icon: LayoutList,
-    accent: 'linear-gradient(135deg, #5ebe78, #2c7a3b)',
-    title: { vi: 'Sắp xếp trang', en: 'Organize Pages' },
-    description: {
-      vi: 'Kéo thả sắp trang, xoay, xóa, nhân đôi, chèn trang trắng.',
-      en: 'Drag pages, rotate, delete, duplicate, insert blank pages.'
-    }
-  },
-  {
-    category: 'organize',
-    to: '/rotate',
-    icon: RotateCw,
-    accent: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-    title: { vi: 'Xoay PDF', en: 'Rotate PDF' },
-    description: {
-      vi: 'Xoay tất cả hoặc từng trang riêng lẻ theo góc 90° hoặc 180° tức thì.',
-      en: 'Rotate all or specific PDF pages by 90° or 180° instantly.'
-    }
-  },
-  {
-    category: 'organize',
-    to: '/page-numbers',
-    icon: Hash,
-    accent: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
-    title: { vi: 'Đánh số trang', en: 'Page Numbers' },
-    description: {
-      vi: 'Đánh số trang tự động, tùy chọn vị trí góc/giữa và bỏ qua bìa.',
-      en: 'Add automatic page numbers with customizable positions and formats.'
-    }
-  },
-  {
-    category: 'organize',
-    to: '/watermark',
-    icon: Stamp,
-    accent: 'linear-gradient(135deg, #ec4899, #be185d)',
-    title: { vi: 'Đóng dấu (Watermark)', en: 'Add Watermark' },
-    description: {
-      vi: 'Đóng dấu chữ bản quyền hoặc logo mờ, xoay 45°, chỉnh độ trong suốt.',
-      en: 'Stamp text or image watermarks with custom angles and opacity.'
-    }
-  },
-  {
-    category: 'organize',
-    to: '/crop',
-    icon: Crop,
-    accent: 'linear-gradient(135deg, #10b981, #047857)',
-    title: { vi: 'Cắt mép trang', en: 'Crop Margins' },
-    description: {
-      vi: 'Thu gọn lề trắng của mọi trang theo mm, xem trước trước khi lưu.',
-      en: 'Trim white margins on every page in mm with a preview.'
-    }
-  },
-  {
-    category: 'organize',
-    to: '/nup',
-    icon: Table2,
-    accent: 'linear-gradient(135deg, #f59e0b, #d97706)',
-    title: { vi: 'N trang / tờ', en: 'N-up Pages' },
-    description: {
-      vi: 'Gộp 2, 4, 6, 9 trang lên một tờ A4 để in tiết kiệm giấy.',
-      en: 'Fit 2, 4, 6 or 9 pages onto one A4 sheet to save paper.'
-    }
-  },
-
-  {
-    category: 'edit',
-    to: '/edit',
-    icon: PenLine,
-    accent: 'linear-gradient(135deg, #6366f1, #4338ca)',
-    title: { vi: 'Chỉnh sửa PDF', en: 'Edit PDF' },
-    description: {
-      vi: 'Thêm chữ (tiếng Việt), chèn ảnh, đóng dấu mờ chữ/ảnh, số trang.',
-      en: 'Add text (Vietnamese), insert images, text/image watermarks, page numbers.'
-    }
-  },
-  {
-    category: 'edit',
-    to: '/sign',
-    icon: FileSignature,
-    accent: 'linear-gradient(135deg, #f97316, #c2410c)',
-    title: { vi: 'Ký PDF', en: 'Sign PDF' },
-    description: {
-      vi: 'Vẽ hoặc gõ chữ ký, ký một hoặc tất cả các trang, lưu chữ ký.',
-      en: 'Draw or type a signature, sign one or all pages, save signatures.'
-    }
-  },
-  {
-    category: 'edit',
-    to: '/redact',
-    icon: EyeOff,
-    accent: 'linear-gradient(135deg, #ef4444, #991b1b)',
-    title: { vi: 'Bôi đen che mật (Redact)', en: 'Redact PDF' },
-    description: {
-      vi: 'Bôi đen vĩnh viễn vùng thông tin nhạy cảm (CCCD, tài khoản, mật khẩu).',
-      en: 'Permanently blackout sensitive details (IDs, bank details, credentials).'
-    }
-  },
-
   {
     category: 'optimize',
     to: '/compress',
@@ -187,8 +88,140 @@ export const TOOLS: ToolInfo[] = [
     accent: 'linear-gradient(135deg, #06b6d4, #0e7490)',
     title: { vi: 'Nén PDF', en: 'Compress PDF' },
     description: {
-      vi: 'Giảm dung lượng với Ghostscript (WASM) — 3 mức chất lượng.',
-      en: 'Shrink file size with Ghostscript (WASM) — three quality presets.'
+      vi: 'Giảm dung lượng tệp PDF mà vẫn giữ chất lượng tốt nhất.',
+      en: 'Reduce file size while keeping the best quality.'
+    }
+  },
+  {
+    category: 'fromPdf',
+    to: '/pdf-to-excel',
+    icon: Table,
+    accent: 'linear-gradient(135deg, #059669, #047857)',
+    title: { vi: 'PDF sang Excel', en: 'PDF to Excel' },
+    description: {
+      vi: 'Lấy dữ liệu bảng từ PDF sang bảng tính Excel.',
+      en: 'Pull tables out of a PDF into an Excel spreadsheet.'
+    }
+  },
+  {
+    category: 'toPdf',
+    to: '/excel-to-pdf',
+    icon: FileSpreadsheet,
+    accent: 'linear-gradient(135deg, #16a34a, #15803d)',
+    title: { vi: 'Excel sang PDF', en: 'Excel to PDF' },
+    description: {
+      vi: 'Chuyển bảng tính Excel, CSV thành PDF dễ đọc, dễ in.',
+      en: 'Turn Excel and CSV sheets into easy-to-read PDFs.'
+    }
+  },
+  {
+    category: 'edit',
+    to: '/edit',
+    icon: PenLine,
+    accent: 'linear-gradient(135deg, #6366f1, #4338ca)',
+    title: { vi: 'Chỉnh sửa PDF', en: 'Edit PDF' },
+    description: {
+      vi: 'Thêm chữ, hình ảnh vào PDF, hỗ trợ đầy đủ tiếng Việt.',
+      en: 'Add text and images to a PDF, with full Vietnamese support.'
+    }
+  },
+  {
+    category: 'fromPdf',
+    to: '/pdf-to-images',
+    icon: Image,
+    accent: 'linear-gradient(135deg, #d946ef, #a21caf)',
+    title: { vi: 'PDF sang ảnh', en: 'PDF to JPG' },
+    description: {
+      vi: 'Chuyển từng trang PDF thành ảnh JPG hoặc PNG.',
+      en: 'Convert each PDF page to a JPG or PNG image.'
+    }
+  },
+  {
+    category: 'toPdf',
+    to: '/images-to-pdf',
+    icon: Images,
+    accent: 'linear-gradient(135deg, #10b981, #15803d)',
+    title: { vi: 'Ảnh sang PDF', en: 'JPG to PDF' },
+    description: {
+      vi: 'Chuyển ảnh JPG, PNG thành PDF, chỉnh hướng và lề trang.',
+      en: 'Convert JPG and PNG images to PDF with page layout options.'
+    }
+  },
+  {
+    category: 'security',
+    to: '/sign',
+    icon: FileSignature,
+    accent: 'linear-gradient(135deg, #f97316, #c2410c)',
+    title: { vi: 'Ký PDF', en: 'Sign PDF' },
+    description: {
+      vi: 'Ký tên lên PDF bằng chữ ký vẽ tay hoặc gõ chữ.',
+      en: 'Sign a PDF with a drawn or typed signature.'
+    }
+  },
+  {
+    category: 'edit',
+    to: '/watermark',
+    icon: Stamp,
+    accent: 'linear-gradient(135deg, #ec4899, #be185d)',
+    title: { vi: 'Đóng dấu', en: 'Watermark' },
+    description: {
+      vi: 'Đóng dấu chữ hoặc logo lên PDF, chỉnh góc và độ mờ.',
+      en: 'Stamp text or a logo over a PDF with angle and opacity.'
+    }
+  },
+  {
+    category: 'edit',
+    to: '/rotate',
+    icon: RotateCw,
+    accent: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+    title: { vi: 'Xoay PDF', en: 'Rotate PDF' },
+    description: {
+      vi: 'Xoay toàn bộ hoặc từng trang PDF theo ý muốn.',
+      en: 'Rotate all pages or just the ones you choose.'
+    }
+  },
+  {
+    category: 'toPdf',
+    to: '/html-to-pdf',
+    icon: FileCode,
+    accent: 'linear-gradient(135deg, #f97316, #ea580c)',
+    title: { vi: 'HTML sang PDF', en: 'HTML to PDF' },
+    description: {
+      vi: 'Chuyển mã HTML thành PDF chuẩn khổ A4.',
+      en: 'Convert HTML into a print-ready A4 PDF.'
+    }
+  },
+  {
+    category: 'security',
+    to: '/protect',
+    icon: Lock,
+    accent: 'linear-gradient(135deg, #8b5cf6, #4c1d95)',
+    title: { vi: 'Bảo vệ PDF', en: 'Protect PDF' },
+    description: {
+      vi: 'Đặt mật khẩu để bảo vệ PDF, hoặc mở khoá tệp đã có mật khẩu.',
+      en: 'Add a password to a PDF, or unlock a protected one.'
+    }
+  },
+  {
+    category: 'organize',
+    to: '/organize',
+    icon: LayoutList,
+    accent: 'linear-gradient(135deg, #5ebe78, #2c7a3b)',
+    title: { vi: 'Sắp xếp PDF', en: 'Organize PDF' },
+    description: {
+      vi: 'Sắp xếp, xoá, thêm trang trắng hoặc nhân đôi trang PDF.',
+      en: 'Reorder, delete, duplicate pages or insert blank ones.'
+    }
+  },
+  {
+    category: 'fromPdf',
+    to: '/pdf-to-pdfa',
+    icon: Archive,
+    accent: 'linear-gradient(135deg, #14b8a6, #0f766e)',
+    title: { vi: 'PDF sang PDF/A', en: 'PDF to PDF/A' },
+    description: {
+      vi: 'Chuyển PDF sang PDF/A để lưu trữ lâu dài.',
+      en: 'Convert PDF to PDF/A for long-term archiving.'
     }
   },
   {
@@ -198,42 +231,30 @@ export const TOOLS: ToolInfo[] = [
     accent: 'linear-gradient(135deg, #eab308, #a16207)',
     title: { vi: 'Sửa lỗi PDF', en: 'Repair PDF' },
     description: {
-      vi: 'Khôi phục file hỏng bảng xref hoặc luồng stream bằng QPDF WASM.',
-      en: 'Recover corrupted or unreadable PDFs by rebuilding xref tables.'
+      vi: 'Khôi phục tệp PDF bị hỏng hoặc không mở được.',
+      en: 'Recover a damaged PDF that will not open.'
     }
   },
   {
-    category: 'optimize',
-    to: '/pdf-to-pdfa',
-    icon: Archive,
-    accent: 'linear-gradient(135deg, #14b8a6, #0f766e)',
-    title: { vi: 'PDF sang PDF/A', en: 'PDF to PDF/A' },
+    category: 'edit',
+    to: '/page-numbers',
+    icon: Hash,
+    accent: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+    title: { vi: 'Đánh số trang', en: 'Page Numbers' },
     description: {
-      vi: 'Chuẩn hóa tệp sang ISO 19005-2 (PDF/A-2b) để lưu trữ vĩnh viễn.',
-      en: 'Convert standard PDFs into long-term archival ISO 19005 (PDF/A-2b).'
-    }
-  },
-
-  {
-    category: 'security',
-    to: '/protect',
-    icon: Lock,
-    accent: 'linear-gradient(135deg, #8b5cf6, #4c1d95)',
-    title: { vi: 'Mật khẩu PDF', en: 'Protect PDF' },
-    description: {
-      vi: 'Đặt mật khẩu mở file (AES-128/256) hoặc bỏ mật khẩu bằng qpdf.',
-      en: 'Add an open password (AES-128/256) or remove one with qpdf.'
+      vi: 'Thêm số trang vào PDF, chọn vị trí và kiểu chữ.',
+      en: 'Add page numbers with the position and style you want.'
     }
   },
   {
-    category: 'security',
-    to: '/flatten',
-    icon: Layers,
-    accent: 'linear-gradient(135deg, #64748b, #334155)',
-    title: { vi: 'Làm phẳng PDF', en: 'Flatten PDF' },
+    category: 'organize',
+    to: '/scan',
+    icon: Camera,
+    accent: 'linear-gradient(135deg, #0284c7, #0369a1)',
+    title: { vi: 'Quét sang PDF', en: 'Scan to PDF' },
     description: {
-      vi: 'Hợp nhất toàn bộ form field và chữ ký vào nền trang chống sửa.',
-      en: 'Merge form fields and signatures into standard non-editable graphics.'
+      vi: 'Chụp tài liệu bằng camera điện thoại và lưu thành PDF.',
+      en: 'Capture documents with your camera and save as PDF.'
     }
   },
   {
@@ -241,99 +262,76 @@ export const TOOLS: ToolInfo[] = [
     to: '/compare',
     icon: GitCompare,
     accent: 'linear-gradient(135deg, #f43f5e, #be123c)',
-    title: { vi: 'So sánh PDF (Compare)', en: 'Compare PDF' },
+    title: { vi: 'So sánh PDF', en: 'Compare PDF' },
     description: {
-      vi: 'So sánh 2 tài liệu song song hoặc tô màu đỏ các điểm khác biệt.',
-      en: 'Compare two PDFs side-by-side or highlight pixel changes with Diff Overlay.'
+      vi: 'So sánh hai bản PDF và tô sáng những chỗ khác nhau.',
+      en: 'Compare two PDFs and highlight the differences.'
     }
   },
   {
     category: 'security',
-    to: '/scan',
-    icon: Camera,
-    accent: 'linear-gradient(135deg, #0284c7, #0369a1)',
-    title: { vi: 'Quét từ Camera (Scan)', en: 'Scan to PDF' },
+    to: '/redact',
+    icon: EyeOff,
+    accent: 'linear-gradient(135deg, #ef4444, #991b1b)',
+    title: { vi: 'Che thông tin', en: 'Redact PDF' },
     description: {
-      vi: 'Dùng camera/webcam chụp tài liệu, lọc màu đen trắng và xuất PDF.',
-      en: 'Scan documents with device camera, apply B&W filters and save as PDF.'
-    }
-  },
-
-  {
-    category: 'convert',
-    to: '/pdf-to-images',
-    icon: Image,
-    accent: 'linear-gradient(135deg, #d946ef, #a21caf)',
-    title: { vi: 'PDF thành ảnh', en: 'PDF to Images' },
-    description: {
-      vi: 'Xuất từng trang thành ảnh JPG/PNG, tải riêng lẻ hoặc ZIP.',
-      en: 'Export each page as JPG/PNG, download individually or as ZIP.'
+      vi: 'Che vĩnh viễn thông tin nhạy cảm như số CCCD, tài khoản.',
+      en: 'Permanently black out sensitive information.'
     }
   },
   {
-    category: 'convert',
-    to: '/images-to-pdf',
-    icon: Images,
-    accent: 'linear-gradient(135deg, #10b981, #15803d)',
-    title: { vi: 'Ảnh thành PDF', en: 'Images to PDF' },
+    category: 'edit',
+    to: '/crop',
+    icon: Crop,
+    accent: 'linear-gradient(135deg, #10b981, #047857)',
+    title: { vi: 'Cắt PDF', en: 'Crop PDF' },
     description: {
-      vi: 'Ghép nhiều ảnh JPG/PNG thành PDF, chọn khổ A4/Letter/vừa ảnh.',
-      en: 'Combine JPG/PNG images into a PDF with A4/Letter/fit sizes.'
+      vi: 'Cắt bớt lề trắng hoặc vùng không cần trên trang PDF.',
+      en: 'Trim margins or unwanted areas from PDF pages.'
     }
   },
   {
-    category: 'convert',
+    category: 'optimize',
+    to: '/flatten',
+    icon: Layers,
+    accent: 'linear-gradient(135deg, #64748b, #334155)',
+    title: { vi: 'Làm phẳng PDF', en: 'Flatten PDF' },
+    description: {
+      vi: 'Gộp biểu mẫu và chữ ký vào trang để không sửa được nữa.',
+      en: 'Merge form fields and signatures into the page.'
+    }
+  },
+  {
+    category: 'organize',
+    to: '/nup',
+    icon: Table2,
+    accent: 'linear-gradient(135deg, #f59e0b, #d97706)',
+    title: { vi: 'Nhiều trang / tờ', en: 'N-up PDF' },
+    description: {
+      vi: 'In nhiều trang trên một tờ giấy để tiết kiệm giấy.',
+      en: 'Print several pages on one sheet to save paper.'
+    }
+  },
+  {
+    category: 'fromPdf',
     to: '/extract-text',
     icon: Search,
     accent: 'linear-gradient(135deg, #38bdf8, #0284c7)',
-    title: { vi: 'Trích xuất chữ', en: 'Extract Text' },
+    title: { vi: 'PDF sang văn bản', en: 'PDF to Text' },
     description: {
-      vi: 'Lấy toàn bộ chữ từ PDF theo từng trang, sao chép hoặc tải .txt.',
-      en: 'Pull all text from a PDF per page, copy or download as .txt.'
+      vi: 'Lấy toàn bộ chữ trong PDF để sao chép hoặc lưu .txt.',
+      en: 'Get all the text from a PDF to copy or save as .txt.'
     }
   },
   {
-    category: 'convert',
-    to: '/html-to-pdf',
-    icon: FileCode,
-    accent: 'linear-gradient(135deg, #f97316, #ea580c)',
-    title: { vi: 'HTML sang PDF', en: 'HTML to PDF' },
-    description: {
-      vi: 'Soạn thảo hoặc dán mã HTML/CSS, xem trước và xuất PDF chuẩn in.',
-      en: 'Compose HTML/CSS code, preview and export high-fidelity PDF.'
-    }
-  },
-  {
-    category: 'convert',
-    to: '/excel-to-pdf',
-    icon: FileSpreadsheet,
-    accent: 'linear-gradient(135deg, #16a34a, #15803d)',
-    title: { vi: 'Excel sang PDF', en: 'Excel to PDF' },
-    description: {
-      vi: 'Chuyển đổi bảng tính .xlsx/.xls/.csv thành tài liệu PDF kẻ lưới A4.',
-      en: 'Convert spreadsheets (.xlsx, .xls, .csv) into clean A4 grid-table PDFs.'
-    }
-  },
-  {
-    category: 'convert',
-    to: '/pdf-to-excel',
-    icon: Table,
-    accent: 'linear-gradient(135deg, #059669, #047857)',
-    title: { vi: 'PDF sang Excel', en: 'PDF to Excel' },
-    description: {
-      vi: 'Trích xuất dữ liệu bảng biểu từ PDF sang bảng tính Microsoft Excel (.xlsx).',
-      en: 'Extract tabular PDF data into editable Microsoft Excel spreadsheets.'
-    }
-  },
-  {
-    category: 'convert',
+    category: 'edit',
     to: '/metadata',
     icon: Hash,
     accent: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-    title: { vi: 'Sửa metadata', en: 'Edit Metadata' },
+    title: { vi: 'Sửa thông tin PDF', en: 'Edit Metadata' },
     description: {
-      vi: 'Xem và sửa tiêu đề, tác giả, từ khóa — hoặc xóa sạch thông tin.',
-      en: 'View and edit title, author, keywords — or wipe them entirely.'
+      vi: 'Xem, sửa hoặc xoá tiêu đề, tác giả, từ khoá của PDF.',
+      en: 'View, edit or clear the title, author and keywords.'
     }
   }
 ];

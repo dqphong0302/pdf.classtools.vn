@@ -47,7 +47,7 @@ export function HomePage() {
         {tools.map(({ to, icon: Icon, title, description, category }) => (
           <a key={to} className={`tool-card tone-${CATEGORY_TONE[category]}`} href={to}>
             <span className="tool-card__icon" aria-hidden="true">
-              <Icon size={22} strokeWidth={1.75} />
+              <Icon size={24} strokeWidth={2} />
             </span>
             <strong>{title[locale]}</strong>
             <span className="tool-card__desc">{description[locale]}</span>
