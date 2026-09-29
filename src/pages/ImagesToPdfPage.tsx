@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ChevronDown, ChevronUp, FilePlus2, Trash2 } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
+import { ResultCard } from '../components/ResultCard';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
 import { downloadBytes, formatBytes, sanitizeFilename, withPdfSuffix } from '../lib/download';
@@ -131,7 +132,6 @@ export function ImagesToPdfPage() {
   const [pageSize, setPageSize] = useState<ImagePageSize>('a4');
   const [orientation, setOrientation] = useState<ImageOrientation>('auto');
   const [marginMm, setMarginMm] = useState(10);
-  const [outputName, setOutputName] = useState('');
   const [busy, setBusy] = useState(false);
   const [opError, setOpError] = useState<string | null>(null);
   const [result, setResult] = useState<Uint8Array | null>(null);
@@ -175,6 +175,16 @@ export function ImagesToPdfPage() {
     },
     [t]
   );
+
+  const handleClear = useCallback(() => {
+    setImages((current) => {
+      current.forEach((image) => URL.revokeObjectURL(image.url));
+      return [];
+    });
+    setResult(null);
+    setOpError(null);
+    setNotice(null);
+  }, []);
 
   const handleRemove = useCallback((id: number) => {
     setImages((current) => {
@@ -223,9 +233,9 @@ export function ImagesToPdfPage() {
 
   const handleDownload = useCallback(() => {
     if (!result) return;
-    const name = outputName.trim() || (vi ? 'anh-thanh-pdf' : 'images-to-pdf');
+    const name = vi ? 'anh' : 'images-to-pdf';
     downloadBytes(result, withPdfSuffix(sanitizeFilename(name)));
-  }, [result, outputName, vi]);
+  }, [result, vi]);
 
   return (
     <ToolShell theme={theme} locale={locale} onThemeToggle={toggleTheme} onLocaleToggle={toggleLocale}>
@@ -240,19 +250,27 @@ export function ImagesToPdfPage() {
         <p>{t.description}</p>
       </div>
 
-      <div className="pdf-workspace pdf-workspace--side i2p-workspace">
-        <section className="ct-panel panel-section i2p-source" aria-label={t.title}>
-          <FileDrop
-            compact={images.length > 0}
-            multiple
-            label={t.choose}
-            accept="image/png,image/jpeg"
-            acceptPattern={/\.(png|jpe?g)$/i}
-            formatLabel="PNG · JPG"
-            maxBytes={MAX_IMAGE_BYTES}
-            onFiles={handlePicked}
+      <div className="flow i2p-workspace">
+        {result ? (
+          <ResultCard
+            vi={vi}
+            message={t.resultText(resultPages)}
+            onDownload={handleDownload}
+            onReset={handleClear}
           />
-          {notice && <p className="notice" role="alert">{notice}</p>}
+        ) : (
+          <section className="ct-panel panel-section i2p-source" aria-label={t.title}>
+            <FileDrop
+              multiple
+              compact={images.length > 0}
+              label={t.choose}
+              accept="image/png,image/jpeg"
+              acceptPattern={/\.(png|jpe?g)$/i}
+              formatLabel="PNG · JPG"
+              maxBytes={MAX_IMAGE_BYTES}
+              onFiles={handlePicked}
+            />
+            {notice && <p className="notice" role="alert">{notice}</p>}
 
           {images.length ? (
             <ul className="i2p-list">
@@ -292,13 +310,10 @@ export function ImagesToPdfPage() {
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className="thumb-empty">{t.emptyHint}</p>
-          )}
-          <span className="ct-chip">{t.images(images.length)}</span>
-        </section>
+          ) : null}
 
-        <section className="ct-panel panel-section i2p-main" aria-label={t.title}>
+            {images.length > 0 && (
+              <>
           <div className="i2p-options">
             <div className="field">
               <span>{t.pageSizeLabel}</span>
@@ -344,39 +359,19 @@ export function ImagesToPdfPage() {
             </label>
           </div>
 
-          <div className="action-bar">
-            <button
-              className="ct-button ct-button--primary i2p-create"
-              type="button"
-              disabled={busy || !images.length}
-              onClick={() => void handleCreate()}
-            >
-              {busy ? <span className="spinner" aria-hidden="true" /> : <FilePlus2 size={17} aria-hidden="true" />}
-              {busy ? t.working : t.create}
-            </button>
-            <label className="field i2p-output">
-              <span>{t.outputName}</span>
-              <input
-                type="text"
-                aria-label={t.outputName}
-                value={outputName}
-                placeholder={vi ? 'anh-thanh-pdf' : 'images-to-pdf'}
-                onChange={(event) => setOutputName(event.target.value)}
-              />
-            </label>
-          </div>
 
-          {opError && <p className="notice" role="alert">{opError}</p>}
+                {opError && <p className="notice" role="alert">{opError}</p>}
 
-          {result && (
-            <div className="notice notice--ok i2p-result" role="status">
-              <span>{t.resultText(resultPages)}</span>
-              <button className="ct-button ct-button--accent" type="button" onClick={handleDownload}>
-                {t.download}
-              </button>
-            </div>
-          )}
-        </section>
+                <div className="action-bar flow-actions">
+                  <button className="primary-action" type="button" disabled={busy} onClick={() => void handleCreate()}>
+                    {busy ? <span className="spinner" aria-hidden="true" /> : <FilePlus2 size={19} aria-hidden="true" />}
+                    {busy ? t.working : vi ? `Tạo PDF từ ${images.length} ảnh` : `Create PDF from ${images.length} images`}
+                  </button>
+                </div>
+              </>
+            )}
+          </section>
+        )}
       </div>
     </ToolShell>
   );

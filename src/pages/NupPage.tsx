@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
-import { ArrowLeft, Download, FileText, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, FileText, LayoutGrid } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
+import { ResultCard } from '../components/ResultCard';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
 import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
@@ -110,20 +111,20 @@ function readFileBytes(file: File): Promise<ArrayBuffer> {
 
 export function NupPage() {
   const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const vi = locale === 'vi';
   const t = STRINGS[locale];
 
   const [source, setSource] = useState<SourceDoc | null>(null);
   const [presetId, setPresetId] = useState('2x2');
   const [landscape, setLandscape] = useState(true);
   const [notice, setNotice] = useState<string | undefined>(undefined);
-  const [customName, setCustomName] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [opError, setOpError] = useState<string | null>(null);
   const [result, setResult] = useState<{ bytes: Uint8Array; pages: number; sheets: number } | null>(null);
 
   const preset = PRESETS.find((item) => item.id === presetId) ?? PRESETS[1];
   const sheetCount = source ? Math.ceil(source.pageCount / (preset.cols * preset.rows)) : 0;
-  const outputName = customName ?? (source ? `${source.file.name.replace(/\.pdf$/i, '')}-nup` : 'nup');
+  const outputName = (source ? `${source.file.name.replace(/\.pdf$/i, '')}-nup` : 'nup');
 
   const clearOutcome = useCallback(() => {
     setOpError(null);
@@ -135,7 +136,6 @@ export function NupPage() {
       const file = incoming[0];
       if (!file) return;
       clearOutcome();
-      setCustomName(null);
       setNotice(undefined);
       if (file.size > MAX_FILE_BYTES) {
         setSource(null);
@@ -189,100 +189,89 @@ export function NupPage() {
         <p>{t.description}</p>
       </div>
 
-      <div className="pdf-workspace pdf-workspace--two nup-workspace">
-        <section className="ct-panel panel-section nup-panel" aria-label={t.dropLabel}>
-          <FileDrop compact={source !== null} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+      <div className="flow nup-workspace">
+        {result ? (
+          <ResultCard
+            vi={vi}
+            message={t.resultText(result.pages, result.sheets)}
+            onDownload={handleDownload}
+            onReset={() => {
+              setSource(null);
+              setNotice(undefined);
+              clearOutcome();
+            }}
+          />
+        ) : (
+          <section className="ct-panel panel-section nup-panel" aria-label={t.dropLabel}>
+            <FileDrop compact={source !== null} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
-          {source && (
-            <div className="nup-source-info">
-              <span className="nup-source-name">{fileSummary(source.file)}</span>
-              <span className="ct-chip nup-chip">
-                <FileText size={13} aria-hidden="true" />
-                {t.pages(source.pageCount)}
-              </span>
-            </div>
-          )}
-        </section>
+            {source && (
+              <>
+                <div className="nup-source-info">
+                  <span className="nup-source-name">{fileSummary(source.file)}</span>
+                  <span className="ct-chip nup-chip">
+                    <FileText size={13} aria-hidden="true" />
+                    {t.pages(source.pageCount)}
+                  </span>
+                </div>
 
-        <section className="ct-panel panel-section nup-side" aria-label={t.title}>
-          <div className="field">
-            <span>{t.layoutLabel}</span>
-            <div className="nup-presets" role="group" aria-label={t.layoutLabel}>
-              {PRESETS.map((item) => {
-                const active = item.id === preset.id;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className={`nup-preset${active ? ' is-active' : ''}`}
-                    aria-pressed={active}
-                    onClick={() => {
-                      setPresetId(item.id);
+                <div className="field">
+                  <span>{t.layoutLabel}</span>
+                  <div className="nup-presets" role="group" aria-label={t.layoutLabel}>
+                    {PRESETS.map((item) => {
+                      const active = item.id === preset.id;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          className={`nup-preset${active ? ' is-active' : ''}`}
+                          aria-pressed={active}
+                          onClick={() => {
+                            setPresetId(item.id);
+                            clearOutcome();
+                          }}
+                        >
+                          {item.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <label className="nup-landscape">
+                  <input
+                    type="checkbox"
+                    checked={landscape}
+                    onChange={(event) => {
+                      setLandscape(event.target.checked);
                       clearOutcome();
                     }}
-                  >
-                    {item.label}
+                  />
+                  {t.landscape}
+                </label>
+
+                {sheetCount > 0 && !busy && (
+                  <p className="flow-hint" role="status">
+                    {t.estimate(sheetCount)}
+                  </p>
+                )}
+
+                {opError && (
+                  <p className="notice" role="alert">
+                    {opError}
+                  </p>
+                )}
+
+                <div className="action-bar flow-actions">
+                  <button className="primary-action" type="button" disabled={busy} onClick={() => void handleApply()}>
+                    {busy ? <span className="spinner" aria-hidden="true" /> : <LayoutGrid size={19} aria-hidden="true" />}
+                    {busy ? t.applying : t.action}
                   </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <label className="nup-landscape">
-            <input
-              type="checkbox"
-              checked={landscape}
-              onChange={(event) => {
-                setLandscape(event.target.checked);
-                clearOutcome();
-              }}
-            />
-            {t.landscape}
-          </label>
-
-          <label className="field nup-output">
-            <span>{t.outputLabel}</span>
-            <input
-              type="text"
-              value={outputName}
-              aria-label={t.outputAria}
-              onChange={(event) => setCustomName(event.target.value)}
-            />
-          </label>
-
-          <div className="action-bar">
-            <button
-              className="ct-button ct-button--primary nup-action"
-              type="button"
-              disabled={!source || busy}
-              onClick={() => void handleApply()}
-            >
-              {busy ? <span className="spinner" aria-hidden="true" /> : <LayoutGrid size={17} aria-hidden="true" />}
-              {busy ? t.applying : t.action}
-            </button>
-            {source && !busy && !result && sheetCount > 0 && (
-              <span className="ct-chip nup-estimate" role="status">
-                {t.estimate(sheetCount)}
-              </span>
+                </div>
+              </>
             )}
-          </div>
-
-          {opError && (
-            <p className="notice" role="alert">
-              {opError}
-            </p>
-          )}
-
-          {result && (
-            <div className="notice notice--ok nup-result" role="status">
-              <span>{t.resultText(result.pages, result.sheets)}</span>
-              <button className="ct-button ct-button--accent" type="button" onClick={handleDownload}>
-                <Download size={16} aria-hidden="true" />
-                {t.download}
-              </button>
-            </div>
-          )}
-        </section>
+          </section>
+        )}
       </div>
     </ToolShell>
   );

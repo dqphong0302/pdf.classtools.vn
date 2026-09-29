@@ -176,6 +176,6 @@ describe('ProtectPage', () => {
 
     const alert = await screen.findByRole('alert');
     expect(alert).toHaveTextContent('Không đọc được tệp: broken.pdf.');
-    expect(screen.getByRole('button', { name: 'Mã hóa & tải xuống' })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: 'Mã hóa & tải xuống' })).not.toBeInTheDocument();
   });
 });

@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
-import { ArrowLeft, ChevronDown, ChevronUp, Combine, Download, FileText, Trash2 } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronUp, Combine, FileText, Trash2 } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
+import { ResultCard } from '../components/ResultCard';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
 import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
@@ -107,13 +108,12 @@ export function MergePage() {
 
   const [entries, setEntries] = useState<MergeEntry[]>([]);
   const [notice, setNotice] = useState<string | undefined>(undefined);
-  const [customName, setCustomName] = useState<string | null>(null);
   const [merging, setMerging] = useState(false);
   const [mergeError, setMergeError] = useState<string | null>(null);
   const [result, setResult] = useState<{ bytes: Uint8Array; pages: number } | null>(null);
   const idRef = useRef(0);
 
-  const outputName = customName ?? (vi ? 'ghep-pdf' : 'merged');
+  const outputName = vi ? 'ghep' : 'merged';
   const allLoaded = entries.every((entry) => entry.pages >= 0);
   const canMerge = entries.length >= 2 && allLoaded && !merging;
   const clearOutcome = useCallback(() => {
@@ -214,98 +214,89 @@ export function MergePage() {
         <p>{t.description}</p>
       </div>
 
-      <div className="pdf-workspace pdf-workspace--two merge-workspace">
-        <section className="ct-panel panel-section merge-panel" aria-label={t.title}>
-          <FileDrop multiple compact={entries.length > 0} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+      <div className="flow merge-workspace">
+        {result ? (
+          <ResultCard
+            vi={vi}
+            message={t.resultText(result.pages)}
+            onDownload={handleDownload}
+            onReset={() => {
+              setEntries([]);
+              setNotice(undefined);
+              clearOutcome();
+            }}
+          />
+        ) : (
+          <section className="ct-panel panel-section merge-panel" aria-label={t.title}>
+            <FileDrop multiple compact={entries.length > 0} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
-          {entries.length > 0 && (
-            <ul className="file-list merge-file-list">
-              {entries.map((entry, index) => (
-                <li key={entry.id}>
-                  <span className="file-list__name">{fileSummary(entry.file)}</span>
-                  {entry.pages >= 0 ? (
-                    <span className="ct-chip merge-chip">
-                      <FileText size={13} aria-hidden="true" />
-                      {t.pages(entry.pages)}
+            {entries.length > 0 && (
+              <ul className="file-list merge-file-list">
+                {entries.map((entry, index) => (
+                  <li key={entry.id}>
+                    <span className="file-list__name">{fileSummary(entry.file)}</span>
+                    {entry.pages >= 0 ? (
+                      <span className="ct-chip merge-chip">
+                        <FileText size={13} aria-hidden="true" />
+                        {t.pages(entry.pages)}
+                      </span>
+                    ) : (
+                      <span className="ct-chip merge-chip merge-chip--pending">…</span>
+                    )}
+                    <span className="merge-row-actions">
+                      <button
+                        className="ct-icon-button"
+                        type="button"
+                        aria-label={t.moveUp(entry.file.name)}
+                        disabled={index === 0}
+                        onClick={() => moveEntry(index, -1)}
+                      >
+                        <ChevronUp size={15} aria-hidden="true" />
+                      </button>
+                      <button
+                        className="ct-icon-button"
+                        type="button"
+                        aria-label={t.moveDown(entry.file.name)}
+                        disabled={index === entries.length - 1}
+                        onClick={() => moveEntry(index, 1)}
+                      >
+                        <ChevronDown size={15} aria-hidden="true" />
+                      </button>
+                      <button
+                        className="ct-icon-button merge-remove"
+                        type="button"
+                        aria-label={t.remove(entry.file.name)}
+                        onClick={() => removeEntry(entry.id)}
+                      >
+                        <Trash2 size={15} aria-hidden="true" />
+                      </button>
                     </span>
-                  ) : (
-                    <span className="ct-chip merge-chip merge-chip--pending">…</span>
-                  )}
-                  <span className="merge-row-actions">
-                    <button
-                      className="ct-icon-button"
-                      type="button"
-                      aria-label={t.moveUp(entry.file.name)}
-                      disabled={index === 0}
-                      onClick={() => moveEntry(index, -1)}
-                    >
-                      <ChevronUp size={15} aria-hidden="true" />
-                    </button>
-                    <button
-                      className="ct-icon-button"
-                      type="button"
-                      aria-label={t.moveDown(entry.file.name)}
-                      disabled={index === entries.length - 1}
-                      onClick={() => moveEntry(index, 1)}
-                    >
-                      <ChevronDown size={15} aria-hidden="true" />
-                    </button>
-                    <button
-                      className="ct-icon-button merge-remove"
-                      type="button"
-                      aria-label={t.remove(entry.file.name)}
-                      onClick={() => removeEntry(entry.id)}
-                    >
-                      <Trash2 size={15} aria-hidden="true" />
-                    </button>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
+                  </li>
+                ))}
+              </ul>
+            )}
 
-          {entries.length > 0 && !allLoaded && <p className="merge-loading">{vi ? 'Đang đọc tệp…' : 'Reading files…'}</p>}
-        </section>
+            {entries.length > 0 && !allLoaded && <p className="merge-loading">{vi ? 'Đang đọc tệp…' : 'Reading files…'}</p>}
+            {entries.length === 1 && allLoaded && (
+              <p className="flow-hint">{vi ? 'Thêm ít nhất một tệp nữa để ghép.' : 'Add at least one more file to merge.'}</p>
+            )}
 
-        <section className="ct-panel panel-section merge-side">
-          <label className="field merge-output">
-            <span>{t.outputLabel}</span>
-            <input
-              type="text"
-              value={outputName}
-              aria-label={t.outputAria}
-              onChange={(event) => setCustomName(event.target.value)}
-            />
-          </label>
+            {mergeError && (
+              <p className="notice" role="alert">
+                {mergeError}
+              </p>
+            )}
 
-          <div className="action-bar">
-            <button className="ct-button ct-button--primary merge-action" type="button" disabled={!canMerge} onClick={handleMerge}>
-              {merging ? (
-                <span className="spinner" aria-hidden="true" />
-              ) : (
-                <Combine size={17} aria-hidden="true" />
-              )}
-              {merging ? t.merging : t.mergeAction}
-            </button>
-            {entries.length > 0 && <span className="ct-chip">{t.fileCount(entries.length)}</span>}
-          </div>
-
-          {mergeError && (
-            <p className="notice" role="alert">
-              {mergeError}
-            </p>
-          )}
-
-          {result && (
-            <div className="notice notice--ok merge-result" role="status">
-              <span>{t.resultText(result.pages)}</span>
-              <button className="ct-button ct-button--accent" type="button" onClick={handleDownload}>
-                <Download size={16} aria-hidden="true" />
-                {t.download}
-              </button>
-            </div>
-          )}
-        </section>
+            {entries.length > 0 && (
+              <div className="action-bar flow-actions">
+                <button className="primary-action" type="button" disabled={!canMerge} onClick={handleMerge}>
+                  {merging ? <span className="spinner" aria-hidden="true" /> : <Combine size={19} aria-hidden="true" />}
+                  {merging ? t.merging : vi ? `Ghép ${entries.length} tệp` : `Merge ${entries.length} files`}
+                </button>
+              </div>
+            )}
+          </section>
+        )}
       </div>
     </ToolShell>
   );

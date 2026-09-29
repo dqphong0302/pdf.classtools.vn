@@ -313,65 +313,67 @@ export function CropPage() {
           {source ? <CropPreview view={view} caption={t.previewLabel} /> : <p className="crop-empty">{t.emptyHint}</p>}
         </section>
 
-        <section className="ct-panel panel-section crop-side" aria-label={t.title}>
-          <div className="field">
-            <span>{t.marginsLabel}</span>
-            <div className="crop-margins">
-              {marginFields.map(({ key, label, aria }) => (
-                <label className="field" key={key}>
-                  <span>{label}</span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={60}
-                    value={margins[key]}
-                    aria-label={aria}
-                    onChange={(event) => updateMargin(key, event.target.value)}
-                  />
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div className="action-bar">
-            <button
-              className="ct-button ct-button--primary crop-apply"
-              type="button"
-              disabled={!canCrop}
-              onClick={() => void handleApply()}
-            >
-              {busy ? <span className="spinner" aria-hidden="true" /> : <Scissors size={17} aria-hidden="true" />}
-              {busy ? t.applying : t.apply}
-            </button>
-            <button className="ct-button ct-button--soft crop-reset" type="button" disabled={!canReset} onClick={handleReset}>
-              <RotateCcw size={16} aria-hidden="true" />
-              {t.reset}
-            </button>
-          </div>
-
-          {opError && (
-            <p className="notice" role="alert">
-              {opError}
-            </p>
-          )}
-
-          {result && (
-            <div className="crop-result">
-              <div className="notice notice--ok crop-result-ok" role="status">
-                <span>{t.cropped(result.pages)}</span>
-                <button className="ct-button ct-button--accent" type="button" onClick={handleDownload}>
-                  <Download size={16} aria-hidden="true" />
-                  {t.download}
-                </button>
+        {source && (
+          <section className="ct-panel panel-section crop-side" aria-label={t.title}>
+            <div className="field">
+              <span>{t.marginsLabel}</span>
+              <div className="crop-margins">
+                {marginFields.map(({ key, label, aria }) => (
+                  <label className="field" key={key}>
+                    <span>{label}</span>
+                    <input
+                      type="number"
+                      min={0}
+                      max={60}
+                      value={margins[key]}
+                      aria-label={aria}
+                      onChange={(event) => updateMargin(key, event.target.value)}
+                    />
+                  </label>
+                ))}
               </div>
-              {result.skipped > 0 && (
-                <p className="notice" role="alert">
-                  {t.skipped(result.skipped)}
-                </p>
-              )}
             </div>
-          )}
-        </section>
+
+            <div className="action-bar">
+              <button
+                className="ct-button ct-button--primary crop-apply"
+                type="button"
+                disabled={!canCrop}
+                onClick={() => void handleApply()}
+              >
+                {busy ? <span className="spinner" aria-hidden="true" /> : <Scissors size={17} aria-hidden="true" />}
+                {busy ? t.applying : t.apply}
+              </button>
+              <button className="ct-button ct-button--soft crop-reset" type="button" disabled={!canReset} onClick={handleReset}>
+                <RotateCcw size={16} aria-hidden="true" />
+                {t.reset}
+              </button>
+            </div>
+
+            {opError && (
+              <p className="notice" role="alert">
+                {opError}
+              </p>
+            )}
+
+            {result && (
+              <div className="crop-result">
+                <div className="notice notice--ok crop-result-ok" role="status">
+                  <span>{t.cropped(result.pages)}</span>
+                  <button className="ct-button ct-button--accent" type="button" onClick={handleDownload}>
+                    <Download size={16} aria-hidden="true" />
+                    {t.download}
+                  </button>
+                </div>
+                {result.skipped > 0 && (
+                  <p className="notice" role="alert">
+                    {t.skipped(result.skipped)}
+                  </p>
+                )}
+              </div>
+            )}
+          </section>
+        )}
       </div>
     </ToolShell>
   );

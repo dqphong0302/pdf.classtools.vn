@@ -36,7 +36,7 @@ describe('ImagesToPdfPage', () => {
 
     expect(await screen.findByText('a.png')).toBeInTheDocument();
     expect(screen.getByText('b.png')).toBeInTheDocument();
-    expect(screen.getByText('2 ảnh')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Tạo PDF từ 2 ảnh/ })).toBeEnabled();
 
     fireEvent.click(screen.getByRole('button', { name: /Tạo PDF/ }));
     await waitFor(() => {
@@ -72,12 +72,12 @@ describe('ImagesToPdfPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Xóa ảnh drop.png' }));
     expect(screen.queryByText('drop.png')).not.toBeInTheDocument();
-    expect(screen.getByText('1 ảnh')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Tạo PDF từ 1 ảnh/ })).toBeInTheDocument();
   });
 
-  it('disables create without images and shows a hint', () => {
+  it('shows only the drop zone until images are added', () => {
     renderPage();
-    expect(screen.getByRole('button', { name: /Tạo PDF/ })).toBeDisabled();
-    expect(screen.getByText('Chưa có ảnh nào. Hãy chọn ảnh để bắt đầu.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Tạo PDF/ })).not.toBeInTheDocument();
+    expect(screen.getByText('Chọn ảnh (PNG/JPG)')).toBeInTheDocument();
   });
 });

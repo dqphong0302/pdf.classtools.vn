@@ -1039,3 +1039,141 @@
     flex: 1 1 100%;
   }
 }
+
+/* ---- Result step: name, download, start over ---- */
+.result-card {
+  width: min(100%, 32rem);
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  margin: 1rem auto;
+  padding: clamp(1.6rem, 5vw, 2.4rem) clamp(1.2rem, 4vw, 2rem);
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-2xl);
+  background: var(--ct-surface-solid);
+  box-shadow: var(--ct-shadow-md);
+  text-align: center;
+}
+
+.result-card__icon {
+  width: 4rem;
+  height: 4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ct-success) 14%, var(--ct-surface-solid));
+  color: var(--ct-success);
+}
+
+.result-card h2 {
+  margin: 0.3rem 0 0;
+  font-family: var(--ct-font-display);
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.result-card p {
+  margin: 0;
+  color: var(--ct-ink-600);
+}
+
+.result-card__download {
+  width: 100%;
+  min-height: 3.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+  border: 0;
+  border-radius: var(--ct-radius-pill);
+  background: var(--ct-cobalt-500);
+  color: #fff;
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 750;
+  box-shadow: 0 12px 26px rgba(89, 103, 255, 0.28);
+  cursor: pointer;
+}
+
+.result-card__download:hover {
+  background: var(--ct-cobalt-600);
+}
+
+.result-card__reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.8rem;
+  border: 0;
+  background: transparent;
+  color: var(--ct-ink-600);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.result-card__reset:hover {
+  color: var(--ct-cobalt-600);
+  text-decoration: underline;
+}
+
+/* Primary "do it" button, used under the file list. */
+.primary-action {
+  min-height: 3.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0 1.8rem;
+  border: 0;
+  border-radius: var(--ct-radius-pill);
+  background: var(--ct-cobalt-500);
+  color: #fff;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 750;
+  box-shadow: 0 12px 26px rgba(89, 103, 255, 0.28);
+  cursor: pointer;
+}
+
+.primary-action:hover:not(:disabled) {
+  background: var(--ct-cobalt-600);
+}
+
+.primary-action:disabled {
+  opacity: 0.5;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.flow-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 0.4rem;
+}
+
+/* Single-column, step-by-step tool layout. */
+.flow {
+  width: min(100%, 44rem);
+  margin-inline: auto;
+}
+
+.flow-hint {
+  margin: 0;
+  color: var(--ct-ink-500);
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+/* Two-column tools show their options only once a file is loaded; until then the
+   drop zone stands alone, centered. */
+.pdf-workspace--two > section:only-child {
+  grid-column: 1 / -1;
+  width: min(100%, 44rem);
+  margin-inline: auto;
+}

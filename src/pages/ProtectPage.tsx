@@ -263,129 +263,131 @@ export function ProtectPage() {
           )}
         </section>
 
-        <section className="ct-panel panel-section protect-panel" aria-label={t.title}>
-          <div className="protect-tabs" role="group" aria-label={t.modeLabel}>
-            <button type="button" className="protect-tab" aria-pressed={mode === 'encrypt'} onClick={() => switchMode('encrypt')}>
-              <Lock size={15} aria-hidden="true" />
-              {t.tabEncrypt}
-            </button>
-            <button type="button" className="protect-tab" aria-pressed={mode === 'decrypt'} onClick={() => switchMode('decrypt')}>
-              <LockOpen size={15} aria-hidden="true" />
-              {t.tabDecrypt}
-            </button>
-          </div>
-
-          {mode === 'encrypt' ? (
-            <div className="protect-fields">
-              <label className="field protect-field">
-                <span>{t.userLabel}</span>
-                <input
-                  type="password"
-                  value={userPassword}
-                  aria-label={t.userLabel}
-                  autoComplete="new-password"
-                  onChange={(event) => setUserPassword(event.target.value)}
-                />
-                {userPassword.length > 0 && userPassword.length < MIN_PASSWORD_LENGTH && (
-                  <span className="protect-field-hint protect-field-hint--warn">{t.minChars}</span>
-                )}
-              </label>
-              <label className="field protect-field">
-                <span>{t.ownerLabel}</span>
-                <input
-                  type="password"
-                  value={ownerPassword}
-                  aria-label={t.ownerLabel}
-                  autoComplete="new-password"
-                  onChange={(event) => setOwnerPassword(event.target.value)}
-                />
-                {ownerPassword.length > 0 && ownerPassword.length < MIN_PASSWORD_LENGTH && (
-                  <span className="protect-field-hint protect-field-hint--warn">{t.minChars}</span>
-                )}
-              </label>
-
-              <div className="protect-strength-row">
-                <span className="protect-strength-label">{t.strengthLabel}</span>
-                <div className="protect-strength" role="group" aria-label={t.strengthLabel}>
-                  {(['128', '256'] as const).map((value) => (
-                    <button
-                      key={value}
-                      type="button"
-                      aria-pressed={strength === value}
-                      onClick={() => setStrength(value)}
-                    >
-                      {value === '128' ? 'AES-128' : 'AES-256'}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <p className="protect-note">
-                <Info size={14} aria-hidden="true" />
-                {t.firstRunNote}
-              </p>
-
-              <div className="action-bar">
-                <button
-                  className="ct-button ct-button--primary protect-action"
-                  type="button"
-                  disabled={!source || !passwordsValid || busy}
-                  onClick={handleEncrypt}
-                >
-                  {busy ? <span className="spinner" aria-hidden="true" /> : <Lock size={17} aria-hidden="true" />}
-                  {busy ? t.encrypting : t.encryptAction}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="protect-fields">
-              <label className="field protect-field">
-                <span>{t.decryptLabel}</span>
-                <input
-                  type="password"
-                  value={decryptPassword}
-                  aria-label={t.decryptLabel}
-                  autoComplete="off"
-                  onChange={(event) => setDecryptPassword(event.target.value)}
-                />
-              </label>
-              <p className="protect-field-hint">{t.decryptHint}</p>
-
-              <div className="action-bar">
-                <button
-                  className="ct-button ct-button--primary protect-action"
-                  type="button"
-                  disabled={!source || busy}
-                  onClick={handleDecrypt}
-                >
-                  {busy ? <span className="spinner" aria-hidden="true" /> : <LockOpen size={17} aria-hidden="true" />}
-                  {busy ? t.decrypting : t.decryptAction}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <p className="notice" role="alert">
-              {error}
-            </p>
-          )}
-
-          {result && (
-            <div className="notice notice--ok protect-result" role="status">
-              <span>{result.message}</span>
-              <button className="ct-button ct-button--accent" type="button" onClick={handleDownload}>
-                <Download size={16} aria-hidden="true" />
-                {t.download}
+        {source && (
+          <section className="ct-panel panel-section protect-panel" aria-label={t.title}>
+            <div className="protect-tabs" role="group" aria-label={t.modeLabel}>
+              <button type="button" className="protect-tab" aria-pressed={mode === 'encrypt'} onClick={() => switchMode('encrypt')}>
+                <Lock size={15} aria-hidden="true" />
+                {t.tabEncrypt}
+              </button>
+              <button type="button" className="protect-tab" aria-pressed={mode === 'decrypt'} onClick={() => switchMode('decrypt')}>
+                <LockOpen size={15} aria-hidden="true" />
+                {t.tabDecrypt}
               </button>
             </div>
-          )}
 
-          <p className="protect-privacy">
-            <ShieldCheck size={16} aria-hidden="true" />
-            {t.privacy}
-          </p>
-        </section>
+            {mode === 'encrypt' ? (
+              <div className="protect-fields">
+                <label className="field protect-field">
+                  <span>{t.userLabel}</span>
+                  <input
+                    type="password"
+                    value={userPassword}
+                    aria-label={t.userLabel}
+                    autoComplete="new-password"
+                    onChange={(event) => setUserPassword(event.target.value)}
+                  />
+                  {userPassword.length > 0 && userPassword.length < MIN_PASSWORD_LENGTH && (
+                    <span className="protect-field-hint protect-field-hint--warn">{t.minChars}</span>
+                  )}
+                </label>
+                <label className="field protect-field">
+                  <span>{t.ownerLabel}</span>
+                  <input
+                    type="password"
+                    value={ownerPassword}
+                    aria-label={t.ownerLabel}
+                    autoComplete="new-password"
+                    onChange={(event) => setOwnerPassword(event.target.value)}
+                  />
+                  {ownerPassword.length > 0 && ownerPassword.length < MIN_PASSWORD_LENGTH && (
+                    <span className="protect-field-hint protect-field-hint--warn">{t.minChars}</span>
+                  )}
+                </label>
+
+                <div className="protect-strength-row">
+                  <span className="protect-strength-label">{t.strengthLabel}</span>
+                  <div className="protect-strength" role="group" aria-label={t.strengthLabel}>
+                    {(['128', '256'] as const).map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        aria-pressed={strength === value}
+                        onClick={() => setStrength(value)}
+                      >
+                        {value === '128' ? 'AES-128' : 'AES-256'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="protect-note">
+                  <Info size={14} aria-hidden="true" />
+                  {t.firstRunNote}
+                </p>
+
+                <div className="action-bar">
+                  <button
+                    className="ct-button ct-button--primary protect-action"
+                    type="button"
+                    disabled={!source || !passwordsValid || busy}
+                    onClick={handleEncrypt}
+                  >
+                    {busy ? <span className="spinner" aria-hidden="true" /> : <Lock size={17} aria-hidden="true" />}
+                    {busy ? t.encrypting : t.encryptAction}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="protect-fields">
+                <label className="field protect-field">
+                  <span>{t.decryptLabel}</span>
+                  <input
+                    type="password"
+                    value={decryptPassword}
+                    aria-label={t.decryptLabel}
+                    autoComplete="off"
+                    onChange={(event) => setDecryptPassword(event.target.value)}
+                  />
+                </label>
+                <p className="protect-field-hint">{t.decryptHint}</p>
+
+                <div className="action-bar">
+                  <button
+                    className="ct-button ct-button--primary protect-action"
+                    type="button"
+                    disabled={!source || busy}
+                    onClick={handleDecrypt}
+                  >
+                    {busy ? <span className="spinner" aria-hidden="true" /> : <LockOpen size={17} aria-hidden="true" />}
+                    {busy ? t.decrypting : t.decryptAction}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {error && (
+              <p className="notice" role="alert">
+                {error}
+              </p>
+            )}
+
+            {result && (
+              <div className="notice notice--ok protect-result" role="status">
+                <span>{result.message}</span>
+                <button className="ct-button ct-button--accent" type="button" onClick={handleDownload}>
+                  <Download size={16} aria-hidden="true" />
+                  {t.download}
+                </button>
+              </div>
+            )}
+
+            <p className="protect-privacy">
+              <ShieldCheck size={16} aria-hidden="true" />
+              {t.privacy}
+            </p>
+          </section>
+        )}
       </div>
     </ToolShell>
   );

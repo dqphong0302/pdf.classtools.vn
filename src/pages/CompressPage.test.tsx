@@ -47,13 +47,17 @@ describe('CompressPage', () => {
     sample = await createPdfFile(2, 'sample.pdf');
   });
 
-  it('defaults to the balanced ebook preset', () => {
-    render(<CompressPage />);
+  it('defaults to the balanced ebook preset once a file is loaded', async () => {
+    const { container } = render(<CompressPage />);
+    // Options stay hidden until there is a file to compress.
+    expect(screen.queryByRole('button', { name: /Nén PDF/ })).not.toBeInTheDocument();
+    upload(container, sample);
+    await screen.findByText('2 trang');
 
     expect(screen.getByRole('button', { name: /Cân bằng \(150dpi\)/ })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: /Chất lượng cao \(300dpi\)/ })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: /Nhỏ nhất \(72dpi\)/ })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByRole('button', { name: /Nén PDF/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Nén PDF/ })).toBeEnabled();
   });
 
   it('compresses with the ebook preset and downloads the result', async () => {

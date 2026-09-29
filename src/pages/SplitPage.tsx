@@ -254,7 +254,6 @@ export function SplitPage() {
   const [opError, setOpError] = useState<string | null>(null);
   const [single, setSingle] = useState<ExtractResult | null>(null);
   const [parts, setParts] = useState<SplitPart[] | null>(null);
-  const [customName, setCustomName] = useState<string | null>(null);
   const [saveFormat, setSaveFormat] = useState<'pdf' | PageImageFormat>('pdf');
   const [saving, setSaving] = useState(false);
 
@@ -262,7 +261,6 @@ export function SplitPage() {
     setOpError(null);
     setSingle(null);
     setParts(null);
-    setCustomName(null);
   }, []);
 
   const parsed = useMemo(() => {
@@ -393,7 +391,7 @@ export function SplitPage() {
           single.indices
         ).replace(/,\s*/g, '-')}`
       : '';
-  const singleName = customName ?? singleDefaultName;
+  const singleName = singleDefaultName;
 
   const handleDownloadSingle = useCallback(async () => {
     if (!single) return;
@@ -610,15 +608,6 @@ export function SplitPage() {
               {single && (
                 <div className="split-result notice notice--ok" role="status">
                   <span>{t.resultText(single.pages)}</span>
-                  <label className="field split-result__name">
-                    <span>{t.outputLabel}</span>
-                    <input
-                      type="text"
-                      value={singleName}
-                      aria-label={t.outputAria}
-                      onChange={(event) => setCustomName(event.target.value)}
-                    />
-                  </label>
                   <div className="field split-format" role="group" aria-label={t.saveAs}>
                     <span>{t.saveAs}</span>
                     <div className="split-format__options">

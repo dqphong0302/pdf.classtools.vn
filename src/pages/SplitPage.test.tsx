@@ -92,7 +92,7 @@ describe('SplitPage', () => {
 
     const status = await screen.findByRole('status');
     expect(status).toHaveTextContent('4 trang');
-    expect(screen.getByDisplayValue('six-trang-1-3-5')).toBeInTheDocument();
+    expect(screen.queryByDisplayValue('six-trang-1-3-5')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Tải xuống' }));
     expect(URL.createObjectURL).toHaveBeenCalledWith(expect.any(Blob));
@@ -171,7 +171,7 @@ describe('SplitPage', () => {
 
     const status = await screen.findByRole('status');
     expect(status).toHaveTextContent('3 trang');
-    expect(screen.getByDisplayValue('six-trang-1-3-6')).toBeInTheDocument();
+    expect(screen.queryByDisplayValue('six-trang-1-3-6')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Tải xuống' }));
     expect(URL.createObjectURL).toHaveBeenCalledWith(expect.any(Blob));

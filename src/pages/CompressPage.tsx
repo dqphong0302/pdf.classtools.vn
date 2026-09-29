@@ -239,67 +239,69 @@ export function CompressPage() {
           )}
         </section>
 
-        <section className="ct-panel panel-section compress-side">
-          <div className="compress-presets" role="group" aria-label={t.presetLabel}>
-            {PRESETS.map(({ id, icon: Icon }) => (
+        {source && (
+          <section className="ct-panel panel-section compress-side">
+            <div className="compress-presets" role="group" aria-label={t.presetLabel}>
+              {PRESETS.map(({ id, icon: Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  className={`compress-preset${preset === id ? ' compress-preset--active' : ''}`}
+                  aria-pressed={preset === id}
+                  onClick={() => setPreset(id)}
+                >
+                  <Icon size={17} aria-hidden="true" className="compress-preset__icon" />
+                  <span className="compress-preset__text">
+                    <span className="compress-preset__title">{t.presetTitle[id]}</span>
+                    <span className="compress-preset__hint">{t.presetHint[id]}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <div className="action-bar">
               <button
-                key={id}
+                className="ct-button ct-button--primary compress-action"
                 type="button"
-                className={`compress-preset${preset === id ? ' compress-preset--active' : ''}`}
-                aria-pressed={preset === id}
-                onClick={() => setPreset(id)}
+                disabled={!canCompress}
+                onClick={handleCompress}
               >
-                <Icon size={17} aria-hidden="true" className="compress-preset__icon" />
-                <span className="compress-preset__text">
-                  <span className="compress-preset__title">{t.presetTitle[id]}</span>
-                  <span className="compress-preset__hint">{t.presetHint[id]}</span>
-                </span>
-              </button>
-            ))}
-          </div>
-
-          <div className="action-bar">
-            <button
-              className="ct-button ct-button--primary compress-action"
-              type="button"
-              disabled={!canCompress}
-              onClick={handleCompress}
-            >
-              {busy ? <span className="spinner" aria-hidden="true" /> : <Minimize2 size={17} aria-hidden="true" />}
-              {busy ? t.compressing : t.compressAction}
-            </button>
-          </div>
-
-          {source && !result && <p className="compress-first-note">{t.firstRunNote}</p>}
-
-          {error && (
-            <p className="notice" role="alert">
-              {error}
-            </p>
-          )}
-
-          {result && !shrunk && (
-            <p className="notice compress-warning" role="alert">
-              {t.cannotShrink}
-            </p>
-          )}
-
-          {result && (
-            <div className="notice notice--ok compress-result" role="status">
-              <span className="compress-result__label">{t.resultReady}</span>
-              <div className="compress-sizes">
-                <span className="compress-size">{formatBytes(result.originalSize)}</span>
-                <span className="compress-sizes__arrow" aria-hidden="true">→</span>
-                <span className="compress-size compress-size--out">{formatBytes(result.compressedSize)}</span>
-              </div>
-              {shrunk && <strong className="compress-saved">{t.saved(savedPercent)}</strong>}
-              <button className="ct-button ct-button--accent compress-download" type="button" onClick={handleDownload}>
-                <Download size={16} aria-hidden="true" />
-                {t.download}
+                {busy ? <span className="spinner" aria-hidden="true" /> : <Minimize2 size={17} aria-hidden="true" />}
+                {busy ? t.compressing : t.compressAction}
               </button>
             </div>
-          )}
-        </section>
+
+            {source && !result && <p className="compress-first-note">{t.firstRunNote}</p>}
+
+            {error && (
+              <p className="notice" role="alert">
+                {error}
+              </p>
+            )}
+
+            {result && !shrunk && (
+              <p className="notice compress-warning" role="alert">
+                {t.cannotShrink}
+              </p>
+            )}
+
+            {result && (
+              <div className="notice notice--ok compress-result" role="status">
+                <span className="compress-result__label">{t.resultReady}</span>
+                <div className="compress-sizes">
+                  <span className="compress-size">{formatBytes(result.originalSize)}</span>
+                  <span className="compress-sizes__arrow" aria-hidden="true">→</span>
+                  <span className="compress-size compress-size--out">{formatBytes(result.compressedSize)}</span>
+                </div>
+                {shrunk && <strong className="compress-saved">{t.saved(savedPercent)}</strong>}
+                <button className="ct-button ct-button--accent compress-download" type="button" onClick={handleDownload}>
+                  <Download size={16} aria-hidden="true" />
+                  {t.download}
+                </button>
+              </div>
+            )}
+          </section>
+        )}
       </div>
     </ToolShell>
   );

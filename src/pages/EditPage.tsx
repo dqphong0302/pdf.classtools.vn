@@ -433,7 +433,6 @@ export function EditPage() {
   const [busy, setBusy] = useState(false);
   const [opError, setOpError] = useState<string | null>(null);
   const [result, setResult] = useState<Uint8Array | null>(null);
-  const [outputName, setOutputName] = useState('');
 
   const previewWrapRef = useRef<HTMLDivElement | null>(null);
   const [draggingId, setDraggingId] = useState<number | null>(null);
@@ -474,7 +473,6 @@ export function EditPage() {
       setOpError(null);
       setResult(null);
       setSelected(0);
-      setOutputName('');
       if (file.size > MAX_FILE_BYTES) {
         setSource(null);
         setNotice(t.oversized(file.name));
@@ -702,9 +700,9 @@ export function EditPage() {
   const handleDownload = useCallback(() => {
     if (!result || !source) return;
     const base = source.file.name.replace(/\.pdf$/i, '');
-    const name = outputName.trim() || `${base}-${vi ? 'da-chinh-sua' : 'edited'}`;
+    const name = `${base}-${vi ? 'da-chinh-sua' : 'edited'}`;
     downloadBytes(result, withPdfSuffix(name));
-  }, [result, source, outputName, vi]);
+  }, [result, source, vi]);
 
   const pageNumbers = source ? Array.from({ length: source.pageCount }, (_, index) => index + 1) : [];
 
@@ -1043,16 +1041,6 @@ export function EditPage() {
                   {busy ? <span className="spinner" aria-hidden="true" /> : <PenLine size={17} aria-hidden="true" />}
                   {busy ? t.working : t.apply}
                 </button>
-                <label className="field edit-output">
-                  <span>{t.outputName}</span>
-                  <input
-                    type="text"
-                    aria-label={t.outputName}
-                    value={outputName}
-                    placeholder={`${(source?.file.name ?? 'tai-lieu.pdf').replace(/\.pdf$/i, '')}-${vi ? 'da-chinh-sua' : 'edited'}`}
-                    onChange={(event) => setOutputName(event.target.value)}
-                  />
-                </label>
               </div>
 
               {opError && (

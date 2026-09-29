@@ -41,15 +41,15 @@ describe('MergePage', () => {
 
   it('lists added files with page chips and enables merge only with two files', async () => {
     const { container } = render(<MergePage />);
-    const mergeButton = screen.getByRole('button', { name: /Ghép PDF/ });
-    expect(mergeButton).toBeDisabled();
+    // Nothing but the drop zone until a file is chosen.
+    expect(screen.queryByRole('button', { name: /Ghép \d+ tệp/ })).not.toBeInTheDocument();
 
     upload(container, [twoPage, threePage]);
 
     expect(await screen.findByText(/^a\.pdf ·/)).toBeInTheDocument();
     expect(await screen.findByText('2 trang')).toBeInTheDocument();
     expect(await screen.findByText('3 trang')).toBeInTheDocument();
-    expect(mergeButton).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Ghép 2 tệp' })).toBeEnabled();
   });
 
   it('reorders files with move up and move down buttons', async () => {
@@ -75,10 +75,12 @@ describe('MergePage', () => {
     upload(container, [twoPage, threePage]);
     await screen.findByText('3 trang');
 
-    fireEvent.click(screen.getByRole('button', { name: /Ghép PDF/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Ghép 2 tệp/ }));
 
     const status = await screen.findByRole('status');
     expect(status).toHaveTextContent('5 trang');
+    // No file-name prompt: the result is named automatically.
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /Tải xuống/ }));
     expect(URL.createObjectURL).toHaveBeenCalledWith(expect.any(Blob));
@@ -93,8 +95,8 @@ describe('MergePage', () => {
     fireEvent.click(screen.getByRole('button', { name: /Xóa a\.pdf/ }));
 
     await waitFor(() => expect(screen.queryByText(/^a\.pdf ·/)).not.toBeInTheDocument());
-    expect(screen.getByText('1 tệp')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Ghép PDF/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Ghép 1 tệp' })).toBeDisabled();
+    expect(screen.getByText('Thêm ít nhất một tệp nữa để ghép.')).toBeInTheDocument();
   });
 
   it('skips oversized and unreadable files with an alert notice', async () => {
@@ -110,6 +112,6 @@ describe('MergePage', () => {
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Không đọc được tệp'));
     expect(screen.getByRole('alert')).toHaveTextContent('quá 100 MB');
     expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Ghép PDF/ })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: /Ghép \d+ tệp/ })).not.toBeInTheDocument();
   });
 });
