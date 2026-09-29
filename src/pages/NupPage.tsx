@@ -191,7 +191,7 @@ export function NupPage() {
 
       <div className="pdf-workspace pdf-workspace--two nup-workspace">
         <section className="ct-panel panel-section nup-panel" aria-label={t.dropLabel}>
-          <FileDrop label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+          <FileDrop compact={source !== null} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
           {source && (
             <div className="nup-source-info">

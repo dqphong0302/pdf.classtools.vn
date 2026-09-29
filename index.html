@@ -12,6 +12,14 @@
     </script>
 
     <meta charset="UTF-8" />
+    <script>
+      // Apply saved theme/locale before first paint (avoids a light flash in dark mode).
+      try {
+        var t = localStorage.getItem('classtools-theme');
+        if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+        if (localStorage.getItem('classtools-locale') === 'en') document.documentElement.lang = 'en';
+      } catch (e) {}
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f7f5ef" />
     <meta name="description" content="ClassTools PDF — Ghép, tách, sắp xếp, chỉnh sửa và ký PDF ngay trên trình duyệt. Tệp không bao giờ rời khỏi thiết bị của bạn." />

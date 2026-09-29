@@ -243,7 +243,7 @@ export function ProtectPage() {
 
       <div className="pdf-workspace pdf-workspace--two protect-workspace">
         <section className="ct-panel panel-section protect-panel" aria-label={t.dropLabel}>
-          <FileDrop label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+          <FileDrop compact={source !== null} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
           {source && (
             <div className="protect-source-info">

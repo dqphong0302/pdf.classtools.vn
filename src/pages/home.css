@@ -1,0 +1,115 @@
+.home-hero {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  padding: clamp(1.5rem, 5vw, 3rem) 0 1.2rem;
+  text-align: center;
+}
+
+.home-hero h1 {
+  max-width: 26ch;
+  margin: 0;
+  font-family: var(--ct-font-display);
+  font-size: clamp(1.9rem, 4.6vw, 3rem);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.home-hero p {
+  max-width: 36rem;
+  margin: 0;
+  color: var(--ct-ink-600);
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.home-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0 1.6rem;
+}
+
+.home-tab {
+  min-height: 2.5rem;
+  padding: 0 1.1rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-pill);
+  background: var(--ct-surface-solid);
+  color: var(--ct-ink-700);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.home-tab:hover {
+  border-color: var(--ct-border-strong);
+}
+
+.home-tab:focus-visible {
+  outline: 2px solid var(--ct-focus);
+  outline-offset: 2px;
+}
+
+.home-tab.is-active {
+  border-color: var(--ct-ink-900);
+  background: var(--ct-ink-900);
+  color: var(--ct-paper-strong);
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+}
+
+.tool-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 1.4rem 1.3rem 1.5rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-xl);
+  background: var(--ct-surface-solid);
+  color: inherit;
+  text-decoration: none;
+  transition: transform var(--ct-fast) var(--ct-ease), box-shadow var(--ct-fast) var(--ct-ease), border-color var(--ct-fast) ease;
+}
+
+.tool-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--ct-border-strong);
+  box-shadow: var(--ct-shadow-md);
+}
+
+.tool-card:focus-visible {
+  outline: 2px solid var(--ct-focus);
+  outline-offset: 2px;
+}
+
+.tool-card__icon {
+  width: 3.6rem;
+  height: 3.6rem;
+  display: grid;
+  place-items: center;
+  margin-bottom: 0.5rem;
+  border-radius: var(--ct-radius-lg);
+  color: #fff;
+  box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.4);
+}
+
+.tool-card strong {
+  font-size: 1.08rem;
+  letter-spacing: -0.01em;
+}
+
+.tool-card__desc {
+  color: var(--ct-ink-600);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}

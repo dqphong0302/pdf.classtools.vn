@@ -1,7 +1,7 @@
 .pdf-excel-container {
   max-width: 860px;
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 0;
 }
 
 .pdf-excel-workspace {
@@ -14,12 +14,12 @@
   display: flex;
   gap: 1rem;
   padding: 1.25rem;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: var(--pdui-radius-lg, 0.75rem);
+  background: var(--ct-teal-100);
+  border: 1px solid color-mix(in srgb, var(--ct-success) 35%, transparent);
+  border-radius: var(--pdui-radius-lg);
 }
 
 .excel-info-card .icon {
-  color: #16a34a;
+  color: var(--ct-teal-700);
   flex-shrink: 0;
 }

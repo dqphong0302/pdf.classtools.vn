@@ -6,7 +6,9 @@ export interface PageRotation {
 }
 
 /**
- * Rotates all pages or specific pages in a PDF document by a given angle delta.
+ * Rotates pages by a clockwise delta on top of their existing /Rotate: either one
+ * delta for every page, or a per-page map (0-based index → delta). Pages missing
+ * from the map keep their rotation.
  */
 export async function rotatePdfPages(
   sourceBytes: Uint8Array,
@@ -23,8 +25,7 @@ export async function rotatePdfPages(
     if (typeof rotations === 'number') {
       newAngle = (currentAngle + rotations) % 360;
     } else if (rotations.has(i)) {
-      const target = rotations.get(i)!;
-      newAngle = target % 360;
+      newAngle = (currentAngle + rotations.get(i)!) % 360;
     }
 
     if (newAngle < 0) newAngle += 360;

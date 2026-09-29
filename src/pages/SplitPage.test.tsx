@@ -2,9 +2,18 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { beforeAll, beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { SplitPage } from './SplitPage';
+import { renderPdfToImages } from '../lib/pdfPageImages';
+import * as download from '../lib/download';
 
 vi.mock('../lib/pdfPreview', () => ({
   openPdfView: vi.fn().mockRejectedValue(new Error('no preview'))
+}));
+
+vi.mock('../lib/pdfPageImages', () => ({
+  renderPdfToImages: vi.fn(async () => [
+    { pageNumber: 1, bytes: new Uint8Array([1]) },
+    { pageNumber: 2, bytes: new Uint8Array([2]) }
+  ])
 }));
 
 async function createPdfFile(pages: number, name: string): Promise<File> {
@@ -179,5 +188,29 @@ describe('SplitPage', () => {
     const alert = await screen.findByRole('alert');
     expect(alert).toHaveTextContent('Không đọc được tệp');
     expect(screen.getByText('Tải lên một tệp PDF để bắt đầu tách trang.')).toBeInTheDocument();
+  });
+  it('asks for a save format and exports the extracted pages as images in a ZIP', async () => {
+    const container = await renderWithSixPages();
+    const downloadSpy = vi.spyOn(download, 'downloadBytes').mockImplementation(() => undefined);
+
+    fireEvent.change(screen.getByLabelText('Khoảng trang cần trích'), { target: { value: '1, 3' } });
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Trích xuất/ }));
+    await screen.findByText(/Đã trích 2 trang/);
+
+    // PDF is the default choice
+    expect(screen.getByRole('button', { name: 'Tệp PDF' })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(screen.getByRole('button', { name: 'Tải xuống' }));
+    await waitFor(() => expect(downloadSpy).toHaveBeenCalledTimes(1));
+    expect(downloadSpy.mock.calls[0][1]).toMatch(/\.pdf$/);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ảnh JPG' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Tải xuống' }));
+    await waitFor(() => expect(downloadSpy).toHaveBeenCalledTimes(2));
+    expect(renderPdfToImages).toHaveBeenCalledWith(expect.any(Uint8Array), 'jpg');
+    const [, name, mime] = downloadSpy.mock.calls[1];
+    expect(name).toMatch(/\.zip$/);
+    expect(mime).toBe('application/zip');
+    expect(container).toBeTruthy();
   });
 });

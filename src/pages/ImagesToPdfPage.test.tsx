@@ -31,7 +31,7 @@ describe('ImagesToPdfPage', () => {
 
   it('adds images and creates a PDF with one page per image', async () => {
     renderPage();
-    const input = screen.getByLabelText('Chọn ảnh (PNG/JPG)');
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
     fireEvent.change(input, { target: { files: [pngFile('a.png'), pngFile('b.png')] } });
 
     expect(await screen.findByText('a.png')).toBeInTheDocument();
@@ -49,7 +49,7 @@ describe('ImagesToPdfPage', () => {
 
   it('reorders images with move buttons', async () => {
     renderPage();
-    const input = screen.getByLabelText('Chọn ảnh (PNG/JPG)');
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
     fireEvent.change(input, { target: { files: [pngFile('first.png'), pngFile('second.png')] } });
     await screen.findByText('first.png');
 
@@ -66,7 +66,7 @@ describe('ImagesToPdfPage', () => {
 
   it('removes an image from the list', async () => {
     renderPage();
-    const input = screen.getByLabelText('Chọn ảnh (PNG/JPG)');
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
     fireEvent.change(input, { target: { files: [pngFile('keep.png'), pngFile('drop.png')] } });
     await screen.findByText('keep.png');
 

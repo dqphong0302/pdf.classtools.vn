@@ -3,7 +3,7 @@ import { Archive, ArrowLeft, Download, FileText, ShieldCheck } from 'lucide-reac
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
+import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { convertToPdfa } from '../lib/wasmGhostscript';
 import './pdf-to-pdfa.css';
@@ -92,7 +92,7 @@ export function PdfToPdfaPage() {
                 <div>
                   <h3 className="file-name">{doc.file.name}</h3>
                   <p className="file-meta">
-                    {fileSummary(doc.file)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
+                    {formatBytes(doc.file.size)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
                   </p>
                 </div>
               </div>

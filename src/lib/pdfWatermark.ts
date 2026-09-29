@@ -1,5 +1,6 @@
-import { PDFDocument, degrees, rgb } from 'pdf-lib';
-import { ensureEmbeddedFonts } from './pdfEdit';
+import { PDFDocument, degrees } from 'pdf-lib';
+import { ensureEmbeddedFonts, hexToPdfRgb } from './pdfEdit';
+import { centeredOrigin, pageFrame } from './pdfPlacement';
 
 export interface TextWatermarkOptions {
   type: 'text';
@@ -23,94 +24,94 @@ export interface ImageWatermarkOptions {
 
 export type WatermarkOptions = TextWatermarkOptions | ImageWatermarkOptions;
 
+/**
+ * Centres (visual space) of every stamp on a page. When tiled, the grid step is the
+ * stamp's rotated bounding box plus `gap`, with every other row shifted by half a
+ * step, so rotated stamps never overlap.
+ */
+export function watermarkCentres(
+  pageWidth: number,
+  pageHeight: number,
+  tiled: boolean,
+  stamp: { width: number; height: number; angle: number; gap: number }
+) {
+  if (!tiled) return [{ x: pageWidth / 2, y: pageHeight / 2 }];
+  const rad = (stamp.angle * Math.PI) / 180;
+  const cos = Math.abs(Math.cos(rad));
+  const sin = Math.abs(Math.sin(rad));
+  const stepX = stamp.width * cos + stamp.height * sin + stamp.gap;
+  const stepY = stamp.width * sin + stamp.height * cos + stamp.gap;
+  const centres: { x: number; y: number }[] = [];
+  for (let row = 0, y = stepY / 2; y < pageHeight + stepY / 2; row += 1, y += stepY) {
+    const shift = row % 2 ? stepX / 2 : 0;
+    for (let x = stepX / 2 - shift; x < pageWidth + stepX / 2; x += stepX) {
+      centres.push({ x, y });
+    }
+  }
+  return centres;
+}
+
 export async function addWatermark(
   sourceBytes: Uint8Array,
   options: WatermarkOptions
 ): Promise<Uint8Array> {
   const pdf = await PDFDocument.load(sourceBytes, { ignoreEncryption: true });
-  const count = pdf.getPageCount();
 
   if (options.type === 'text') {
     const fonts = await ensureEmbeddedFonts(pdf);
-    const cleanHex = options.colorHex.replace('#', '').trim();
-    const r = parseInt(cleanHex.slice(0, 2), 16) / 255 || 0.5;
-    const g = parseInt(cleanHex.slice(2, 4), 16) / 255 || 0.5;
-    const b = parseInt(cleanHex.slice(4, 6), 16) / 255 || 0.5;
-    const color = rgb(r, g, b);
+    const color = hexToPdfRgb(options.colorHex);
+    const textWidth = fonts.bold.widthOfTextAtSize(options.text, options.fontSize);
+    // Cap height ≈ 0.7em; centring on it keeps the glyphs visually centred.
+    const textHeight = options.fontSize * 0.7;
 
-    for (let i = 0; i < count; i++) {
-      const page = pdf.getPage(i);
-      const { width, height } = page.getSize();
-      const textWidth = fonts.bold.widthOfTextAtSize(options.text, options.fontSize);
-
-      if (options.tiled) {
-        // Draw grid
-        const stepX = Math.max(180, textWidth + 60);
-        const stepY = 160;
-        for (let x = -width / 2; x < width * 1.5; x += stepX) {
-          for (let y = -height / 2; y < height * 1.5; y += stepY) {
-            page.drawText(options.text, {
-              x,
-              y,
-              size: options.fontSize,
-              font: fonts.bold,
-              color,
-              opacity: options.opacity,
-              rotate: degrees(options.angle)
-            });
-          }
-        }
-      } else {
-        // Single centered watermark
-        const cx = (width - textWidth) / 2;
-        const cy = height / 2;
+    for (const page of pdf.getPages()) {
+      const frame = pageFrame(page);
+      const centres = watermarkCentres(frame.width, frame.height, options.tiled, {
+        width: textWidth,
+        height: textHeight,
+        angle: options.angle,
+        gap: options.fontSize
+      });
+      for (const centre of centres) {
+        const origin = centeredOrigin(centre.x, centre.y, textWidth, textHeight, options.angle);
+        const at = frame.toPdf(origin.x, origin.y);
         page.drawText(options.text, {
-          x: cx,
-          y: cy,
+          x: at.x,
+          y: at.y,
           size: options.fontSize,
           font: fonts.bold,
           color,
           opacity: options.opacity,
-          rotate: degrees(options.angle)
+          rotate: degrees(options.angle + frame.rotation)
         });
       }
     }
   } else {
-    // Image watermark
     const embeddedImage = options.isPng
       ? await pdf.embedPng(options.imageBytes)
       : await pdf.embedJpg(options.imageBytes);
 
-    const baseWidth = embeddedImage.width * options.scale;
-    const baseHeight = embeddedImage.height * options.scale;
+    const imageWidth = embeddedImage.width * options.scale;
+    const imageHeight = embeddedImage.height * options.scale;
 
-    for (let i = 0; i < count; i++) {
-      const page = pdf.getPage(i);
-      const { width, height } = page.getSize();
-
-      if (options.tiled) {
-        const stepX = Math.max(150, baseWidth + 80);
-        const stepY = Math.max(150, baseHeight + 80);
-        for (let x = 40; x < width; x += stepX) {
-          for (let y = 40; y < height; y += stepY) {
-            page.drawImage(embeddedImage, {
-              x,
-              y,
-              width: baseWidth,
-              height: baseHeight,
-              opacity: options.opacity,
-              rotate: degrees(options.angle)
-            });
-          }
-        }
-      } else {
+    for (const page of pdf.getPages()) {
+      const frame = pageFrame(page);
+      const centres = watermarkCentres(frame.width, frame.height, options.tiled, {
+        width: imageWidth,
+        height: imageHeight,
+        angle: options.angle,
+        gap: 40
+      });
+      for (const centre of centres) {
+        const origin = centeredOrigin(centre.x, centre.y, imageWidth, imageHeight, options.angle);
+        const at = frame.toPdf(origin.x, origin.y);
         page.drawImage(embeddedImage, {
-          x: (width - baseWidth) / 2,
-          y: (height - baseHeight) / 2,
-          width: baseWidth,
-          height: baseHeight,
+          x: at.x,
+          y: at.y,
+          width: imageWidth,
+          height: imageHeight,
           opacity: options.opacity,
-          rotate: degrees(options.angle)
+          rotate: degrees(options.angle + frame.rotation)
         });
       }
     }

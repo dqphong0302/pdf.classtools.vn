@@ -17,3 +17,4 @@ function copyPackageFile(packageName, relativeFile, targetDir, targetName) {
 copyPackageFile('@bentopdf/gs-wasm', 'assets/gs.js', 'public/wasm/gs', 'gs.js');
 copyPackageFile('@bentopdf/gs-wasm', 'assets/gs.wasm', 'public/wasm/gs', 'gs.wasm');
 copyPackageFile('@jspawn/qpdf-wasm', 'qpdf.wasm', 'public/wasm/qpdf', 'qpdf.wasm');
+copyPackageFile('@jspawn/qpdf-wasm', 'qpdf.js', 'public/wasm/qpdf', 'qpdf.js');

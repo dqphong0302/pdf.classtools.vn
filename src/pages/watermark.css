@@ -1,7 +1,7 @@
 .watermark-container {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 0;
 }
 
 .wm-workspace {
@@ -12,20 +12,20 @@
 
 .wm-layout {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: 2rem;
 }
 
 @media (max-width: 800px) {
   .wm-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 .wm-settings-card {
-  background: var(--pdui-bg-surface, #ffffff);
-  border: 1px solid var(--pdui-border, #e2e8f0);
-  border-radius: var(--pdui-radius-lg, 0.75rem);
+  background: var(--pdui-bg-surface);
+  border: 1px solid var(--pdui-border);
+  border-radius: var(--pdui-radius-lg);
   padding: 1.5rem;
 }
 
@@ -33,9 +33,9 @@
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1.25rem;
-  background: var(--pdui-bg-subtle, #f1f5f9);
+  background: var(--pdui-bg-subtle);
   padding: 4px;
-  border-radius: var(--pdui-radius-md, 0.5rem);
+  border-radius: var(--pdui-radius-md);
 }
 
 .tab-btn {
@@ -54,8 +54,8 @@
 }
 
 .tab-btn.active {
-  background: var(--pdui-bg-surface, #ffffff);
-  color: var(--pdui-primary, #2563eb);
+  background: var(--pdui-bg-surface);
+  color: var(--pdui-primary);
   font-weight: 600;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
@@ -70,14 +70,14 @@
 .chip {
   font-size: 0.75rem;
   padding: 3px 8px;
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
+  background: var(--ct-canvas);
+  border: 1px solid var(--ct-border-strong);
   border-radius: 9999px;
   cursor: pointer;
 }
 
 .chip:hover {
-  background: #e2e8f0;
+  background: var(--ct-ink-200);
 }
 
 .checkbox-row {

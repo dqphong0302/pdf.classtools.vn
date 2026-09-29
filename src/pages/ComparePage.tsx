@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Columns, Eye, FileText } from 'lucide-react';
+import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
 import { getPdfPageCount } from '../lib/pdfOps';
@@ -38,6 +39,17 @@ export function ComparePage() {
     viewARef.current = null;
     viewBRef.current = null;
   }, []);
+
+  useEffect(() => cleanup, [cleanup]);
+
+  const releaseViewA = () => {
+    viewARef.current?.destroy();
+    viewARef.current = null;
+  };
+  const releaseViewB = () => {
+    viewBRef.current?.destroy();
+    viewBRef.current = null;
+  };
 
   const handleFileA = async (file: File) => {
     try {
@@ -144,12 +156,22 @@ export function ComparePage() {
                       {docA.pageCount} {isVi ? 'trang' : 'pages'}
                     </span>
                   </div>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => {
+                      releaseViewA();
+                      setDocA(null);
+                      setDiffStats(null);
+                    }}
+                  >
+                    {isVi ? 'Đổi tệp' : 'Change'}
+                  </button>
                 </div>
               ) : (
-                <input
-                  type="file"
-                  accept=".pdf,application/pdf"
-                  onChange={(e) => e.target.files?.[0] && handleFileA(e.target.files[0])}
+                <FileDrop
+                  label={isVi ? 'Chọn hoặc kéo thả PDF bản gốc' : 'Choose or drop the original PDF'}
+                  onFiles={(files) => files[0] && handleFileA(files[0])}
                 />
               )}
             </div>
@@ -165,12 +187,22 @@ export function ComparePage() {
                       {docB.pageCount} {isVi ? 'trang' : 'pages'}
                     </span>
                   </div>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => {
+                      releaseViewB();
+                      setDocB(null);
+                      setDiffStats(null);
+                    }}
+                  >
+                    {isVi ? 'Đổi tệp' : 'Change'}
+                  </button>
                 </div>
               ) : (
-                <input
-                  type="file"
-                  accept=".pdf,application/pdf"
-                  onChange={(e) => e.target.files?.[0] && handleFileB(e.target.files[0])}
+                <FileDrop
+                  label={isVi ? 'Chọn hoặc kéo thả PDF bản chỉnh sửa' : 'Choose or drop the modified version PDF'}
+                  onFiles={(files) => files[0] && handleFileB(files[0])}
                 />
               )}
             </div>

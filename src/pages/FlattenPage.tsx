@@ -3,7 +3,7 @@ import { ArrowLeft, Download, FileText, Layers } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
+import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { flattenPdf } from '../lib/pdfFlatten';
 import './flatten.css';
@@ -88,7 +88,7 @@ export function FlattenPage() {
                 <div>
                   <h3 className="file-name">{doc.file.name}</h3>
                   <p className="file-meta">
-                    {fileSummary(doc.file)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
+                    {formatBytes(doc.file.size)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
                   </p>
                 </div>
               </div>

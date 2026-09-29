@@ -3,7 +3,7 @@ import { ArrowLeft, Download, FileSpreadsheet, FileText } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary } from '../lib/download';
+import { downloadBytes, formatBytes } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { pdfToExcel } from '../lib/pdfExcel';
 import './pdf-to-excel.css';
@@ -89,7 +89,7 @@ export function PdfToExcelPage() {
                 <div>
                   <h3 className="file-name">{doc.file.name}</h3>
                   <p className="file-meta">
-                    {fileSummary(doc.file)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
+                    {formatBytes(doc.file.size)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
                   </p>
                 </div>
               </div>

@@ -256,7 +256,7 @@ export function MetadataPage() {
 
       <div className="pdf-workspace pdf-workspace--side meta-workspace">
         <section className="ct-panel panel-section meta-source" aria-label={t.dropLabel}>
-          <FileDrop label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+          <FileDrop compact={source !== null} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
           {source && (
             <>

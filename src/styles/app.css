@@ -42,7 +42,8 @@
 
 .tool-app-main {
   flex: 1;
-  width: 100%;
+  /* Width comes from .ct-container (gutter + max width); an unlayered width here
+     would override it because .ct-container lives in @layer components. */
   padding-block: 1.5rem 3rem;
 }
 
@@ -99,39 +100,37 @@
 
 /* Page heading */
 .tool-page-heading {
-  max-width: 58rem;
+  max-width: 48rem;
+  margin-bottom: 1.4rem;
 }
 
 .tool-page-heading--compact {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.4rem;
 }
 
-.tool-page-heading__back {
-  width: fit-content;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
-  border-radius: var(--ct-radius-sm);
-  color: var(--ct-ink-600);
-  font-size: 0.83rem;
-  font-weight: 750;
+/* The breadcrumb in ToolShell replaces the per-page back link and eyebrow. */
+.tool-page-heading__back,
+.tool-page-heading .ct-eyebrow {
+  display: none;
 }
 
 .tool-page-heading h1 {
-  margin-top: 0.7rem;
+  margin: 0;
   font-family: var(--ct-font-display);
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
-  font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1.2;
+  font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+  font-weight: 750;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  text-wrap: balance;
 }
 
 .tool-page-heading > p {
-  max-width: 48rem;
-  margin-top: 0.5rem;
+  max-width: 44rem;
+  margin: 0.55rem 0 0;
   color: var(--ct-ink-600);
-  font-size: 0.92rem;
+  font-size: 1rem;
+  line-height: 1.55;
+  text-wrap: pretty;
 }
 
 /* File drop */
@@ -143,11 +142,13 @@
 .file-drop {
   display: grid;
   justify-items: center;
-  gap: 0.35rem;
-  padding: 2.2rem 1.2rem;
+  gap: 0.5rem;
+  padding: clamp(2rem, 6vw, 3.4rem) 1.2rem;
   border: 2px dashed var(--ct-border-strong);
-  border-radius: var(--ct-radius-xl);
-  background: var(--ct-surface);
+  border-radius: var(--ct-radius-2xl);
+  background:
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--ct-cobalt-500) 7%, transparent), transparent 70%),
+    var(--ct-surface-solid);
   color: var(--ct-ink-600);
   text-align: center;
   cursor: pointer;
@@ -157,36 +158,70 @@
 .file-drop:hover,
 .file-drop:focus-visible {
   border-color: var(--ct-cobalt-500);
-  background: var(--ct-surface-solid);
+}
+
+.file-drop:focus-visible {
+  outline: none;
+  box-shadow: var(--ct-ring);
 }
 
 .file-drop--dragging {
   border-color: var(--ct-cobalt-500);
-  background: color-mix(in srgb, var(--ct-cobalt-100) 55%, transparent);
+  border-style: solid;
+  background: color-mix(in srgb, var(--ct-cobalt-500) 10%, var(--ct-surface-solid));
   transform: scale(1.01);
 }
 
-.file-drop strong {
-  color: var(--ct-ink-800);
-  font-size: 0.98rem;
+.file-drop__icon {
+  width: 4rem;
+  height: 4rem;
+  display: grid;
+  place-items: center;
+  margin-bottom: 0.3rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ct-cobalt-500) 12%, var(--ct-surface-solid));
+  color: var(--ct-cobalt-500);
 }
 
-.file-drop span {
-  font-size: 0.8rem;
+.file-drop strong {
+  color: var(--ct-ink-900);
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+}
+
+.file-drop__button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin-top: 0.4rem;
+  padding: 0 1.4rem;
+  border-radius: var(--ct-radius-pill);
+  background: var(--ct-cobalt-500);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 750;
+  box-shadow: 0 10px 24px rgba(89, 103, 255, 0.25);
+}
+
+.file-drop:hover .file-drop__button {
+  background: var(--ct-cobalt-600);
+}
+
+.file-drop span:not(.file-drop__button) {
+  font-size: 0.86rem;
 }
 
 .file-drop__notice {
   color: var(--ct-danger);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 700;
 }
 
 .file-drop__meta {
-  color: var(--ct-ink-400);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  color: var(--ct-ink-500);
+  font-size: 0.76rem;
+  font-weight: 650;
+  text-align: center;
 }
 
 /* Shared list of files */
@@ -347,6 +382,10 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
+.pdf-workspace > * {
+  min-width: 0;
+}
+
 .pdf-workspace--side {
   grid-template-columns: minmax(15rem, 0.9fr) minmax(0, 2fr);
 }
@@ -354,7 +393,7 @@
 @media (max-width: 900px) {
   .pdf-workspace--two,
   .pdf-workspace--side {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -412,150 +451,591 @@
   color: var(--ct-ink-800);
 }
 
-/* Home */
-.home-hero {
-  padding: clamp(1.5rem, 4vw, 3rem) 0 clamp(2rem, 5vw, 3.5rem);
-  text-align: center;
+/* Dòng giới thiệu hệ sinh thái (đồng bộ PDUI v2 .pd-eco-line) */
+.pd-eco-line { width: min(100% - 2rem, var(--ct-container)); margin: 0 auto; padding: var(--ct-space-3) 0; color: var(--ct-ink-600); font-size: 0.82rem; text-align: center; }
+.pd-eco-line a { color: var(--ct-ink-950); font-weight: 500; text-decoration: none; }
+.pd-eco-line a:hover { color: var(--ct-cobalt-600); }
+
+/* Aliases for tool pages written against PDUI v2 token names — resolve to the
+   ClassTools tokens so they follow light/dark theme. */
+:root {
+  --pdui-text: var(--ct-ink-900);
+  --pdui-text-muted: var(--ct-ink-500);
+  --pdui-border: var(--ct-border);
+  --pdui-bg-surface: var(--ct-surface-solid);
+  --pdui-bg-subtle: var(--ct-canvas);
+  --pdui-primary: var(--ct-cobalt-500);
+  --pdui-radius-md: var(--ct-radius-md);
+  --pdui-radius-lg: var(--ct-radius-lg);
 }
 
-.home-hero__badge {
+/* Generic buttons used by the tool pages (same look as .ct-button). */
+.btn {
+  min-height: 2.75rem;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  padding: 0.4rem 0.95rem;
-  margin-bottom: 1rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid transparent;
   border-radius: var(--ct-radius-pill);
-  border: 1px solid var(--ct-border);
-  background: var(--ct-surface);
-  color: var(--ct-teal-700);
-  font-size: 0.8rem;
-  font-weight: 700;
+  background: transparent;
+  color: var(--ct-ink-900);
+  font: inherit;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform var(--ct-fast) var(--ct-ease), box-shadow var(--ct-fast) var(--ct-ease), background var(--ct-fast) ease, border-color var(--ct-fast) ease;
 }
+.btn:hover:not(:disabled) { transform: translateY(-1px); }
+.btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+.btn:focus-visible { outline: 2px solid var(--ct-focus, var(--ct-cobalt-500)); outline-offset: 2px; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+.btn-primary { background: var(--ct-cobalt-500); color: #fff; box-shadow: 0 10px 24px rgba(89, 103, 255, 0.22); }
+.btn-primary:hover:not(:disabled) { background: var(--ct-cobalt-600); color: #fff; }
+.btn-secondary { background: var(--ct-surface-solid); border-color: var(--ct-border); box-shadow: var(--ct-shadow-xs); }
+.btn-secondary:hover:not(:disabled) { border-color: var(--ct-border-strong); }
+.btn-success { background: var(--ct-success); color: #fff; box-shadow: 0 10px 24px rgba(47, 122, 79, 0.22); }
+.btn-sm { min-height: 2.25rem; padding: 0.4rem 0.85rem; font-size: 0.85rem; }
+.btn-lg { min-height: 3rem; padding: 0.75rem 1.3rem; font-size: 1rem; }
+.btn-group, .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.actions .btn-lg { flex: 1 1 100%; }
 
-.home-hero h1 {
-  font-family: var(--ct-font-display);
-  font-size: clamp(1.9rem, 4.5vw, 3rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  color: var(--ct-ink-950);
-}
-
-.home-hero h1 em {
-  font-style: normal;
-  color: var(--ct-cobalt-600);
-}
-
-.home-hero__lead {
-  max-width: 44rem;
-  margin: 0.8rem auto 0;
-  color: var(--ct-ink-600);
-  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
-}
-
-.home-hero__privacy {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
+.error-banner {
   margin-top: 1rem;
-  color: var(--ct-teal-700);
-  font-size: 0.82rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--ct-danger) 35%, transparent);
+  border-radius: var(--ct-radius-md);
+  background: color-mix(in srgb, var(--ct-danger) 8%, var(--ct-surface-solid));
+  color: var(--ct-danger);
+  font-size: 0.85rem;
   font-weight: 700;
 }
+.empty-hint { margin: 0; padding: 0.5rem 0; color: var(--ct-ink-500); font-size: 0.85rem; }
+.select-sm { min-height: 2.25rem; padding: 0.3rem 0.6rem; font-size: 0.85rem; }
 
-.tool-grid {
+/* Shared tool-page building blocks (were page-scoped, but CSS loads per route). */
+/* from rotate.css */
+.file-header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--pdui-bg-surface);
+  border: 1px solid var(--pdui-border);
+  border-radius: var(--pdui-radius-lg);
+}
+
+/* from rotate.css */
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+/* from rotate.css */
+.file-info .icon {
+  color: var(--pdui-primary);
+}
+
+/* from rotate.css */
+.file-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* from rotate.css */
+.file-meta {
+  font-size: 0.8125rem;
+  color: var(--pdui-text-muted);
+  margin: 0;
+}
+
+/* from rotate.css */
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--pdui-border);
+  border-radius: 4px;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pdui-text);
+}
+
+/* from rotate.css */
+.icon-btn:hover {
+  background: var(--pdui-bg-subtle);
+}
+
+/* from rotate.css */
+.action-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* from page-numbers.css */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-bottom: 0.875rem;
+}
+
+/* from page-numbers.css */
+.field-row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1rem;
 }
 
-.pdf-tool-card {
+/* from page-numbers.css */
+.field-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--pdui-text-muted);
+}
+
+/* from page-numbers.css */
+.select-input,
+.text-input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--pdui-border);
+  border-radius: var(--pdui-radius-md);
+  font-size: 0.875rem;
+  background: var(--pdui-bg-surface);
+  color: inherit;
+}
+
+/* from page-numbers.css */
+.color-input {
+  width: 100%;
+  height: 38px;
+  padding: 2px;
+  border: 1px solid var(--pdui-border);
+  border-radius: var(--pdui-radius-md);
+  cursor: pointer;
+  background: none;
+}
+
+/* from page-numbers.css */
+.hint {
+  font-size: 0.75rem;
+  color: var(--pdui-text-muted);
+}
+
+/* from page-numbers.css */
+.preview-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--pdui-text-muted);
+}
+
+/* from page-numbers.css */
+.preview-box {
+  background: var(--ct-canvas);
+  border: 1px dashed var(--pdui-border);
+  border-radius: var(--pdui-radius-md);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* from page-numbers.css */
+.preview-box canvas {
+  max-width: 100%;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* from pdf-to-pdfa.css */
+.info-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: inherit;
+  margin: 0 0 0.375rem 0;
+}
+
+/* from pdf-to-pdfa.css */
+.info-desc {
+  font-size: 0.875rem;
+  color: inherit;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* from redact.css */
+.text-btn {
+  background: none;
+  border: none;
+  color: var(--ct-danger);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+/* Suspense fallback while a tool's chunk loads. */
+.route-loading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--ct-paper);
+  color: var(--ct-ink-500);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.route-loading span { animation: route-pulse 1.2s ease-in-out infinite; }
+@keyframes route-pulse { 50% { opacity: 0.4; } }
+@media (prefers-reduced-motion: reduce) { .route-loading span { animation: none; } }
+
+/* ---- Header, tool menu, breadcrumb, related tools ---- */
+.header-action--primary {
+  border-color: transparent;
+  background: var(--ct-ink-900);
+  color: var(--ct-paper-strong);
+}
+
+.header-action--primary:hover {
+  background: var(--ct-ink-800);
+}
+
+.header-kbd {
+  min-width: 1.35rem;
+  padding: 0 0.3rem;
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--ct-paper-strong) 20%, transparent);
+  font: inherit;
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+.header-action:focus-visible,
+.ct-icon-button:focus-visible {
+  outline: 2px solid var(--ct-focus);
+  outline-offset: 2px;
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+  color: var(--ct-ink-500);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.breadcrumb a {
+  color: var(--ct-ink-600);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: var(--ct-cobalt-600);
+  text-decoration: underline;
+}
+
+.breadcrumb [aria-current] {
+  color: var(--ct-ink-900);
+}
+
+.menu-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(0.5rem, 5vh, 3.5rem) 0.75rem 0;
+}
+
+.menu-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(15, 20, 35, 0.5);
+  backdrop-filter: blur(3px);
+  cursor: default;
+}
+
+.menu-panel {
+  position: relative;
+  width: min(100%, 68rem);
+  max-height: min(88vh, 42rem);
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
-  padding: 1.15rem;
+  overflow: hidden;
   border: 1px solid var(--ct-border);
-  border-radius: var(--ct-radius-xl);
-  background: var(--ct-surface);
+  border-radius: var(--ct-radius-2xl);
+  background: var(--ct-surface-solid);
+  box-shadow: var(--ct-shadow-lg);
+  animation: menu-in 160ms var(--ct-ease);
+}
+
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-8px) scale(0.985); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-panel { animation: none; }
+}
+
+.menu-search {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.6rem 0.5rem 1.1rem;
+  border-bottom: 1px solid var(--ct-border);
+  color: var(--ct-ink-500);
+}
+
+.menu-search input {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.9rem;
+  border: 0;
+  background: transparent;
+  color: var(--ct-ink-900);
+  font: inherit;
+  font-size: 1.02rem;
+}
+
+.menu-search input:focus {
+  outline: none;
+}
+
+.menu-close {
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ct-ink-600);
+  cursor: pointer;
+}
+
+.menu-close:hover {
+  background: var(--ct-ink-100);
+}
+
+.menu-body {
+  overflow-y: auto;
+  padding: 1rem 1.1rem 1.2rem;
+}
+
+.menu-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr));
+  gap: 1.2rem 1rem;
+}
+
+.menu-group h3 {
+  margin: 0 0 0.4rem;
+  color: var(--ct-ink-500);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.2rem;
+  padding: 0.25rem 0.55rem;
+  margin-inline: -0.55rem;
+  border-radius: var(--ct-radius-md);
   color: var(--ct-ink-800);
-  box-shadow: var(--ct-shadow-xs);
-  transition: transform var(--ct-fast) var(--ct-ease), box-shadow var(--ct-fast) var(--ct-ease), border-color var(--ct-fast) ease;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
 }
 
-.pdf-tool-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--ct-shadow-md);
-  border-color: color-mix(in srgb, var(--ct-cobalt-500) 45%, var(--ct-border));
+.menu-link svg {
+  flex: none;
+  color: var(--ct-ink-500);
 }
 
-.pdf-tool-card__icon {
-  width: 2.6rem;
-  height: 2.6rem;
+.menu-link:hover,
+.menu-link:focus-visible {
+  background: var(--ct-cobalt-100);
+  color: var(--ct-cobalt-700);
+  outline: none;
+}
+
+.menu-link.is-current {
+  background: var(--ct-ink-100);
+  font-weight: 750;
+}
+
+.menu-empty {
+  margin: 1.5rem 0;
+  color: var(--ct-ink-600);
+  text-align: center;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  gap: 0.5rem;
+}
+
+.menu-tool {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-lg);
+  background: var(--ct-surface-solid);
+  color: var(--ct-ink-900);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: border-color var(--ct-fast) ease, transform var(--ct-fast) var(--ct-ease);
+}
+
+.menu-tool:hover,
+.menu-tool:focus-visible {
+  border-color: var(--ct-cobalt-500);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.menu-tool__icon {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
   display: grid;
   place-items: center;
   border-radius: var(--ct-radius-md);
   color: #fff;
 }
 
-.pdf-tool-card h2 {
+.related {
+  margin-top: 3rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--ct-border);
+}
+
+.related h2 {
+  margin: 0 0 0.8rem;
   font-family: var(--ct-font-display);
   font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--ct-ink-900);
 }
 
-.pdf-tool-card p {
-  color: var(--ct-ink-600);
-  font-size: 0.85rem;
-  line-height: 1.45;
-}
-
-.pdf-tool-card__cta {
+.footer-privacy {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  color: var(--ct-cobalt-600);
-  font-size: 0.82rem;
-  font-weight: 700;
-  margin-top: auto;
+  gap: 0.4rem;
 }
 
-.home-section-heading {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.1rem;
-  flex-wrap: wrap;
-}
-
-.home-section-heading h2 {
-  font-family: var(--ct-font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--ct-ink-900);
-}
-
-.home-section-heading p {
-  color: var(--ct-ink-600);
-  font-size: 0.88rem;
-}
-
-.home-band {
-  margin-top: 2.2rem;
-  padding: 1.2rem 1.4rem;
-  border: 1px solid var(--ct-border);
-  border-radius: var(--ct-radius-xl);
-  background: color-mix(in srgb, var(--ct-teal-100) 45%, var(--ct-surface));
+.footer-privacy svg {
   color: var(--ct-teal-700);
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  font-size: 0.88rem;
-  font-weight: 700;
 }
 
-/* Dòng giới thiệu hệ sinh thái (đồng bộ PDUI v2 .pd-eco-line) */
-.pd-eco-line { width: min(100% - 2rem, var(--ct-container)); margin: 0 auto; padding: var(--ct-space-3) 0; color: var(--ct-ink-600); font-size: 0.82rem; text-align: center; }
-.pd-eco-line a { color: var(--ct-ink-950); font-weight: 500; text-decoration: none; }
-.pd-eco-line a:hover { color: var(--ct-cobalt-600); }
+@media (max-width: 640px) {
+  .header-action--primary span,
+  .header-kbd {
+    display: none;
+  }
+
+  .header-action--primary {
+    width: 2.35rem;
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .tool-app-footer > div {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tool-app-footer span:last-child {
+    text-align: left;
+  }
+
+  .menu-layer {
+    padding-top: 0;
+  }
+
+  .menu-panel {
+    max-height: 100vh;
+    height: 100%;
+    border-radius: 0;
+  }
+}
+
+/* Before a file is chosen, a panel holding nothing but the empty hint is hidden and
+   the drop zone before it takes the full width. */
+.pdf-workspace > section:has(> .thumb-empty:only-child) {
+  display: none;
+}
+
+.pdf-workspace > section:has(+ section > .thumb-empty:only-child) {
+  grid-column: 1 / -1;
+}
+
+.file-drop--compact {
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  justify-items: start;
+  gap: 0.2rem 0.8rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--ct-radius-xl);
+  text-align: left;
+}
+
+.file-drop--compact .file-drop__icon {
+  width: 2.4rem;
+  height: 2.4rem;
+  margin: 0;
+}
+
+.file-drop--compact .file-drop__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.file-drop--compact strong {
+  font-size: 0.9rem;
+}
+
+.file-drop--compact .file-drop__button {
+  margin: 0;
+  min-height: 2.2rem;
+  padding: 0 1rem;
+  font-size: 0.84rem;
+  box-shadow: none;
+}
+
+/* Primary actions stay reachable on phones while scrolling long previews. */
+@media (max-width: 720px) {
+  .actions,
+  .action-row,
+  .split-mode-body .action-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 4;
+    margin-inline: -0.5rem;
+    padding: 0.7rem 0.5rem calc(0.7rem + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--ct-border);
+    background: color-mix(in srgb, var(--ct-surface-solid) 94%, transparent);
+    backdrop-filter: blur(10px);
+  }
+
+  .actions .btn,
+  .action-row .btn,
+  .split-mode-body .action-bar .ct-button {
+    flex: 1 1 100%;
+  }
+}

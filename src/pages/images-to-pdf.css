@@ -6,6 +6,7 @@
 
 .i2p-source {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.8rem;
 }
 

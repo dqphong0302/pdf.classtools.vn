@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ChevronDown, ChevronUp, FilePlus2, Trash2 } from 'lucide-react';
+import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
 import { downloadBytes, formatBytes, sanitizeFilename, withPdfSuffix } from '../lib/download';
@@ -146,7 +147,7 @@ export function ImagesToPdfPage() {
   }, []);
 
   const handlePicked = useCallback(
-    (list: FileList | null) => {
+    (list: File[] | FileList | null) => {
       if (!list || !list.length) return;
       setNotice(null);
       setOpError(null);
@@ -241,19 +242,16 @@ export function ImagesToPdfPage() {
 
       <div className="pdf-workspace pdf-workspace--side i2p-workspace">
         <section className="ct-panel panel-section i2p-source" aria-label={t.title}>
-          <label className="field">
-            <span>{t.choose}</span>
-            <input
-              type="file"
-              accept="image/png,image/jpeg"
-              multiple
-              aria-label={t.choose}
-              onChange={(event) => {
-                handlePicked(event.target.files);
-                event.target.value = '';
-              }}
-            />
-          </label>
+          <FileDrop
+            compact={images.length > 0}
+            multiple
+            label={t.choose}
+            accept="image/png,image/jpeg"
+            acceptPattern={/\.(png|jpe?g)$/i}
+            formatLabel="PNG · JPG"
+            maxBytes={MAX_IMAGE_BYTES}
+            onFiles={handlePicked}
+          />
           {notice && <p className="notice" role="alert">{notice}</p>}
 
           {images.length ? (

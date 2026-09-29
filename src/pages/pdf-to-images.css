@@ -93,7 +93,7 @@
 
 .p2i-item {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 0.6rem;
   padding: 0.55rem 0.7rem;
@@ -138,6 +138,6 @@
   }
 
   .p2i-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }

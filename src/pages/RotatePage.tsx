@@ -3,7 +3,7 @@ import { ArrowLeft, Download, FileText, RotateCcw, RotateCw } from 'lucide-react
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
+import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { openPdfView, type OpenedPdfView } from '../lib/pdfPreview';
 import { rotatePdfPages } from '../lib/pdfRotate';
@@ -13,6 +13,7 @@ interface DocState {
   file: File;
   bytes: Uint8Array;
   pageCount: number;
+  pageSizes: { width: number; height: number }[];
 }
 
 export function RotatePage() {
@@ -20,7 +21,7 @@ export function RotatePage() {
   const [doc, setDoc] = useState<DocState | null>(null);
   const [rotations, setRotations] = useState<Map<number, number>>(new Map());
   const [busy, setBusy] = useState(false);
-  const [resultBytes, setResultBytes] = useState<Uint8Array | null>(null);
+  const [result, setResult] = useState<{ bytes: Uint8Array; key: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const previewRef = useRef<OpenedPdfView | null>(null);
@@ -38,7 +39,7 @@ export function RotatePage() {
     async (file: File) => {
       cleanup();
       setError(null);
-      setResultBytes(null);
+      setResult(null);
       try {
         const bytes = new Uint8Array(await file.arrayBuffer());
         const pageCount = await getPdfPageCount(bytes);
@@ -46,10 +47,9 @@ export function RotatePage() {
         for (let i = 0; i < pageCount; i++) map.set(i, 0);
 
         setRotations(map);
-        setDoc({ file, bytes, pageCount });
-
         const view = await openPdfView(bytes);
         previewRef.current = view;
+        setDoc({ file, bytes, pageCount, pageSizes: view.pages.map(({ width, height }) => ({ width, height })) });
       } catch {
         setError(isVi ? 'Không thể đọc tệp PDF. Tệp có thể bị hỏng hoặc có mật khẩu.' : 'Unable to read PDF file.');
       }
@@ -93,13 +93,17 @@ export function RotatePage() {
     });
   };
 
+  // A result is only offered while it still matches the current rotations.
+  const settingsKey = JSON.stringify([...rotations]);
+  const resultBytes = result?.key === settingsKey ? result.bytes : null;
+
   const handleApply = async () => {
     if (!doc) return;
     setBusy(true);
     setError(null);
     try {
       const res = await rotatePdfPages(doc.bytes, rotations);
-      setResultBytes(res);
+      setResult({ bytes: res, key: settingsKey });
     } catch {
       setError(isVi ? 'Lỗi khi xoay PDF.' : 'Error rotating PDF.');
     } finally {
@@ -143,7 +147,7 @@ export function RotatePage() {
                 <div>
                   <h3 className="file-name">{doc.file.name}</h3>
                   <p className="file-meta">
-                    {fileSummary(doc.file)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
+                    {formatBytes(doc.file.size)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
                   </p>
                 </div>
               </div>
@@ -189,12 +193,15 @@ export function RotatePage() {
             <div className="pages-grid">
               {Array.from({ length: doc.pageCount }, (_, i) => {
                 const angle = rotations.get(i) || 0;
+                const info = doc.pageSizes[i];
+                // A quarter turn swaps width/height; shrink so the thumbnail stays inside its card.
+                const fit = info && angle % 180 !== 0 ? Math.min(info.width, info.height) / Math.max(info.width, info.height) : 1;
                 return (
                   <div key={i} className="page-card">
                     <div
                       className="canvas-wrapper"
                       style={{
-                        transform: `rotate(${angle}deg)`,
+                        transform: `rotate(${angle}deg) scale(${fit})`,
                         transition: 'transform 0.2s ease-in-out'
                       }}
                     >

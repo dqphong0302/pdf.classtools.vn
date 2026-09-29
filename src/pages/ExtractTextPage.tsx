@@ -231,7 +231,7 @@ export function ExtractTextPage() {
 
       <div className="pdf-workspace pdf-workspace--side xt-workspace">
         <section className="ct-panel panel-section xt-source" aria-label={t.dropLabel}>
-          <FileDrop label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+          <FileDrop compact={source !== null} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
           {source && (
             <div className="xt-source__info">

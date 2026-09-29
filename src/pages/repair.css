@@ -1,7 +1,7 @@
 .repair-container {
   max-width: 860px;
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 0;
 }
 
 .repair-workspace {
@@ -14,12 +14,12 @@
   display: flex;
   gap: 1rem;
   padding: 1.25rem;
-  background: #fefce8;
-  border: 1px solid #fef08a;
-  border-radius: var(--pdui-radius-lg, 0.75rem);
+  background: var(--ct-yellow-100);
+  border: 1px solid color-mix(in srgb, var(--ct-yellow-500) 45%, transparent);
+  border-radius: var(--pdui-radius-lg);
 }
 
 .repair-info-box .icon {
-  color: #ca8a04;
+  color: var(--ct-yellow-500);
   flex-shrink: 0;
 }

@@ -1,26 +1,26 @@
 .scan-container {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 0;
 }
 
 .scan-layout {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: 1.5rem;
   margin-top: 1rem;
 }
 
 @media (max-width: 800px) {
   .scan-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 .camera-card {
-  background: var(--pdui-bg-surface, #ffffff);
-  border: 1px solid var(--pdui-border, #e2e8f0);
-  border-radius: var(--pdui-radius-lg, 0.75rem);
+  background: var(--pdui-bg-surface);
+  border: 1px solid var(--pdui-border);
+  border-radius: var(--pdui-radius-lg);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -32,7 +32,7 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   background: #0f172a;
-  border-radius: var(--pdui-radius-md, 0.5rem);
+  border-radius: var(--pdui-radius-md);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -75,9 +75,9 @@
 }
 
 .gallery-card {
-  background: var(--pdui-bg-surface, #ffffff);
-  border: 1px solid var(--pdui-border, #e2e8f0);
-  border-radius: var(--pdui-radius-lg, 0.75rem);
+  background: var(--pdui-bg-surface);
+  border: 1px solid var(--pdui-border);
+  border-radius: var(--pdui-radius-lg);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -98,7 +98,7 @@
 
 .scanned-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
   max-height: 420px;
   overflow-y: auto;
@@ -106,8 +106,8 @@
 }
 
 .scanned-thumb {
-  background: #f8fafc;
-  border: 1px solid var(--pdui-border, #e2e8f0);
+  background: var(--ct-canvas);
+  border: 1px solid var(--pdui-border);
   border-radius: 4px;
   padding: 4px;
   display: flex;

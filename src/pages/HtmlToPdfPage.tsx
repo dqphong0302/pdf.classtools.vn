@@ -38,33 +38,28 @@ export function HtmlToPdfPage() {
   const isVi = locale === 'vi';
 
   const handlePrint = () => {
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
+    // Print from a hidden sandboxed iframe: no popup to be blocked, and the pasted
+    // HTML cannot run scripts (no allow-scripts) even though we can reach its window.
+    const pageRule = `<style>@page { size: A4 ${orientation}; margin: 15mm; }</style>`;
+    const html = /<\/head>/i.test(htmlContent)
+      ? htmlContent.replace(/<\/head>/i, `${pageRule}</head>`)
+      : `<!DOCTYPE html><html><head><meta charset="utf-8">${pageRule}</head><body>${htmlContent}</body></html>`;
 
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Exported PDF</title>
-          <style>
-            @page {
-              size: A4 ${orientation};
-              margin: 15mm;
-            }
-          </style>
-        </head>
-        <body>
-          ${htmlContent}
-          <script>
-            window.onload = function() {
-              window.print();
-              window.close();
-            };
-          </script>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
+    document.querySelectorAll('iframe[data-html-print]').forEach((frame) => frame.remove());
+    const frame = document.createElement('iframe');
+    frame.dataset.htmlPrint = '';
+    frame.setAttribute('sandbox', 'allow-same-origin allow-modals');
+    frame.setAttribute('aria-hidden', 'true');
+    frame.tabIndex = -1;
+    Object.assign(frame.style, { position: 'fixed', right: '0', bottom: '0', width: '0', height: '0', border: '0' });
+    frame.onload = () => {
+      const target = frame.contentWindow;
+      if (!target) return;
+      target.focus();
+      target.print();
+    };
+    frame.srcdoc = html;
+    document.body.appendChild(frame);
   };
 
   return (

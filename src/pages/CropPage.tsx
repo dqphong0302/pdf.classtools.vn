@@ -298,7 +298,7 @@ export function CropPage() {
 
       <div className="pdf-workspace pdf-workspace--two crop-workspace">
         <section className="ct-panel panel-section crop-panel" aria-label={t.dropLabel}>
-          <FileDrop label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+          <FileDrop compact={source !== null} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
           {source && (
             <div className="crop-source-info">

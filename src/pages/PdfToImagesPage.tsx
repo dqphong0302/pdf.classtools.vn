@@ -259,7 +259,7 @@ export function PdfToImagesPage() {
 
       <div className="pdf-workspace pdf-workspace--side p2i-workspace">
         <section className="ct-panel panel-section p2i-source" aria-label={t.dropLabel}>
-          <FileDrop label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+          <FileDrop compact={source !== null} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
           {source && (
             <div className="p2i-source__info">

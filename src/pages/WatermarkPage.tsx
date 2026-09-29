@@ -3,10 +3,10 @@ import { ArrowLeft, Download, FileText, Image as ImageIcon, Stamp, Type } from '
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
+import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { openPdfView, type OpenedPdfView } from '../lib/pdfPreview';
-import { addWatermark, type WatermarkOptions } from '../lib/pdfWatermark';
+import { addWatermark, watermarkCentres, type WatermarkOptions } from '../lib/pdfWatermark';
 import './watermark.css';
 
 interface DocState {
@@ -33,7 +33,7 @@ export function WatermarkPage() {
   const [imgScale, setImgScale] = useState(0.5);
 
   const [busy, setBusy] = useState(false);
-  const [resultBytes, setResultBytes] = useState<Uint8Array | null>(null);
+  const [result, setResult] = useState<{ bytes: Uint8Array; key: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const previewRef = useRef<OpenedPdfView | null>(null);
@@ -46,17 +46,19 @@ export function WatermarkPage() {
     previewRef.current = null;
   }, []);
 
+  useEffect(() => cleanup, [cleanup]);
+
   const handleFile = useCallback(
     async (file: File) => {
       cleanup();
       setError(null);
-      setResultBytes(null);
+      setResult(null);
       try {
         const bytes = new Uint8Array(await file.arrayBuffer());
         const pageCount = await getPdfPageCount(bytes);
-        setDoc({ file, bytes, pageCount });
         const view = await openPdfView(bytes);
         previewRef.current = view;
+        setDoc({ file, bytes, pageCount });
       } catch {
         setError(isVi ? 'Không thể đọc tệp PDF.' : 'Unable to read PDF.');
       }
@@ -72,10 +74,86 @@ export function WatermarkPage() {
     setImageBytes(bytes);
   };
 
+  // Page 1 is rendered once into an offscreen canvas; the watermark is painted on
+  // top of a copy whenever a setting changes, mirroring addWatermark's layout.
+  const baseRef = useRef<HTMLCanvasElement | null>(null);
+  const [baseVersion, setBaseVersion] = useState(0);
+  const [loadedImage, setLoadedImage] = useState<{ source: Uint8Array; img: HTMLImageElement } | null>(null);
+  const previewImage = imageBytes && loadedImage?.source === imageBytes ? loadedImage.img : null;
+
   useEffect(() => {
-    if (!doc || !previewRef.current || !canvasRef.current) return;
-    previewRef.current.render(1, canvasRef.current, 280).catch(() => {});
+    const view = previewRef.current;
+    if (!doc || !view) return;
+    let cancelled = false;
+    const base = document.createElement('canvas');
+    view
+      .render(1, base, 560)
+      .then(() => {
+        if (cancelled) return;
+        baseRef.current = base;
+        setBaseVersion((version) => version + 1);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, [doc]);
+
+  useEffect(() => {
+    if (!imageBytes) return;
+    const url = URL.createObjectURL(new Blob([imageBytes as BlobPart]));
+    const img = new Image();
+    img.onload = () => setLoadedImage({ source: imageBytes, img });
+    img.src = url;
+    return () => URL.revokeObjectURL(url);
+  }, [imageBytes]);
+
+  useEffect(() => {
+    const base = baseRef.current;
+    const canvas = canvasRef.current;
+    const page = previewRef.current?.pages[0];
+    if (!base || !canvas || !page) return;
+    canvas.width = base.width;
+    canvas.height = base.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(base, 0, 0);
+
+    const scale = base.width / page.width;
+    const rad = (-angle * Math.PI) / 180; // canvas y axis points down
+    ctx.globalAlpha = opacity;
+
+    if (mode === 'text') {
+      if (!text.trim()) return;
+      ctx.font = `bold ${fontSize * scale}px Roboto, "Segoe UI", Arial, sans-serif`;
+      ctx.fillStyle = colorHex;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const textWidth = ctx.measureText(text).width / scale;
+      for (const c of watermarkCentres(page.width, page.height, tiled, { width: textWidth, height: fontSize * 0.7, angle, gap: fontSize })) {
+        ctx.save();
+        ctx.translate(c.x * scale, (page.height - c.y) * scale);
+        ctx.rotate(rad);
+        ctx.fillText(text, 0, 0);
+        ctx.restore();
+      }
+    } else if (previewImage) {
+      const w = previewImage.naturalWidth * imgScale;
+      const h = previewImage.naturalHeight * imgScale;
+      for (const c of watermarkCentres(page.width, page.height, tiled, { width: w, height: h, angle, gap: 40 })) {
+        ctx.save();
+        ctx.translate(c.x * scale, (page.height - c.y) * scale);
+        ctx.rotate(rad);
+        ctx.drawImage(previewImage, (-w / 2) * scale, (-h / 2) * scale, w * scale, h * scale);
+        ctx.restore();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }, [baseVersion, mode, text, angle, opacity, fontSize, colorHex, tiled, previewImage, imgScale]);
+
+  // A result is only offered while it still matches the current settings.
+  const settingsKey = JSON.stringify([mode, text, angle, opacity, fontSize, colorHex, tiled, imageFile?.name, imageBytes?.byteLength, imgScale]);
+  const resultBytes = result?.key === settingsKey ? result.bytes : null;
 
   const handleApply = async () => {
     if (!doc) return;
@@ -111,7 +189,7 @@ export function WatermarkPage() {
       }
 
       const res = await addWatermark(doc.bytes, opt);
-      setResultBytes(res);
+      setResult({ bytes: res, key: settingsKey });
     } catch {
       setError(isVi ? 'Lỗi khi đóng dấu bản quyền.' : 'Error applying watermark.');
     } finally {
@@ -155,7 +233,7 @@ export function WatermarkPage() {
                 <div>
                   <h3 className="file-name">{doc.file.name}</h3>
                   <p className="file-meta">
-                    {fileSummary(doc.file)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
+                    {formatBytes(doc.file.size)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
                   </p>
                 </div>
               </div>

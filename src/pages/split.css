@@ -157,3 +157,19 @@
     margin-left: 0;
   }
 }
+
+.split-format {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.split-format__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.split-format small {
+  color: var(--ct-ink-500);
+  font-size: 0.78rem;
+}

@@ -218,7 +218,7 @@ export function CompressPage() {
 
       <div className="pdf-workspace pdf-workspace--two compress-workspace">
         <section className="ct-panel panel-section compress-panel" aria-label={t.title}>
-          <FileDrop label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+          <FileDrop compact={source !== null} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
           {reading && <p className="compress-reading">{t.reading}</p>}
 

@@ -732,7 +732,7 @@ export function EditPage() {
 
       <div className="pdf-workspace pdf-workspace--side edit-workspace">
         <section className="ct-panel panel-section edit-source" aria-label={t.dropLabel}>
-          <FileDrop label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+          <FileDrop compact={source !== null} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
           {source && (
             <>

@@ -108,6 +108,7 @@ describe('ExtractTextPage', () => {
       pages: [],
       render: vi.fn(),
       getPageText: async () => '',
+      getPageTextItems: async () => [],
       destroy: vi.fn()
     });
 

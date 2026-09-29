@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx';
 import { PDFDocument, rgb } from 'pdf-lib';
 import { ensureEmbeddedFonts } from './pdfEdit';
-import { openPdfView } from './pdfPreview';
+import { openPdfView, type PdfTextItem } from './pdfPreview';
 
 export interface ExcelSheetData {
   name: string;
@@ -137,39 +137,101 @@ export async function excelToPdf(
   return await pdf.save();
 }
 
+type Cell = { text: string; x: number; end: number };
+
+function toCellValue(text: string): string | number {
+  const trimmed = text.trim();
+  // Keep leading-zero codes (phone numbers, IDs) as text.
+  if (/^-?(0|[1-9]\d*)(\.\d+)?$/.test(trimmed) && trimmed.length <= 15) return Number(trimmed);
+  return trimmed;
+}
+
 /**
- * Extracts tabular data from PDF pages into an Excel (.xlsx) file bytes.
+ * Rebuilds table rows from positioned text: items are grouped into lines by
+ * baseline, glued into cells when the horizontal gap is small, then cells are
+ * snapped to column anchors shared by the whole page.
+ */
+export function textItemsToRows(items: PdfTextItem[]): (string | number)[][] {
+  if (!items.length) return [];
+  const sorted = [...items].sort((a, b) => b.y - a.y || a.x - b.x);
+
+  const lines: PdfTextItem[][] = [];
+  for (const item of sorted) {
+    const line = lines[lines.length - 1];
+    const tolerance = Math.max(2, item.size * 0.45);
+    if (line && Math.abs(line[0].y - item.y) <= tolerance) line.push(item);
+    else lines.push([item]);
+  }
+
+  const cellLines: Cell[][] = lines.map((line) => {
+    const cells: Cell[] = [];
+    for (const item of [...line].sort((a, b) => a.x - b.x)) {
+      const last = cells[cells.length - 1];
+      const gap = last ? item.x - last.end : Infinity;
+      if (last && gap < item.size * 1.2) {
+        last.text += gap > item.size * 0.15 && !last.text.endsWith(' ') && !item.str.startsWith(' ') ? ` ${item.str}` : item.str;
+        last.end = Math.max(last.end, item.x + item.width);
+      } else {
+        cells.push({ text: item.str, x: item.x, end: item.x + item.width });
+      }
+    }
+    return cells;
+  });
+
+  // Column anchors: cluster every cell start on the page.
+  const starts = cellLines.flat().map((cell) => cell.x).sort((a, b) => a - b);
+  const anchors: number[] = [];
+  for (const x of starts) {
+    if (!anchors.length || x - anchors[anchors.length - 1] > 12) anchors.push(x);
+  }
+  const columnOf = (x: number) => {
+    let best = 0;
+    for (let i = 0; i < anchors.length; i += 1) {
+      if (Math.abs(anchors[i] - x) < Math.abs(anchors[best] - x)) best = i;
+    }
+    return best;
+  };
+
+  return cellLines.map((cells) => {
+    const row: (string | number)[] = [];
+    for (const cell of cells) {
+      let column = columnOf(cell.x);
+      while (row[column] !== undefined && row[column] !== '') column += 1;
+      for (let i = row.length; i < column; i += 1) row[i] = '';
+      row[column] = toCellValue(cell.text);
+    }
+    return row;
+  });
+}
+
+/**
+ * Extracts tabular data from PDF pages into an Excel (.xlsx) workbook, one sheet per page.
  */
 export async function pdfToExcel(sourceBytes: Uint8Array): Promise<Uint8Array> {
   const opened = await openPdfView(sourceBytes);
-  const rows: string[][] = [];
+  const wb = XLSX.utils.book_new();
 
-  for (let i = 1; i <= opened.pageCount; i++) {
-    const text = await opened.getPageText(i);
-    const lines = text.split('\n').filter((line) => line.trim().length > 0);
-
-    for (const line of lines) {
-      // Split on tabs, commas, or 2+ consecutive spaces
-      let cells = line.split(/\t/);
-      if (cells.length <= 1) {
-        cells = line.split(/\s{2,}/);
-      }
-      if (cells.length <= 1 && line.includes(',')) {
-        cells = line.split(',');
-      }
-      rows.push(cells.map((c) => c.trim()));
+  try {
+    for (let i = 1; i <= opened.pageCount; i++) {
+      const rows = textItemsToRows(await opened.getPageTextItems(i));
+      if (!rows.length) continue;
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      ws['!cols'] = Array.from({ length: Math.max(...rows.map((row) => row.length)) }, (_, column) => ({
+        wch: Math.min(60, Math.max(8, ...rows.map((row) => String(row[column] ?? '').length + 2)))
+      }));
+      XLSX.utils.book_append_sheet(wb, ws, `Trang ${i}`);
     }
-    // Add page separator row
-    if (i < opened.pageCount) {
-      rows.push([`--- Trang ${i + 1} ---`]);
-    }
+  } finally {
+    opened.destroy();
   }
 
-  opened.destroy();
-
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.aoa_to_sheet(rows.length > 0 ? rows : [['(Không tìm thấy dữ liệu văn bản)']]);
-  XLSX.utils.book_append_sheet(wb, ws, 'Trích xuất PDF');
+  if (!wb.SheetNames.length) {
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.aoa_to_sheet([['(Không tìm thấy chữ trong PDF — có thể là bản scan)']]),
+      'Trang 1'
+    );
+  }
 
   const out = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
   return new Uint8Array(out);

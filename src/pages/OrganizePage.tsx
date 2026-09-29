@@ -606,7 +606,7 @@ export function OrganizePage() {
 
       <div className="pdf-workspace org-workspace">
         <section className="ct-panel panel-section org-panel" aria-label={t.title}>
-          <FileDrop label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={loadNotice} />
+          <FileDrop compact={source !== null} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={loadNotice} />
 
           {source && (
             <div className="action-bar org-toolbar">

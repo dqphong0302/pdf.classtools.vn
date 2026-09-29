@@ -11,11 +11,22 @@ export interface PdfPageView {
   rotation: number;
 }
 
+export interface PdfTextItem {
+  str: string;
+  /** Baseline start in PDF user space (bottom-left origin). */
+  x: number;
+  y: number;
+  width: number;
+  /** Approximate font size in pt. */
+  size: number;
+}
+
 export interface OpenedPdfView {
   pageCount: number;
   pages: PdfPageView[];
   render(pageNumber: number, canvas: HTMLCanvasElement, targetWidth: number): Promise<void>;
   getPageText(pageNumber: number): Promise<string>;
+  getPageTextItems(pageNumber: number): Promise<PdfTextItem[]>;
   destroy(): void;
 }
 
@@ -65,6 +76,23 @@ export async function openPdfView(sourceBytes: Uint8Array): Promise<OpenedPdfVie
         if (item.hasEOL) text += '\n';
       });
       return text.replace(/[ \t]+\n/g, '\n').trim();
+    },
+    async getPageTextItems(pageNumber) {
+      const page = await doc.getPage(pageNumber);
+      const content = await page.getTextContent();
+      const items: PdfTextItem[] = [];
+      content.items.forEach((item) => {
+        if (!('str' in item) || !item.str.trim()) return;
+        const [a, b, c, d, e, f] = item.transform as number[];
+        items.push({
+          str: item.str,
+          x: e,
+          y: f,
+          width: item.width,
+          size: Math.hypot(c, d) || Math.hypot(a, b) || item.height || 10
+        });
+      });
+      return items;
     },
     destroy() {
       void task.destroy();

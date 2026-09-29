@@ -3,7 +3,7 @@ import { ArrowLeft, Download, FileSpreadsheet, Table } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
+import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { excelToPdf, parseExcelWorkbook, type ExcelSheetData } from '../lib/pdfExcel';
 import './excel-to-pdf.css';
 
@@ -86,6 +86,7 @@ export function ExcelToPdfPage() {
             onFiles={(files) => files[0] && handleFile(files[0])}
             accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
             acceptPattern={/\.(xlsx|xls|csv)$/i}
+            formatLabel="XLSX · XLS · CSV"
             label={isVi ? 'Chọn hoặc kéo thả tệp Excel (.xlsx, .xls, .csv)' : 'Choose or drop an Excel spreadsheet'}
             hint={isVi ? 'Hỗ trợ .xlsx, .xls, .csv' : 'Supports .xlsx, .xls, .csv'}
           />
@@ -97,7 +98,7 @@ export function ExcelToPdfPage() {
                 <div>
                   <h3 className="file-name">{doc.file.name}</h3>
                   <p className="file-meta">
-                    {fileSummary(doc.file)} • {doc.sheets.length} {isVi ? 'trang tính (sheets)' : 'sheets'}
+                    {formatBytes(doc.file.size)} • {doc.sheets.length} {isVi ? 'trang tính (sheets)' : 'sheets'}
                   </p>
                 </div>
               </div>

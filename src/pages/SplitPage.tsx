@@ -16,6 +16,7 @@ import { EncryptedPdfError, extractPages, getPdfPageCount, splitEveryN } from '.
 import { openPdfView } from '../lib/pdfPreview';
 import type { OpenedPdfView } from '../lib/pdfPreview';
 import { chunkEvery, formatPageLabel, parsePageRanges } from '../lib/ranges';
+import { renderPdfToImages, type PageImageFormat } from '../lib/pdfPageImages';
 import { zipFiles } from '../lib/zip';
 import './split.css';
 
@@ -78,6 +79,11 @@ interface SplitStrings {
   multiResultText: (count: number) => string;
   download: string;
   zipAll: string;
+  saveAs: string;
+  formatPdf: string;
+  formatPng: string;
+  formatJpg: string;
+  imagesHint: string;
   opError: string;
 }
 
@@ -120,6 +126,11 @@ const STRINGS: Record<'vi' | 'en', SplitStrings> = {
     multiResultText: (count) => `Đã tách thành ${count} tệp.`,
     download: 'Tải xuống',
     zipAll: 'Tải tất cả (ZIP)',
+    saveAs: 'Lưu thành',
+    formatPdf: 'Tệp PDF',
+    formatPng: 'Ảnh PNG',
+    formatJpg: 'Ảnh JPG',
+    imagesHint: 'Mỗi trang là một ảnh; nhiều trang sẽ được nén trong một tệp ZIP.',
     opError: 'Không thể xử lý tệp PDF này. Tệp có thể bị hỏng hoặc không đúng chuẩn.'
   },
   en: {
@@ -160,6 +171,11 @@ const STRINGS: Record<'vi' | 'en', SplitStrings> = {
     multiResultText: (count) => `Split into ${count} files.`,
     download: 'Download',
     zipAll: 'Download all (ZIP)',
+    saveAs: 'Save as',
+    formatPdf: 'PDF file',
+    formatPng: 'PNG images',
+    formatJpg: 'JPG images',
+    imagesHint: 'One image per page; several pages are packed into one ZIP file.',
     opError: 'Could not process this PDF. The file may be corrupted or not a valid PDF.'
   }
 };
@@ -239,6 +255,8 @@ export function SplitPage() {
   const [single, setSingle] = useState<ExtractResult | null>(null);
   const [parts, setParts] = useState<SplitPart[] | null>(null);
   const [customName, setCustomName] = useState<string | null>(null);
+  const [saveFormat, setSaveFormat] = useState<'pdf' | PageImageFormat>('pdf');
+  const [saving, setSaving] = useState(false);
 
   const clearOutcome = useCallback(() => {
     setOpError(null);
@@ -377,10 +395,35 @@ export function SplitPage() {
       : '';
   const singleName = customName ?? singleDefaultName;
 
-  const handleDownloadSingle = useCallback(() => {
+  const handleDownloadSingle = useCallback(async () => {
     if (!single) return;
-    downloadBytes(single.bytes, withPdfSuffix(singleName));
-  }, [single, singleName]);
+    if (saveFormat === 'pdf') {
+      downloadBytes(single.bytes, withPdfSuffix(singleName));
+      return;
+    }
+    setSaving(true);
+    setOpError(null);
+    try {
+      const images = await renderPdfToImages(single.bytes, saveFormat);
+      const mime = saveFormat === 'jpg' ? 'image/jpeg' : 'image/png';
+      const base = sanitizeFilename(singleName.replace(/\.(pdf|zip|png|jpe?g)$/i, '')) || 'pages';
+      if (images.length === 1) {
+        downloadBytes(images[0].bytes, `${base}.${saveFormat}`, mime);
+        return;
+      }
+      const zipBytes = await zipFiles(
+        images.map((image, index) => ({
+          name: `${base}-${single.indices[index] + 1}.${saveFormat}`,
+          bytes: image.bytes
+        }))
+      );
+      downloadBytes(zipBytes, `${base}.zip`, 'application/zip');
+    } catch {
+      setOpError(t.opError);
+    } finally {
+      setSaving(false);
+    }
+  }, [single, singleName, saveFormat, t]);
 
   const handleDownloadZip = useCallback(async () => {
     if (!parts || !parts.length) return;
@@ -418,7 +461,7 @@ export function SplitPage() {
 
       <div className="pdf-workspace pdf-workspace--side split-workspace">
         <section className="ct-panel panel-section split-source" aria-label={t.dropLabel}>
-          <FileDrop label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+          <FileDrop compact={source !== null} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
           {source && (
             <div className="split-source__info">
@@ -466,7 +509,7 @@ export function SplitPage() {
                       onChange={(event) => setRangeInput(event.target.value)}
                     />
                   </label>
-                  {rangeInput.trim() && parsed && (
+                  {rangeInput.trim() && parsed?.error && (
                     <p className="notice" role="alert">
                       {rangeErrorMessage(parsed.error, source.pageCount, t)}
                     </p>
@@ -576,10 +619,38 @@ export function SplitPage() {
                       onChange={(event) => setCustomName(event.target.value)}
                     />
                   </label>
+                  <div className="field split-format" role="group" aria-label={t.saveAs}>
+                    <span>{t.saveAs}</span>
+                    <div className="split-format__options">
+                      {(
+                        [
+                          ['pdf', t.formatPdf],
+                          ['png', t.formatPng],
+                          ['jpg', t.formatJpg]
+                        ] as const
+                      ).map(([id, label]) => (
+                        <button
+                          key={id}
+                          type="button"
+                          className={`split-tab${saveFormat === id ? ' is-active' : ''}`}
+                          aria-pressed={saveFormat === id}
+                          onClick={() => setSaveFormat(id)}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                    {saveFormat !== 'pdf' && <small>{t.imagesHint}</small>}
+                  </div>
                   <div className="action-bar">
-                    <button type="button" className="ct-button ct-button--accent" onClick={handleDownloadSingle}>
-                      <Download size={16} aria-hidden="true" />
-                      {t.download}
+                    <button
+                      type="button"
+                      className="ct-button ct-button--accent"
+                      disabled={saving}
+                      onClick={() => void handleDownloadSingle()}
+                    >
+                      {saving ? <span className="spinner" aria-hidden="true" /> : <Download size={16} aria-hidden="true" />}
+                      {saving ? t.working : t.download}
                     </button>
                   </div>
                 </div>

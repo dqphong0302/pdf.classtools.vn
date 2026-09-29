@@ -61,7 +61,7 @@ pdf/
 ```bash
 pnpm install
 pnpm dev        # http://localhost:5173
-pnpm test       # vitest (61 tests)
+pnpm test       # vitest (153 tests)
 pnpm lint       # eslint
 pnpm build      # tsc -b && vite build
 pnpm preview

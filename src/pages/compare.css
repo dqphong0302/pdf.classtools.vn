@@ -1,26 +1,26 @@
 .compare-container {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 0;
 }
 
 .upload-dual-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1.5rem;
   margin-top: 1rem;
 }
 
 @media (max-width: 640px) {
   .upload-dual-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 .upload-box {
-  background: var(--pdui-bg-surface, #ffffff);
-  border: 2px dashed var(--pdui-border, #cbd5e1);
-  border-radius: var(--pdui-radius-lg, 0.75rem);
+  background: var(--pdui-bg-surface);
+  border: 2px dashed var(--pdui-border);
+  border-radius: var(--pdui-radius-lg);
   padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
@@ -42,6 +42,13 @@
   text-align: left;
 }
 
+.uploaded-info > div {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .compare-workspace {
   display: flex;
   flex-direction: column;
@@ -55,9 +62,9 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding: 0.75rem 1.25rem;
-  background: var(--pdui-bg-surface, #ffffff);
-  border: 1px solid var(--pdui-border, #e2e8f0);
-  border-radius: var(--pdui-radius-md, 0.5rem);
+  background: var(--pdui-bg-surface);
+  border: 1px solid var(--pdui-border);
+  border-radius: var(--pdui-radius-md);
 }
 
 .mode-toggle {
@@ -77,13 +84,13 @@
 }
 
 .diff-badge {
-  background: #fee2e2;
-  color: #dc2626;
+  background: color-mix(in srgb, var(--ct-danger) 10%, var(--ct-surface-solid));
+  color: var(--ct-danger);
   font-weight: 600;
   font-size: 0.8125rem;
   padding: 4px 10px;
   border-radius: 9999px;
-  border: 1px solid #fca5a5;
+  border: 1px solid color-mix(in srgb, var(--ct-danger) 35%, transparent);
 }
 
 .diff-view-card {
@@ -91,16 +98,16 @@
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  background: var(--pdui-bg-subtle, #f8fafc);
-  border: 1px solid var(--pdui-border, #e2e8f0);
-  border-radius: var(--pdui-radius-lg, 0.75rem);
+  background: var(--pdui-bg-subtle);
+  border: 1px solid var(--pdui-border);
+  border-radius: var(--pdui-radius-lg);
   padding: 1.5rem;
 }
 
 .view-title {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--pdui-text, #334155);
+  color: var(--pdui-text);
 }
 
 .canvas-frame {
@@ -117,13 +124,13 @@
 
 .side-by-side-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1.5rem;
 }
 
 @media (max-width: 768px) {
   .side-by-side-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

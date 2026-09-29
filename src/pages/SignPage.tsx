@@ -632,7 +632,7 @@ export function SignPage() {
 
       <div className="pdf-workspace pdf-workspace--side sign-workspace">
         <section className="ct-panel panel-section sign-source" aria-label={t.dropLabel}>
-          <FileDrop label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+          <FileDrop compact={source !== null} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
           {source && (
             <>

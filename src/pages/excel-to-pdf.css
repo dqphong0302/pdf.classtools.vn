@@ -1,7 +1,7 @@
 .excel-pdf-container {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 0;
 }
 
 .excel-workspace {
@@ -11,9 +11,9 @@
 }
 
 .sheet-selector-card {
-  background: var(--pdui-bg-surface, #ffffff);
-  border: 1px solid var(--pdui-border, #e2e8f0);
-  border-radius: var(--pdui-radius-md, 0.5rem);
+  background: var(--pdui-bg-surface);
+  border: 1px solid var(--pdui-border);
+  border-radius: var(--pdui-radius-md);
   padding: 1rem;
 }
 
@@ -27,23 +27,23 @@
 .sheet-tab {
   padding: 0.375rem 0.75rem;
   font-size: 0.8125rem;
-  border: 1px solid var(--pdui-border, #cbd5e1);
-  background: var(--pdui-bg-subtle, #f8fafc);
+  border: 1px solid var(--pdui-border);
+  background: var(--pdui-bg-subtle);
   border-radius: 4px;
   cursor: pointer;
 }
 
 .sheet-tab.active {
-  background: var(--pdui-primary, #2563eb);
+  background: var(--pdui-primary);
   color: #ffffff;
-  border-color: var(--pdui-primary, #2563eb);
+  border-color: var(--pdui-primary);
   font-weight: 600;
 }
 
 .table-preview-card {
-  background: var(--pdui-bg-surface, #ffffff);
-  border: 1px solid var(--pdui-border, #e2e8f0);
-  border-radius: var(--pdui-radius-lg, 0.75rem);
+  background: var(--pdui-bg-surface);
+  border: 1px solid var(--pdui-border);
+  border-radius: var(--pdui-radius-lg);
   padding: 1.25rem;
 }
 
@@ -62,7 +62,7 @@
 .table-wrapper {
   max-height: 380px;
   overflow: auto;
-  border: 1px solid var(--pdui-border, #e2e8f0);
+  border: 1px solid var(--pdui-border);
   border-radius: 4px;
 }
 
@@ -73,16 +73,16 @@
 }
 
 .excel-table td {
-  border: 1px solid var(--pdui-border, #e2e8f0);
+  border: 1px solid var(--pdui-border);
   padding: 6px 10px;
   white-space: nowrap;
 }
 
 .excel-table tr:nth-child(even) {
-  background: #f8fafc;
+  background: var(--ct-canvas);
 }
 
 .excel-table tr.header-row {
-  background: #eff6ff;
+  background: var(--ct-cobalt-100);
   font-weight: 600;
 }

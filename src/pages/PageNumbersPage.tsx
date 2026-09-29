@@ -3,9 +3,9 @@ import { ArrowLeft, Download, FileText, Hash } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
+import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
-import { addPageNumbers, type PageNumberPosition } from '../lib/pdfPageNumbers';
+import { addPageNumbers, pageNumberLabel, pageNumberOrigin, type PageNumberPosition } from '../lib/pdfPageNumbers';
 import { openPdfView, type OpenedPdfView } from '../lib/pdfPreview';
 import './page-numbers.css';
 
@@ -27,7 +27,7 @@ export function PageNumbersPage() {
   const [marginPt, setMarginPt] = useState(24);
 
   const [busy, setBusy] = useState(false);
-  const [resultBytes, setResultBytes] = useState<Uint8Array | null>(null);
+  const [result, setResult] = useState<{ bytes: Uint8Array; key: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const previewRef = useRef<OpenedPdfView | null>(null);
@@ -40,17 +40,19 @@ export function PageNumbersPage() {
     previewRef.current = null;
   }, []);
 
+  useEffect(() => cleanup, [cleanup]);
+
   const handleFile = useCallback(
     async (file: File) => {
       cleanup();
       setError(null);
-      setResultBytes(null);
+      setResult(null);
       try {
         const bytes = new Uint8Array(await file.arrayBuffer());
         const pageCount = await getPdfPageCount(bytes);
-        setDoc({ file, bytes, pageCount });
         const view = await openPdfView(bytes);
         previewRef.current = view;
+        setDoc({ file, bytes, pageCount });
       } catch {
         setError(isVi ? 'Không thể đọc tệp PDF.' : 'Unable to read PDF.');
       }
@@ -58,10 +60,53 @@ export function PageNumbersPage() {
     [cleanup, isVi]
   );
 
+  // Preview the first page that actually receives a number.
+  const previewIndex = doc ? Math.min(Math.max(1, firstPage), doc.pageCount) - 1 : 0;
+  const baseRef = useRef<HTMLCanvasElement | null>(null);
+  const [baseVersion, setBaseVersion] = useState(0);
+
   useEffect(() => {
-    if (!doc || !previewRef.current || !canvasRef.current) return;
-    previewRef.current.render(1, canvasRef.current, 280).catch(() => {});
-  }, [doc]);
+    const view = previewRef.current;
+    if (!doc || !view) return;
+    let cancelled = false;
+    const base = document.createElement('canvas');
+    view
+      .render(previewIndex + 1, base, 560)
+      .then(() => {
+        if (cancelled) return;
+        baseRef.current = base;
+        setBaseVersion((version) => version + 1);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [doc, previewIndex]);
+
+  useEffect(() => {
+    const base = baseRef.current;
+    const canvas = canvasRef.current;
+    const page = previewRef.current?.pages[previewIndex];
+    if (!doc || !base || !canvas || !page) return;
+    canvas.width = base.width;
+    canvas.height = base.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(base, 0, 0);
+    const options = { position, format, startFrom, firstPageToNumber: firstPage, fontSize, colorHex, marginPt };
+    const text = pageNumberLabel(previewIndex, doc.pageCount, options);
+    if (!text) return;
+    const scale = base.width / page.width;
+    ctx.font = `${fontSize * scale}px Roboto, "Segoe UI", Arial, sans-serif`;
+    ctx.fillStyle = colorHex;
+    ctx.textBaseline = 'alphabetic';
+    const origin = pageNumberOrigin(page.width, page.height, ctx.measureText(text).width / scale, options);
+    ctx.fillText(text, origin.x * scale, (page.height - origin.y) * scale);
+  }, [doc, baseVersion, previewIndex, position, format, startFrom, firstPage, fontSize, colorHex, marginPt]);
+
+  // A result is only offered while it still matches the current settings.
+  const settingsKey = JSON.stringify([position, format, startFrom, firstPage, fontSize, colorHex, marginPt]);
+  const resultBytes = result?.key === settingsKey ? result.bytes : null;
 
   const handleApply = async () => {
     if (!doc) return;
@@ -77,7 +122,7 @@ export function PageNumbersPage() {
         colorHex,
         marginPt
       });
-      setResultBytes(res);
+      setResult({ bytes: res, key: settingsKey });
     } catch {
       setError(isVi ? 'Lỗi khi đánh số trang.' : 'Error adding page numbers.');
     } finally {
@@ -121,7 +166,7 @@ export function PageNumbersPage() {
                 <div>
                   <h3 className="file-name">{doc.file.name}</h3>
                   <p className="file-meta">
-                    {fileSummary(doc.file)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
+                    {formatBytes(doc.file.size)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
                   </p>
                 </div>
               </div>
@@ -257,7 +302,7 @@ export function PageNumbersPage() {
 
               {/* Preview */}
               <div className="pn-preview-panel">
-                <span className="preview-label">{isVi ? 'Xem trước mẫu trang 1' : 'Page 1 Preview'}</span>
+                <span className="preview-label">{isVi ? `Xem trước trang ${previewIndex + 1}` : `Page ${previewIndex + 1} preview`}</span>
                 <div className="preview-box">
                   <canvas ref={canvasRef} />
                 </div>

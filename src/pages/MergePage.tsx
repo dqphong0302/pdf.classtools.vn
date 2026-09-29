@@ -216,7 +216,7 @@ export function MergePage() {
 
       <div className="pdf-workspace pdf-workspace--two merge-workspace">
         <section className="ct-panel panel-section merge-panel" aria-label={t.title}>
-          <FileDrop multiple label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
+          <FileDrop multiple compact={entries.length > 0} label={t.dropLabel} hint={t.dropHint} onFiles={handleFiles} notice={notice} />
 
           {entries.length > 0 && (
             <ul className="file-list merge-file-list">

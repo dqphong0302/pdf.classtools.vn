@@ -1,5 +1,6 @@
-import { PDFDocument, rgb } from 'pdf-lib';
-import { ensureEmbeddedFonts } from './pdfEdit';
+import { PDFDocument, degrees } from 'pdf-lib';
+import { ensureEmbeddedFonts, hexToPdfRgb } from './pdfEdit';
+import { pageFrame } from './pdfPlacement';
 
 export type PageNumberPosition =
   | 'bottom-center'
@@ -19,6 +20,33 @@ export interface PageNumberOptions {
   marginPt: number; // distance from edge, e.g. 24
 }
 
+/** Label for page `index` (0-based), or null when the page is not numbered. */
+export function pageNumberLabel(index: number, totalPages: number, options: PageNumberOptions): string | null {
+  const first = Math.max(1, options.firstPageToNumber);
+  if (index + 1 < first) return null;
+  return options.format
+    .replace(/\{n\}/g, String(options.startFrom + index - (first - 1)))
+    .replace(/\{total\}/g, String(totalPages - (first - 1)));
+}
+
+/** Baseline origin (visual coordinates, bottom-left origin) of the label on a page. */
+export function pageNumberOrigin(
+  pageWidth: number,
+  pageHeight: number,
+  textWidth: number,
+  options: Pick<PageNumberOptions, 'position' | 'marginPt' | 'fontSize'>
+): { x: number; y: number } {
+  const [vertical, horizontal] = options.position.split('-') as ['top' | 'bottom', 'left' | 'center' | 'right'];
+  const x =
+    horizontal === 'left'
+      ? options.marginPt
+      : horizontal === 'right'
+        ? pageWidth - textWidth - options.marginPt
+        : (pageWidth - textWidth) / 2;
+  const y = vertical === 'top' ? pageHeight - options.marginPt - options.fontSize : options.marginPt;
+  return { x, y };
+}
+
 export async function addPageNumbers(
   sourceBytes: Uint8Array,
   options: PageNumberOptions
@@ -26,64 +54,24 @@ export async function addPageNumbers(
   const pdf = await PDFDocument.load(sourceBytes, { ignoreEncryption: true });
   const fonts = await ensureEmbeddedFonts(pdf);
   const totalPages = pdf.getPageCount();
+  const fontColor = hexToPdfRgb(options.colorHex);
 
-  const cleanHex = options.colorHex.replace('#', '').trim();
-  const r = parseInt(cleanHex.slice(0, 2), 16) / 255 || 0.3;
-  const g = parseInt(cleanHex.slice(2, 4), 16) / 255 || 0.3;
-  const b = parseInt(cleanHex.slice(4, 6), 16) / 255 || 0.3;
-  const fontColor = rgb(r, g, b);
-
-  for (let i = 0; i < totalPages; i++) {
-    const pageNum = i + 1;
-    if (pageNum < options.firstPageToNumber) continue;
-
-    const currentNumber = options.startFrom + (i - (options.firstPageToNumber - 1));
-    const text = options.format
-      .replace(/\{n\}/g, String(currentNumber))
-      .replace(/\{total\}/g, String(totalPages - (options.firstPageToNumber - 1)));
-
-    const page = pdf.getPage(i);
-    const { width, height } = page.getSize();
+  pdf.getPages().forEach((page, index) => {
+    const text = pageNumberLabel(index, totalPages, options);
+    if (!text) return;
+    const frame = pageFrame(page);
     const textWidth = fonts.regular.widthOfTextAtSize(text, options.fontSize);
-
-    let x = (width - textWidth) / 2;
-    let y = options.marginPt;
-
-    switch (options.position) {
-      case 'bottom-left':
-        x = options.marginPt;
-        y = options.marginPt;
-        break;
-      case 'bottom-center':
-        x = (width - textWidth) / 2;
-        y = options.marginPt;
-        break;
-      case 'bottom-right':
-        x = width - textWidth - options.marginPt;
-        y = options.marginPt;
-        break;
-      case 'top-left':
-        x = options.marginPt;
-        y = height - options.marginPt - options.fontSize;
-        break;
-      case 'top-center':
-        x = (width - textWidth) / 2;
-        y = height - options.marginPt - options.fontSize;
-        break;
-      case 'top-right':
-        x = width - textWidth - options.marginPt;
-        y = height - options.marginPt - options.fontSize;
-        break;
-    }
-
+    const origin = pageNumberOrigin(frame.width, frame.height, textWidth, options);
+    const at = frame.toPdf(origin.x, origin.y);
     page.drawText(text, {
-      x,
-      y,
+      x: at.x,
+      y: at.y,
+      rotate: degrees(frame.rotation),
       size: options.fontSize,
       font: fonts.regular,
       color: fontColor
     });
-  }
+  });
 
   return await pdf.save();
 }

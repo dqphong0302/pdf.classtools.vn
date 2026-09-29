@@ -3,10 +3,10 @@ import { ArrowLeft, Download, EyeOff, FileText, Trash2 } from 'lucide-react';
 import { FileDrop } from '../components/FileDrop';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
-import { downloadBytes, fileSummary, withPdfSuffix } from '../lib/download';
+import { downloadBytes, formatBytes, withPdfSuffix } from '../lib/download';
 import { getPdfPageCount } from '../lib/pdfOps';
 import { openPdfView, type OpenedPdfView } from '../lib/pdfPreview';
-import { redactPdf, type RedactBox } from '../lib/pdfRedact';
+import { redactPdf, type RedactBox, type RedactColor } from '../lib/pdfRedact';
 import './redact.css';
 
 interface DocState {
@@ -15,177 +15,170 @@ interface DocState {
   pageCount: number;
 }
 
+type Point = { x: number; y: number };
+
 export function RedactPage() {
   const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
   const [doc, setDoc] = useState<DocState | null>(null);
+  const [view, setView] = useState<OpenedPdfView | null>(null);
   const [activePage, setActivePage] = useState(1);
   const [boxes, setBoxes] = useState<RedactBox[]>([]);
-  const [redactColor, setRedactColor] = useState<'black' | 'white'>('black');
+  const [redactColor, setRedactColor] = useState<RedactColor>('black');
+  const [renderTick, setRenderTick] = useState(0);
 
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
-  const [currentPos, setCurrentPos] = useState<{ x: number; y: number } | null>(null);
+  // Drag rectangle in canvas pixels; null when not drawing.
+  const [draft, setDraft] = useState<{ start: Point; current: Point } | null>(null);
 
   const [busy, setBusy] = useState(false);
   const [resultBytes, setResultBytes] = useState<Uint8Array | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const previewRef = useRef<OpenedPdfView | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const isVi = locale === 'vi';
 
-  const cleanup = useCallback(() => {
-    previewRef.current?.destroy();
-    previewRef.current = null;
+  useEffect(() => () => view?.destroy(), [view]);
+
+  const resetDoc = useCallback(() => {
+    setDoc(null);
+    setView(null);
+    setBoxes([]);
+    setResultBytes(null);
+    setActivePage(1);
+    setDraft(null);
   }, []);
 
   const handleFile = useCallback(
     async (file: File) => {
-      cleanup();
+      resetDoc();
       setError(null);
-      setResultBytes(null);
-      setBoxes([]);
       try {
         const bytes = new Uint8Array(await file.arrayBuffer());
         const pageCount = await getPdfPageCount(bytes);
+        const opened = await openPdfView(bytes);
+        setView(opened);
         setDoc({ file, bytes, pageCount });
-        const view = await openPdfView(bytes);
-        previewRef.current = view;
       } catch {
         setError(isVi ? 'Không thể đọc tệp PDF.' : 'Unable to read PDF.');
       }
     },
-    [cleanup, isVi]
+    [resetDoc, isVi]
   );
 
-  const renderActivePage = useCallback(async () => {
-    if (!doc || !previewRef.current || !canvasRef.current) return;
+  useEffect(() => {
     const canvas = canvasRef.current;
-    await previewRef.current.render(activePage, canvas, 560);
-
-    // Sync overlay canvas size
-    if (overlayCanvasRef.current) {
-      overlayCanvasRef.current.width = canvas.width;
-      overlayCanvasRef.current.height = canvas.height;
-      drawBoxes();
-    }
-  }, [doc, activePage]);
+    const overlay = overlayCanvasRef.current;
+    if (!view || !canvas || !overlay) return;
+    let cancelled = false;
+    const pageInfo = view.pages[activePage - 1];
+    // Render at device resolution but never wider than the page at 2×.
+    const target = Math.min(pageInfo.width * 2, 860 * Math.min(window.devicePixelRatio || 1, 2));
+    view
+      .render(activePage, canvas, target)
+      .then(() => {
+        if (cancelled) return;
+        overlay.width = canvas.width;
+        overlay.height = canvas.height;
+        setRenderTick((tick) => tick + 1);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [view, activePage]);
 
   useEffect(() => {
-    renderActivePage().catch(() => {});
-  }, [renderActivePage]);
-
-  const drawBoxes = useCallback(() => {
     const overlay = overlayCanvasRef.current;
-    if (!overlay || !previewRef.current) return;
+    if (!overlay || !view) return;
     const ctx = overlay.getContext('2d');
     if (!ctx) return;
-
     ctx.clearRect(0, 0, overlay.width, overlay.height);
 
-    const pageView = previewRef.current.pages[activePage - 1];
-    if (!pageView) return;
+    const pageView = view.pages[activePage - 1];
+    if (!pageView || !overlay.width) return;
     const scale = overlay.width / pageView.width;
+    const line = Math.max(1, overlay.width / 400);
 
-    // Draw saved boxes for this page
-    const pageBoxes = boxes.filter((b) => b.pageIndex === activePage - 1);
     ctx.fillStyle = redactColor === 'black' ? 'rgba(0, 0, 0, 0.85)' : 'rgba(255, 255, 255, 0.9)';
     ctx.strokeStyle = '#ef4444';
-    ctx.lineWidth = 2;
-
-    for (const b of pageBoxes) {
-      // PDF bottom-left to canvas top-left
-      const cvsX = b.x * scale;
-      const cvsY = (pageView.height - b.y - b.height) * scale;
-      const cvsW = b.width * scale;
-      const cvsH = b.height * scale;
-
-      ctx.fillRect(cvsX, cvsY, cvsW, cvsH);
-      ctx.strokeRect(cvsX, cvsY, cvsW, cvsH);
+    ctx.lineWidth = line;
+    for (const b of boxes) {
+      if (b.pageIndex !== activePage - 1) continue;
+      const rect = [b.x * scale, (pageView.height - b.y - b.height) * scale, b.width * scale, b.height * scale] as const;
+      ctx.fillRect(...rect);
+      ctx.strokeRect(...rect);
     }
 
-    // Draw active drawing box
-    if (isDrawing && startPos && currentPos) {
-      const x = Math.min(startPos.x, currentPos.x);
-      const y = Math.min(startPos.y, currentPos.y);
-      const w = Math.abs(currentPos.x - startPos.x);
-      const h = Math.abs(currentPos.y - startPos.y);
-
+    if (draft) {
+      const x = Math.min(draft.start.x, draft.current.x);
+      const y = Math.min(draft.start.y, draft.current.y);
+      const w = Math.abs(draft.current.x - draft.start.x);
+      const h = Math.abs(draft.current.y - draft.start.y);
       ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
-      ctx.strokeStyle = '#ef4444';
-      ctx.setLineDash([4, 4]);
+      ctx.setLineDash([line * 4, line * 4]);
       ctx.fillRect(x, y, w, h);
       ctx.strokeRect(x, y, w, h);
       ctx.setLineDash([]);
     }
-  }, [activePage, boxes, isDrawing, startPos, currentPos, redactColor]);
+  }, [view, activePage, boxes, draft, redactColor, renderTick]);
 
-  useEffect(() => {
-    drawBoxes();
-  }, [drawBoxes]);
-
-  const getCanvasCoords = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const overlay = overlayCanvasRef.current;
-    if (!overlay) return { x: 0, y: 0 };
+  // Pointer position in canvas pixels (the canvas is CSS-scaled to fit its column).
+  const toCanvasPoint = (event: React.PointerEvent<HTMLCanvasElement>): Point => {
+    const overlay = event.currentTarget;
     const rect = overlay.getBoundingClientRect();
+    const sx = rect.width ? overlay.width / rect.width : 1;
+    const sy = rect.height ? overlay.height / rect.height : 1;
     return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      x: Math.max(0, Math.min(overlay.width, (event.clientX - rect.left) * sx)),
+      y: Math.max(0, Math.min(overlay.height, (event.clientY - rect.top) * sy))
     };
   };
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const coords = getCanvasCoords(e);
-    setIsDrawing(true);
-    setStartPos(coords);
-    setCurrentPos(coords);
+  const handlePointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (event.button !== 0) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    const point = toCanvasPoint(event);
+    setDraft({ start: point, current: point });
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
-    setCurrentPos(getCanvasCoords(e));
+  const handlePointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!draft) return;
+    const point = toCanvasPoint(event);
+    setDraft((prev) => (prev ? { ...prev, current: point } : prev));
   };
 
-  const handleMouseUp = () => {
-    if (!isDrawing || !startPos || !currentPos || !previewRef.current || !overlayCanvasRef.current) {
-      setIsDrawing(false);
-      return;
-    }
-    const pageView = previewRef.current.pages[activePage - 1];
-    const scale = overlayCanvasRef.current.width / pageView.width;
+  const handlePointerUp = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    const overlay = event.currentTarget;
+    const current = draft ? toCanvasPoint(event) : null;
+    const start = draft?.start;
+    setDraft(null);
+    if (!start || !current || !view || !overlay.width) return;
 
-    const cvsX = Math.min(startPos.x, currentPos.x);
-    const cvsY = Math.min(startPos.y, currentPos.y);
-    const cvsW = Math.abs(currentPos.x - startPos.x);
-    const cvsH = Math.abs(currentPos.y - startPos.y);
+    const pageView = view.pages[activePage - 1];
+    const scale = overlay.width / pageView.width;
+    const cvsX = Math.min(start.x, current.x);
+    const cvsY = Math.min(start.y, current.y);
+    const cvsW = Math.abs(current.x - start.x);
+    const cvsH = Math.abs(current.y - start.y);
+    // Ignore accidental clicks (< ~3 pt).
+    if (cvsW / scale < 3 || cvsH / scale < 3) return;
 
-    if (cvsW > 5 && cvsH > 5) {
-      // Convert to PDF coordinates (pt, bottom-left origin)
-      const pdfX = cvsX / scale;
-      const pdfH = cvsH / scale;
-      const pdfW = cvsW / scale;
-      const pdfY = pageView.height - (cvsY + cvsH) / scale;
-
-      setBoxes((prev) => [
-        ...prev,
-        {
-          pageIndex: activePage - 1,
-          x: pdfX,
-          y: pdfY,
-          width: pdfW,
-          height: pdfH
-        }
-      ]);
-    }
-
-    setIsDrawing(false);
-    setStartPos(null);
-    setCurrentPos(null);
+    setResultBytes(null);
+    setBoxes((prev) => [
+      ...prev,
+      {
+        pageIndex: activePage - 1,
+        x: cvsX / scale,
+        y: pageView.height - (cvsY + cvsH) / scale,
+        width: cvsW / scale,
+        height: cvsH / scale
+      }
+    ]);
   };
 
   const removeBox = (idx: number) => {
+    setResultBytes(null);
     setBoxes((prev) => prev.filter((_, i) => i !== idx));
   };
 
@@ -243,17 +236,14 @@ export function RedactPage() {
                 <div>
                   <h3 className="file-name">{doc.file.name}</h3>
                   <p className="file-meta">
-                    {fileSummary(doc.file)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
+                    {formatBytes(doc.file.size)} • {doc.pageCount} {isVi ? 'trang' : 'pages'}
                   </p>
                 </div>
               </div>
               <button
                 type="button"
                 className="btn btn-secondary btn-sm"
-                onClick={() => {
-                  cleanup();
-                  setDoc(null);
-                }}
+                onClick={resetDoc}
               >
                 {isVi ? 'Đổi tệp' : 'Change file'}
               </button>
@@ -291,15 +281,16 @@ export function RedactPage() {
                   <canvas
                     ref={overlayCanvasRef}
                     className="overlay-canvas"
-                    onMouseDown={handleMouseDown}
-                    onMouseMove={handleMouseMove}
-                    onMouseUp={handleMouseUp}
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerCancel={() => setDraft(null)}
                   />
                 </div>
                 <p className="canvas-hint">
                   {isVi
-                    ? '💡 Nhấn giữ và kéo chuột trên trang để tạo vùng bôi đen'
-                    : '💡 Click and drag on the page to draw a blackout redaction box'}
+                    ? '💡 Nhấn giữ và kéo (chuột hoặc ngón tay) trên trang để tạo vùng che. Trang có vùng che sẽ được chuyển thành ảnh để xoá hẳn chữ bên dưới.'
+                    : '💡 Click or touch and drag on the page to draw a box. Redacted pages are flattened to images so the text underneath is removed for good.'}
                 </p>
               </div>
 
@@ -316,14 +307,20 @@ export function RedactPage() {
                     <button
                       type="button"
                       className={`color-btn ${redactColor === 'black' ? 'active' : ''}`}
-                      onClick={() => setRedactColor('black')}
+                      onClick={() => {
+                        setRedactColor('black');
+                        setResultBytes(null);
+                      }}
                     >
                       {isVi ? 'Bôi đen' : 'Blackout'}
                     </button>
                     <button
                       type="button"
                       className={`color-btn ${redactColor === 'white' ? 'active' : ''}`}
-                      onClick={() => setRedactColor('white')}
+                      onClick={() => {
+                        setRedactColor('white');
+                        setResultBytes(null);
+                      }}
                     >
                       {isVi ? 'Xóa trắng' : 'Whiteout'}
                     </button>
@@ -334,7 +331,10 @@ export function RedactPage() {
                   <div className="section-head">
                     <span className="field-label">{isVi ? `Vùng đã chọn (${boxes.length})` : `Boxes (${boxes.length})`}</span>
                     {boxes.length > 0 && (
-                      <button type="button" className="text-btn" onClick={() => setBoxes([])}>
+                      <button type="button" className="text-btn" onClick={() => {
+                        setResultBytes(null);
+                        setBoxes([]);
+                      }}>
                         {isVi ? 'Xóa hết' : 'Clear all'}
                       </button>
                     )}

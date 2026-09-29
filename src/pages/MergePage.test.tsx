@@ -107,9 +107,8 @@ describe('MergePage', () => {
     const { container } = render(<MergePage />);
     upload(container, [big, broken]);
 
-    const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent('quá 100 MB');
-    expect(alert).toHaveTextContent('Không đọc được tệp');
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Không đọc được tệp'));
+    expect(screen.getByRole('alert')).toHaveTextContent('quá 100 MB');
     expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Ghép PDF/ })).toBeDisabled();
   });
