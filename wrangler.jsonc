@@ -3,12 +3,10 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "classtools-pdf",
   "compatibility_date": "2026-08-01",
-  "main": "worker/index.ts",
   // Cloudflare runs `npx wrangler deploy` without a build step, so build here.
   "build": { "command": "pnpm build" },
   "assets": {
     "directory": "./dist",
-    "binding": "ASSETS",
     "not_found_handling": "single-page-application"
   },
   "observability": {

@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+/* Fonts are loaded by <link> in index.html; an @import here would add a second,
+   render-blocking request chain. (Otherwise identical to classtools/packages/ui/styles.css.) */
 
 @layer reset, tokens, base, components, utilities;
 

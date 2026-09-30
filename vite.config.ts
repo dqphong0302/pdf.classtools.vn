@@ -7,14 +7,6 @@ export default defineConfig({
   build: {
     target: 'es2022',
     chunkSizeWarningLimit: 20000,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'pdf-lib': ['pdf-lib'],
-          'pdf-viewer': ['pdfjs-dist']
-        }
-      }
-    }
   },
   test: {
     environment: 'jsdom',
