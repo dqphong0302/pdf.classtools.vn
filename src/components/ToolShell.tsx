@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { ChevronRight, FileText, Languages, LayoutGrid, Moon, Search, ShieldCheck, Sun, X } from 'lucide-react';
+import { ChevronRight, FileText, LayoutGrid, Moon, Search, ShieldCheck, Sun, X } from 'lucide-react';
 import { usePreferences, type Locale } from '../hooks/usePreferences';
 import { CATEGORIES, CATEGORY_TONE, TOOLS, searchTools, toolForPath, type ToolInfo } from '../lib/tools';
 
@@ -118,7 +118,7 @@ function ToolsMenu({ locale, currentPath, onClose }: { locale: Locale; currentPa
 }
 
 export function ToolShell({ children }: ToolShellProps) {
-  const { theme, locale, toggleTheme, toggleLocale } = usePreferences();
+  const { theme, locale, toggleTheme, setLocale } = usePreferences();
   const vi = locale === 'vi';
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
@@ -162,10 +162,20 @@ export function ToolShell({ children }: ToolShellProps) {
               <span>{vi ? 'Tất cả công cụ' : 'All tools'}</span>
               <kbd className="header-kbd" aria-hidden="true">/</kbd>
             </button>
-            <button className="header-action" type="button" onClick={toggleLocale} aria-label={vi ? 'Switch to English' : 'Chuyển sang tiếng Việt'}>
-              <Languages size={17} aria-hidden="true" />
-              <span>{locale.toUpperCase()}</span>
-            </button>
+            <div className="lang-switch" role="group" aria-label="Ngôn ngữ / Language" data-locale={locale}>
+              {(['vi', 'en'] as const).map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  lang={code}
+                  aria-pressed={locale === code}
+                  aria-label={code === 'vi' ? 'Tiếng Việt' : 'English'}
+                  onClick={() => setLocale(code)}
+                >
+                  {code.toUpperCase()}
+                </button>
+              ))}
+            </div>
             <button className="ct-icon-button" type="button" onClick={toggleTheme} aria-label={vi ? 'Đổi giao diện' : 'Toggle theme'}>
               {theme === 'light' ? <Moon size={19} aria-hidden="true" /> : <Sun size={19} aria-hidden="true" />}
             </button>

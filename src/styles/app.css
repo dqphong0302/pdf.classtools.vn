@@ -1291,3 +1291,184 @@
 .tone-teal { --tone-soft: var(--ct-teal-100); --tone-ink: var(--ct-teal-700); --tone-solid: var(--ct-teal-500); }
 .tone-coral { --tone-soft: var(--ct-coral-100); --tone-ink: var(--ct-coral-600); --tone-solid: var(--ct-coral-500); }
 .tone-yellow { --tone-soft: var(--ct-yellow-100); --tone-ink: var(--ct-yellow-700); --tone-solid: var(--ct-yellow-500); }
+
+/* ---- Language switch: VI | EN with a sliding indicator ---- */
+.lang-switch {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 3px;
+  border: 1px solid var(--ct-border);
+  border-radius: var(--ct-radius-pill);
+  background: var(--ct-surface);
+}
+
+.lang-switch::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  border-radius: var(--ct-radius-pill);
+  background: var(--ct-cobalt-600);
+  transition: transform var(--ct-normal) var(--ct-ease);
+}
+
+.lang-switch[data-locale='en']::before {
+  transform: translateX(100%);
+}
+
+.lang-switch button {
+  position: relative;
+  z-index: 1;
+  min-width: 2.4rem;
+  min-height: 2rem;
+  padding: 0 0.6rem;
+  border: 0;
+  border-radius: var(--ct-radius-pill);
+  background: transparent;
+  color: var(--ct-ink-600);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: color var(--ct-normal) ease;
+}
+
+.lang-switch button[aria-pressed='true'] {
+  color: #fff;
+}
+
+[data-theme='dark'] .lang-switch button[aria-pressed='true'] {
+  color: #0e1726;
+}
+
+.lang-switch button:focus-visible {
+  outline: 2px solid var(--ct-focus);
+  outline-offset: 2px;
+}
+
+/* ---- Motion ---- */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.92); }
+}
+
+@keyframes check-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.12); opacity: 1; }
+}
+
+@keyframes float-icon {
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+  /* Home */
+  .home-hero > * {
+    animation: fade-up 600ms var(--ct-ease) both;
+  }
+  .home-hero > :nth-child(2) { animation-delay: 60ms; }
+  .home-hero > :nth-child(3) { animation-delay: 120ms; }
+  .home-tabs { animation: fade-up 600ms 180ms var(--ct-ease) both; }
+
+  .tool-card {
+    animation: fade-up 520ms var(--ct-ease) both;
+    animation-delay: calc(min(var(--i, 0), 16) * 30ms + 120ms);
+  }
+
+  .tool-card__icon {
+    transition: transform var(--ct-normal) var(--ct-ease);
+  }
+
+  .tool-card:hover .tool-card__icon {
+    transform: translateY(-2px) rotate(-6deg) scale(1.08);
+  }
+
+  /* Tool pages */
+  .breadcrumb,
+  .tool-page-heading {
+    animation: fade-up 500ms var(--ct-ease) both;
+  }
+  .tool-page-heading { animation-delay: 50ms; }
+
+  /* Whatever the page renders after the heading slides in just after it. */
+  .tool-page-heading ~ * {
+    animation: fade-up 520ms 110ms var(--ct-ease) both;
+  }
+
+  .file-drop:hover .file-drop__icon,
+  .file-drop--dragging .file-drop__icon {
+    animation: float-icon 1.2s ease-in-out infinite;
+  }
+
+  .file-card {
+    animation: pop-in 320ms var(--ct-ease) both;
+  }
+
+  .result-card {
+    animation: pop-in 380ms var(--ct-ease) both;
+  }
+
+  .result-card__icon {
+    animation: check-pop 520ms 120ms var(--ct-ease) both;
+  }
+
+  /* Tactile press feedback */
+  .primary-action,
+  .result-card__download,
+  .file-drop__button,
+  .btn,
+  .home-tab {
+    transition: transform var(--ct-fast) var(--ct-ease), background var(--ct-fast) ease, color var(--ct-fast) ease;
+  }
+
+  .primary-action:active:not(:disabled),
+  .result-card__download:active,
+  .btn:active:not(:disabled),
+  .home-tab:active {
+    transform: scale(0.97);
+  }
+
+/* Reduced motion: keep gentle fades, drop movement, bounce and hover tilts. */
+@media (prefers-reduced-motion: reduce) {
+  .home-hero > *,
+  .home-tabs,
+  .tool-card,
+  .breadcrumb,
+  .tool-page-heading,
+  .tool-page-heading ~ *,
+  .file-card,
+  .result-card,
+  .result-card__icon {
+    animation-name: fade-in;
+    /* The shared ClassTools reset shortens every animation to 0.01ms here; a
+       short fade is still comfortable, so restore it for these elements. */
+    animation-duration: 450ms !important;
+  }
+
+  .file-drop:hover .file-drop__icon,
+  .file-drop--dragging .file-drop__icon {
+    animation: none;
+  }
+
+  .tool-card:hover .tool-card__icon,
+  .primary-action:active:not(:disabled),
+  .result-card__download:active,
+  .btn:active:not(:disabled),
+  .home-tab:active {
+    transform: none;
+  }
+
+  .lang-switch::before {
+    transition: none;
+  }
+}

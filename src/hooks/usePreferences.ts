@@ -57,6 +57,6 @@ export function usePreferences() {
     theme,
     locale,
     toggleTheme: () => update({ theme: theme === 'light' ? 'dark' : 'light' }),
-    toggleLocale: () => update({ locale: locale === 'vi' ? 'en' : 'vi' })
+    setLocale: (next: Locale) => update({ locale: next })
   };
 }

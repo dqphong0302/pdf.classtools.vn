@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { ToolShell } from '../components/ToolShell';
 import { usePreferences } from '../hooks/usePreferences';
 import { CATEGORIES, CATEGORY_TONE, TOOLS, type ToolCategory } from '../lib/tools';
@@ -43,9 +43,15 @@ export function HomePage() {
         ))}
       </div>
 
-      <div className="tool-grid">
-        {tools.map(({ to, icon: Icon, title, description, category }) => (
-          <a key={to} className={`tool-card tone-${CATEGORY_TONE[category]}`} href={to}>
+      {/* Keyed by filter so the cards re-animate when the category changes. */}
+      <div className="tool-grid" key={active}>
+        {tools.map(({ to, icon: Icon, title, description, category }, index) => (
+          <a
+            key={to}
+            className={`tool-card tone-${CATEGORY_TONE[category]}`}
+            href={to}
+            style={{ '--i': index } as CSSProperties}
+          >
             <span className="tool-card__icon" aria-hidden="true">
               <Icon size={24} strokeWidth={2} />
             </span>
