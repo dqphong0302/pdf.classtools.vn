@@ -4,3 +4,14 @@ dist
 .DS_Store
 *.tsbuildinfo
 public/wasm
+
+node_modules/
+dist/
+.wrangler/
+.dev.vars
+.dev.vars.*
+.env
+.env.*
+!.env.example
+!.dev.vars.example
+pnpm-debug.log*

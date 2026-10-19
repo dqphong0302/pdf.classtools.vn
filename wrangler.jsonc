@@ -1,19 +1,31 @@
-// wrangler.toml-c compatible config for Cloudflare Workers static assets
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "classtools-pdf",
+  "name": "pdf-classtools-vn",
   "compatibility_date": "2026-08-01",
-  // Cloudflare runs `npx wrangler deploy` without a build step, so build here.
-  "build": { "command": "pnpm build" },
+  "build": {
+    "command": "pnpm build"
+  },
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api",
+      "/api/*"
+    ]
   },
   "observability": {
     "enabled": true
   },
   "routes": [
-    { "pattern": "pdf.classtools.vn", "custom_domain": true },
-    { "pattern": "pdf.phongdang.io.vn", "custom_domain": true }
-  ]
+    {
+      "pattern": "pdf.classtools.vn",
+      "custom_domain": true
+    },
+    {
+      "pattern": "pdf.phongdang.io.vn",
+      "custom_domain": true
+    }
+  ],
+  "main": "worker/index.mjs"
 }

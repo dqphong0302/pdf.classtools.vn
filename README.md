@@ -72,7 +72,7 @@ pnpm preview
 Yêu cầu: Cloudflare account có quyền quản lý DNS `classtools.vn`.
 
 ```bash
-pnpm deploy
+pnpm run deploy
 # hoặc: pnpm build && pnpm exec wrangler deploy
 ```
 
@@ -81,3 +81,21 @@ Lần đầu deploy, wrangler tự tạo custom domain `pdf.classtools.vn` (rout
 ## Quyền riêng tư
 
 Toàn bộ thao tác PDF diễn ra trong RAM của trình duyệt. Không có request upload; chỉ tải thư viện tĩnh từ CDN. Khi đóng tab, mọi dữ liệu tạm biến mất.
+
+
+## Hono trên Cloudflare Workers
+
+Worker HTTP dùng Hono tại `worker/index.mjs`. File tĩnh được Cloudflare phục vụ
+trực tiếp; chỉ đường dẫn động mới chạy Worker. Mỗi project deploy độc lập.
+
+```bash
+pnpm install --frozen-lockfile
+pnpm build
+pnpm dev:worker     # thử Worker và assets trên máy
+pnpm check:worker   # bundle thử, không publish
+pnpm run deploy         # Wrangler tự build một lần trước khi deploy
+```
+
+Health của Worker: `/api/health`. Giữ `pnpm dev` cho workflow frontend hiện có.
+Cấu hình domains và bindings nằm trong `wrangler.jsonc`; secrets dùng
+`pnpm exec wrangler secret put TEN_SECRET`, không đưa vào file assets.
